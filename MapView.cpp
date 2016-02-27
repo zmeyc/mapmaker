@@ -19,7 +19,8 @@ const char mimeType[] = "application/x-levelobject";
 MapView::MapView(QWidget *parent)
     : QGraphicsView(parent)
 {
-    WidgetUtils::setBackgroundColor(this, Qt::white);
+    //WidgetUtils::setBackgroundColor(this, Qt::white);
+    //setBackgroundBrush(Qt::blue);
 
     setAcceptDrops(true);
     setFocusPolicy(Qt::StrongFocus);
@@ -34,12 +35,14 @@ MapScene *MapView::mapScene() const
 
 void MapView::paintEvent(QPaintEvent *event)
 {
-//    {
-//        QPainter painter(viewport());
-//        QPainterPath path;
-//        path.addPolygon(mapFromScene(sceneRect()));
-//        painter.fillPath(path, Qt::green);
-//    }
+    {
+        QPainter painter(viewport());
+        QPainterPath path;
+        path.addRect(rect());
+        painter.fillPath(path, Qt::white);
+        path.addPolygon(mapFromScene(sceneRect()));
+        painter.fillPath(path, Qt::lightGray);
+    }
 
     QGraphicsView::paintEvent(event);
 
