@@ -18,7 +18,6 @@ include(ThirdParty/qtpropertybrowser/src/qtpropertybrowser.pri)7
 SOURCES += main.cpp\
         MainWindow.cpp \
     ObjectBrowser.cpp \
-    MapLayer.cpp \
     Utils/WidgetUtils.cpp \
     Models/LevelObjectsModel.cpp \
     Utils/Utils.cpp \
@@ -27,11 +26,13 @@ SOURCES += main.cpp\
     Controls/LevelWidget.cpp \
     Controllers/LevelLoader.cpp \
     Utils/Settings.cpp \
-    PropertyBrowser.cpp
+    PropertyBrowser.cpp \
+    MapView.cpp \
+    Models/MapScene.cpp \
+    MapItems/MapItem.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
-    MapLayer.h \
     Utils/WidgetUtils.h \
     Models/LevelObjectsModel.h \
     Utils/Utils.h \
@@ -40,4 +41,7 @@ HEADERS  += MainWindow.h \
     Controls/LevelWidget.h \
     Controllers/LevelLoader.h \
     Utils/Settings.h \
-    PropertyBrowser.h
+    PropertyBrowser.h \
+    MapView.h \
+    Models/MapScene.h \
+    MapItems/MapItem.h

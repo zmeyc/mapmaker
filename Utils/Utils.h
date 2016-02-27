@@ -8,6 +8,13 @@
 #include <QMutex>
 #include <QMutexLocker>
 
+class QPoint;
+class QPointF;
+class QSize;
+class QSizeF;
+class QRect;
+class QRectF;
+
 #define qout LogLocker(stdoutStream, &logMutex).stream()
 #define qerr LogLocker(stderrStream, &logMutex).stream()
 #define qvrb qout
@@ -32,5 +39,12 @@ protected:
     QMutexLocker locker_;
     QTextStream &stream_;
 };
+
+QTextStream &operator<<(QTextStream &s, const QPoint &p);
+QTextStream &operator<<(QTextStream &s, const QPointF &p);
+QTextStream &operator<<(QTextStream &s, const QSize &sz);
+QTextStream &operator<<(QTextStream &s, const QSizeF &sz);
+QTextStream &operator<<(QTextStream &s, const QRect &r);
+QTextStream &operator<<(QTextStream &s, const QRectF &r);
 
 #endif // UTILS_H

@@ -5,7 +5,7 @@
 
 #include <QMainWindow>
 
-class MapLayer;
+class MapView;
 class LevelWidget;
 class PropertyBrowser;
 
@@ -21,11 +21,9 @@ public:
 
 protected slots:
     void loadLevel();
-    void onWidgetSelectionChanged(LevelWidget *widget);
-    void onWidgetPositionChanged(LevelWidget *widget);
 
 protected:
-    MapLayer *mapLayer_ = nullptr;
+    MapView *mapView_ = nullptr;
     PropertyBrowser *propertyBrowser_ = nullptr;
 };
 

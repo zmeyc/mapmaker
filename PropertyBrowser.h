@@ -6,12 +6,13 @@
 #include "ThirdParty/qtpropertybrowser/src/QtTreePropertyBrowser"
 
 class QtProperty;
-class LevelWidget;
 class QtGroupPropertyManager;
 class QtStringPropertyManager;
 class QtIntPropertyManager;
 class QtBoolPropertyManager;
 class QtProperty;
+
+class LevelObject;
 
 class PropertyBrowser : public QtTreePropertyBrowser
 {
@@ -19,15 +20,16 @@ class PropertyBrowser : public QtTreePropertyBrowser
 public:
     explicit PropertyBrowser(QWidget *parent = 0);
 
-    LevelWidget *levelWidget() const;
-    void setLevelWidget(LevelWidget *widget);
-
-    // FIXME: connect to widget's signal directly
-    void updatePosition();
-
-signals:
+    LevelObject *levelObject() const { return levelObject_; }
 
 public slots:
+    void setLevelObject(LevelObject *object);
+    void resetLevelObject();
+    void updatePosition(const QPointF &pos);
+
+protected:
+    void connectSignals(LevelObject *object);
+    void disconnectSignals(LevelObject *object);
 
 protected:
     QtGroupPropertyManager *groupManager_ = nullptr;
@@ -40,7 +42,7 @@ protected:
     QtProperty *y_ = nullptr;
 
     QtProperty *customGroup_ = nullptr;
-    LevelWidget *levelWidget_ = nullptr;
+    LevelObject *levelObject_ = nullptr;
 };
 
 #endif // PROPERTYBROWSER_H
