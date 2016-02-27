@@ -6,7 +6,7 @@
 #include <QTimer>
 
 #include "MainWindow.h"
-#include "MapLayer.h"
+#include "MapView.h"
 #include "ObjectBrowser.h"
 #include "Controls/LevelWidget.h"
 #include "PropertyBrowser.h"
@@ -19,10 +19,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     resize(800, 600);
 
-    mapLayer_ = new MapLayer(this);
-    connect(mapLayer_, SIGNAL(widgetSelectionChanged(LevelWidget*)),
+    mapView_ = new MapView(this);
+    connect(mapView_, SIGNAL(widgetSelectionChanged(LevelWidget*)),
             this, SLOT(onWidgetSelectionChanged(LevelWidget*)));
-    connect(mapLayer_, SIGNAL(widgetPositionChanged(LevelWidget*)),
+    connect(mapView_, SIGNAL(widgetPositionChanged(LevelWidget*)),
             this, SLOT(onWidgetPositionChanged(LevelWidget*)));
 
     ObjectBrowser *objectBrowser = new ObjectBrowser(this);
@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     rightColumnSplitter->setSizes(QList<int>() << 400 << 200);
 
     QSplitter *splitter = new QSplitter(this);
-    splitter->addWidget(mapLayer_);
+    splitter->addWidget(mapView_);
     splitter->addWidget(rightColumnSplitter);
 
     splitter->setSizes(QList<int>() << 400 << 200);
@@ -54,7 +54,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
 
-    if (!mapLayer_->modified())
+    if (!mapView_->modified())
         return;
 
     QMessageBox::StandardButton result =
@@ -64,7 +64,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (result == QMessageBox::Yes) {
         LevelLoader *levelLoader = LevelLoader::sharedInstance();
         if (!levelLoader->saveToFile(
-                    mapLayer_,
+                    mapView_,
                     Settings::sharedInstance()->mapFilename())) {
             QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
             event->ignore();
@@ -78,13 +78,13 @@ void MainWindow::loadLevel()
 {
     LevelLoader *levelLoader = LevelLoader::sharedInstance();
     Settings *settings = Settings::sharedInstance();
-    if (!levelLoader->loadFromFile(mapLayer_, settings->mapFilename())) {
+    if (!levelLoader->loadFromFile(mapView_, settings->mapFilename())) {
         QMessageBox::StandardButton result =
             QMessageBox::warning(this, "Error",
                                  levelLoader->lastErrorDescription(),
                                  QMessageBox::Yes | QMessageBox::Cancel);
         if (result == QMessageBox::Yes)
-            mapLayer_->setModified(true);
+            mapView_->setModified(true);
         else
             close();
     }

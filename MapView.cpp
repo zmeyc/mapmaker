@@ -6,7 +6,7 @@
 #include <QApplication>
 #include <QPainter>
 
-#include "MapLayer.h"
+#include "MapView.h"
 #include "Models/LevelObjectsModel.h"
 #include "Controls/LevelWidget.h"
 #include "Utils/WidgetUtils.h"
@@ -14,7 +14,7 @@
 
 const char mimeType[] = "application/x-levelobject";
 
-MapLayer::MapLayer(QWidget *parent) : QWidget(parent)
+MapView::MapView(QWidget *parent) : QWidget(parent)
 {
     WidgetUtils::setBackgroundColor(this, Qt::white);
 
@@ -22,7 +22,7 @@ MapLayer::MapLayer(QWidget *parent) : QWidget(parent)
     setFocusPolicy(Qt::StrongFocus);
 }
 
-void MapLayer::paintEvent(QPaintEvent *event)
+void MapView::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
@@ -33,7 +33,7 @@ void MapLayer::paintEvent(QPaintEvent *event)
     }
 }
 
-void MapLayer::dragEnterEvent(QDragEnterEvent *event)
+void MapView::dragEnterEvent(QDragEnterEvent *event)
 {
     qdbg << "dragEvent: mime=" << event->mimeData()->formats().first() << endl;
     if (!event->mimeData()->hasFormat(mimeType))
@@ -41,17 +41,17 @@ void MapLayer::dragEnterEvent(QDragEnterEvent *event)
     event->acceptProposedAction();
 }
 
-void MapLayer::dragMoveEvent(QDragMoveEvent *event)
+void MapView::dragMoveEvent(QDragMoveEvent *event)
 {
     Q_UNUSED(event);
 }
 
-void MapLayer::dragLeaveEvent(QDragLeaveEvent *event)
+void MapView::dragLeaveEvent(QDragLeaveEvent *event)
 {
     Q_UNUSED(event);
 }
 
-void MapLayer::dropEvent(QDropEvent *event)
+void MapView::dropEvent(QDropEvent *event)
 {
     qdbg << "dropEvent: text=" << event->mimeData()->formats().first() << endl;
     if (!event->mimeData()->hasFormat(mimeType))
@@ -78,7 +78,7 @@ void MapLayer::dropEvent(QDropEvent *event)
     modified_ = true;
 }
 
-void MapLayer::mousePressEvent(QMouseEvent *event)
+void MapView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         LevelWidget *widget = qobject_cast<LevelWidget *>(childAt(event->pos()));
@@ -105,7 +105,7 @@ void MapLayer::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void MapLayer::mouseReleaseEvent(QMouseEvent *event)
+void MapView::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
     if (event->button() == Qt::LeftButton) {
@@ -120,12 +120,12 @@ void MapLayer::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
-void MapLayer::mouseDoubleClickEvent(QMouseEvent *event)
+void MapView::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 }
 
-void MapLayer::mouseMoveEvent(QMouseEvent *event)
+void MapView::mouseMoveEvent(QMouseEvent *event)
 {
     if (selecting_) {
         QRect rect = selectionRect();
@@ -154,7 +154,7 @@ void MapLayer::mouseMoveEvent(QMouseEvent *event)
     prevPos_ = event->pos();
 }
 
-void MapLayer::keyPressEvent(QKeyEvent *event)
+void MapView::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
     case Qt::Key_Backspace:
@@ -163,17 +163,17 @@ void MapLayer::keyPressEvent(QKeyEvent *event)
     }
 }
 
-bool MapLayer::modified() const
+bool MapView::modified() const
 {
     return modified_;
 }
 
-void MapLayer::setModified(bool modified)
+void MapView::setModified(bool modified)
 {
     modified_ = modified;
 }
 
-void MapLayer::deselectAllExcept(LevelWidget *widget)
+void MapView::deselectAllExcept(LevelWidget *widget)
 {
     foreach (LevelWidget *other, findChildren<LevelWidget *>()) {
         if (other == widget)
@@ -182,7 +182,7 @@ void MapLayer::deselectAllExcept(LevelWidget *widget)
     }
 }
 
-void MapLayer::selectActiveWidgets()
+void MapView::selectActiveWidgets()
 {
     foreach (LevelWidget *widget, findChildren<LevelWidget *>()) {
         if (widget->active()) {
@@ -192,7 +192,7 @@ void MapLayer::selectActiveWidgets()
     }
 }
 
-void MapLayer::deleteSelectedWidgets()
+void MapView::deleteSelectedWidgets()
 {
     foreach (LevelWidget *widget, findChildren<LevelWidget *>()) {
         if (widget->selected())
@@ -200,7 +200,7 @@ void MapLayer::deleteSelectedWidgets()
     }
 }
 
-void MapLayer::onWidgetSelectedChanged(bool selected)
+void MapView::onWidgetSelectedChanged(bool selected)
 {
     Q_UNUSED(selected);
     LevelWidget *widget = qobject_cast<LevelWidget *>(sender());
@@ -209,7 +209,7 @@ void MapLayer::onWidgetSelectedChanged(bool selected)
     emit widgetSelectionChanged(widget);
 }
 
-void MapLayer::onWidgetPositionChanged()
+void MapView::onWidgetPositionChanged()
 {
     LevelWidget *widget = qobject_cast<LevelWidget *>(sender());
     if (!widget)
@@ -217,14 +217,14 @@ void MapLayer::onWidgetPositionChanged()
     emit widgetPositionChanged(widget);
 }
 
-QRect MapLayer::selectionRect() const
+QRect MapView::selectionRect() const
 {
     QPoint pos(mapFromGlobal(QCursor::pos()));
     return QRect(startPos_.x(), startPos_.y(),
                  pos.x() - startPos_.x(), pos.y() - startPos_.y());
 }
 
-void MapLayer::addLevelWidget(LevelWidget *widget)
+void MapView::addLevelWidget(LevelWidget *widget)
 {
     if (widget->parent() == nullptr)
         widget->setParent(this);

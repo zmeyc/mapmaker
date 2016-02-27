@@ -1,17 +1,17 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
-#ifndef MAPLAYER_H
-#define MAPLAYER_H
+#ifndef MAPVIEW_H
+#define MAPVIEW_H
 
 #include <QWidget>
 
 class LevelWidget;
 
-class MapLayer : public QWidget
+class MapView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MapLayer(QWidget *parent = 0);
+    explicit MapView(QWidget *parent = 0);
 
     void paintEvent(QPaintEvent *event) override;
 
@@ -58,4 +58,4 @@ protected:
     bool modified_ = false;
 };
 
-#endif // MAPLAYER_H
+#endif // MAPVIEW_H
