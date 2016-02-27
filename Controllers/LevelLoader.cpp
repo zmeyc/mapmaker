@@ -110,13 +110,14 @@ bool LevelLoader::loadFromFile(MapView *mapView, const QString &filename)
             continue;
         }
 
-        LevelWidget *objWidget = new LevelWidget(mapView);
-        objWidget->setLevelObject(levelObject);
-        objWidget->move(x, y);
-        objWidget->setFlipX(flipX);
-        objWidget->setFlipY(flipY);
-        objWidget->show();
-        mapView->addLevelWidget(objWidget);
+        // TODO
+//        LevelWidget *objWidget = new LevelWidget(mapView);
+//        objWidget->setLevelObject(levelObject);
+//        objWidget->move(x, y);
+//        objWidget->setFlipX(flipX);
+//        objWidget->setFlipY(flipY);
+//        objWidget->show();
+//        mapView->addLevelWidget(objWidget);
     }
 
     if (!notFoundList.isEmpty()) {

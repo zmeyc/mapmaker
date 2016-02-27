@@ -8,6 +8,7 @@
 #include <ThirdParty/qtpropertybrowser/src/QtSpinBoxFactory>
 #include "PropertyBrowser.h"
 #include "Controls/LevelWidget.h"
+#include "Data/LevelObject.h"
 
 PropertyBrowser::PropertyBrowser(QWidget *parent)
     : QtTreePropertyBrowser(parent)
@@ -55,26 +56,28 @@ PropertyBrowser::PropertyBrowser(QWidget *parent)
     //addProperty(customGroup);
 }
 
-LevelWidget *PropertyBrowser::levelWidget() const
+void PropertyBrowser::setLevelObject(LevelObject *object)
 {
-    return levelWidget_;
-}
+    if (levelObject_) {
+        disconnect(levelObject_, nullptr,
+                   this, nullptr);
+    }
 
-void PropertyBrowser::setLevelWidget(LevelWidget *widget)
-{
-    levelWidget_ = widget;
-    if (levelWidget_) {
+    levelObject_ = object;
+
+    if (levelObject_) {
         addProperty(standardGroup_);
         addProperty(customGroup_);
-
-        updatePosition();
+        updatePosition(levelObject_->position());
+        connect(levelObject_, SIGNAL(positionChanged(QPointF)),
+                this, SLOT(updatePosition(QPointF)));
     } else {
         clear();
     }
 }
 
-void PropertyBrowser::updatePosition()
+void PropertyBrowser::updatePosition(const QPointF &pos)
 {
-    intManager_->setValue(x_, levelWidget_->x());
-    intManager_->setValue(y_, levelWidget_->y());
+    intManager_->setValue(x_, pos.x());
+    intManager_->setValue(y_, pos.y());
 }

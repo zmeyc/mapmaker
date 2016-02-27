@@ -9,6 +9,18 @@ LevelObject::LevelObject(QObject *parent)
 
 }
 
+LevelObject *LevelObject::clone(QObject *parent)
+{
+    LevelObject *obj = new LevelObject(parent);
+    obj->name_ = name_;
+    obj->filename_ = filename_;
+    obj->image_ = image_;
+    obj->position_ = position_;
+    obj->flipX_ = flipX_;
+    obj->flipY_ = flipY_;
+    return obj;
+}
+
 QString LevelObject::name() const
 {
     return name_;
@@ -39,6 +51,24 @@ QImage LevelObject::image() const
 void LevelObject::setImage(const QImage &image)
 {
     image_ = image;
+}
+
+QPointF LevelObject::position() const
+{
+    return position_;
+}
+
+void LevelObject::setPosition(const QPointF &pos)
+{
+    if (position_ != pos) {
+        position_ = pos;
+        emit positionChanged(pos);
+    }
+}
+
+QSizeF LevelObject::size() const
+{
+    return image_.size();
 }
 
 bool LevelObject::flipX() const

@@ -3,15 +3,19 @@
 #ifndef MAPVIEW_H
 #define MAPVIEW_H
 
-#include <QWidget>
+#include <QGraphicsView>
 
-class LevelWidget;
+class LevelObject;
+class MapScene;
+class MapItem;
 
-class MapView : public QWidget
+class MapView : public QGraphicsView
 {
     Q_OBJECT
 public:
     explicit MapView(QWidget *parent = 0);
+
+    MapScene *mapScene() const;
 
     void paintEvent(QPaintEvent *event) override;
 
@@ -30,25 +34,24 @@ public:
     bool modified() const;
     void setModified(bool modified);
 
-    void deselectAllExcept(LevelWidget *widget);
+    LevelObject *selectedLevelObject() const { return selectedLevelObject_; }
+
     void selectActiveWidgets();
     void deleteSelectedWidgets();
 
 signals:
-    void widgetSelectionChanged(LevelWidget *widget);
-    void widgetPositionChanged(LevelWidget *widget);
+    void selectedLevelObjectChanged(LevelObject *item);
 
 public slots:
 
 protected slots:
-    void onWidgetSelectedChanged(bool selected);
-    void onWidgetPositionChanged();
+    void setSelectedLevelObject(LevelObject *object);
+    void selectSingleItem(MapItem *item);
 
 protected:
     friend class LevelLoader;
 
     QRect selectionRect() const;
-    void addLevelWidget(LevelWidget *widget);
 
     bool dragging_ = false;
     bool scrolling_ = false;
@@ -56,6 +59,8 @@ protected:
     QPoint startPos_;
     QPoint prevPos_;
     bool modified_ = false;
+
+    LevelObject *selectedLevelObject_ = nullptr;
 };
 
 #endif // MAPVIEW_H

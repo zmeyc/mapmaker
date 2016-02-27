@@ -27,7 +27,9 @@ SOURCES += main.cpp\
     Controllers/LevelLoader.cpp \
     Utils/Settings.cpp \
     PropertyBrowser.cpp \
-    MapView.cpp
+    MapView.cpp \
+    Models/MapScene.cpp \
+    MapItems/MapItem.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -40,4 +42,6 @@ HEADERS  += MainWindow.h \
     Controllers/LevelLoader.h \
     Utils/Settings.h \
     PropertyBrowser.h \
-    MapView.h
+    MapView.h \
+    Models/MapScene.h \
+    MapItems/MapItem.h

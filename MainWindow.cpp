@@ -20,13 +20,12 @@ MainWindow::MainWindow(QWidget *parent)
     resize(800, 600);
 
     mapView_ = new MapView(this);
-    connect(mapView_, SIGNAL(widgetSelectionChanged(LevelWidget*)),
-            this, SLOT(onWidgetSelectionChanged(LevelWidget*)));
-    connect(mapView_, SIGNAL(widgetPositionChanged(LevelWidget*)),
-            this, SLOT(onWidgetPositionChanged(LevelWidget*)));
 
     ObjectBrowser *objectBrowser = new ObjectBrowser(this);
     propertyBrowser_ = new PropertyBrowser(this);
+
+    connect(mapView_, SIGNAL(selectedLevelObjectChanged(LevelObject*)),
+            propertyBrowser_, SLOT(setLevelObject(LevelObject*)));
 
     QSplitter *rightColumnSplitter = new QSplitter(this);
     rightColumnSplitter->setOrientation(Qt::Vertical);
@@ -42,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(splitter);
 
-    QTimer::singleShot(0, this, SLOT(loadLevel()));
+//    QTimer::singleShot(0, this, SLOT(loadLevel()));
 }
 
 MainWindow::~MainWindow()
@@ -89,21 +88,4 @@ void MainWindow::loadLevel()
             close();
     }
 
-}
-
-void MainWindow::onWidgetSelectionChanged(LevelWidget *widget)
-{
-    bool selected = widget->selected();
-    if (!selected) {
-        if (propertyBrowser_->levelWidget() == widget)
-            propertyBrowser_->setLevelWidget(nullptr);
-    } else {
-        propertyBrowser_->setLevelWidget(widget);
-    }
-}
-
-void MainWindow::onWidgetPositionChanged(LevelWidget *widget)
-{
-    if (propertyBrowser_->levelWidget() == widget)
-        propertyBrowser_->updatePosition();
 }

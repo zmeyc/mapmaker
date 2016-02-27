@@ -21,8 +21,6 @@ public:
 
 protected slots:
     void loadLevel();
-    void onWidgetSelectionChanged(LevelWidget *widget);
-    void onWidgetPositionChanged(LevelWidget *widget);
 
 protected:
     MapView *mapView_ = nullptr;

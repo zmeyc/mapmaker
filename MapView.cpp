@@ -7,27 +7,50 @@
 #include <QPainter>
 
 #include "MapView.h"
+#include "MapItems/MapItem.h"
 #include "Models/LevelObjectsModel.h"
+#include "Models/MapScene.h"
 #include "Controls/LevelWidget.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
 
 const char mimeType[] = "application/x-levelobject";
 
-MapView::MapView(QWidget *parent) : QWidget(parent)
+MapView::MapView(QWidget *parent)
+    : QGraphicsView(parent)
 {
     WidgetUtils::setBackgroundColor(this, Qt::white);
 
     setAcceptDrops(true);
     setFocusPolicy(Qt::StrongFocus);
+
+    setScene(new MapScene(this));
+}
+
+MapScene *MapView::mapScene() const
+{
+    return qobject_cast<MapScene *>(scene());
 }
 
 void MapView::paintEvent(QPaintEvent *event)
 {
-    QWidget::paintEvent(event);
+//    {
+//        QPainter painter(viewport());
+//        QPainterPath path;
+//        path.addPolygon(mapFromScene(sceneRect()));
+//        painter.fillPath(path, Qt::green);
+//    }
+
+    QGraphicsView::paintEvent(event);
+
+//    {
+//        QPainter painter(viewport());
+//        painter.setPen(QPen(Qt::red, 10));
+//        painter.drawPoint(mapFromScene(QPointF(0, 0)));
+//    }
 
     if (selecting_) {
-        QPainter painter(this);
+        QPainter painter(viewport());
         painter.setPen(Qt::DashLine);
         painter.drawRect(selectionRect());
     }
@@ -69,33 +92,36 @@ void MapView::dropEvent(QDropEvent *event)
     if (!obj)
         return;
 
-    LevelWidget *objWidget = new LevelWidget(this);
-    objWidget->setLevelObject(obj);
-    QPoint pos(event->pos() - dragOffset);
-    objWidget->move(pos);
-    objWidget->show();
-    addLevelWidget(objWidget);
+    QSizeF objSize = obj->size();
+    QPoint dragOffsetShifted(dragOffset.x() - objSize.width() / 2,
+                             dragOffset.y() - objSize.height() / 2);
+
+    QPoint viewportTargetPos(event->pos() - dragOffsetShifted);
+
+    MapItem *item = new MapItem(obj->clone());
+    item->levelObject()->setPosition(mapToScene(viewportTargetPos));
+    scene()->addItem(item);
+
     modified_ = true;
 }
 
 void MapView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
-        LevelWidget *widget = qobject_cast<LevelWidget *>(childAt(event->pos()));
-        if (widget) {
+        MapItem *item = dynamic_cast<MapItem *>(itemAt(event->pos()));
+        if (item) {
             if (qApp->keyboardModifiers() & Qt::ControlModifier) {
-                widget->setSelected(!widget->selected());
+                item->setSelected(!item->selected());
+                setSelectedLevelObject(item->levelObject());
             } else {
-                if (!widget->selected()) {
-                    widget->setSelected(true);
-                    deselectAllExcept(widget);
-                }
+                if (!item->selected())
+                    selectSingleItem(item);
             }
             prevPos_ = event->pos();
             dragging_ = true;
         } else {
             if (!(qApp->keyboardModifiers() & Qt::ShiftModifier))
-                deselectAllExcept(nullptr);
+                selectSingleItem(nullptr);
             startPos_ = event->pos();
             selecting_ = true;
         }
@@ -113,7 +139,7 @@ void MapView::mouseReleaseEvent(QMouseEvent *event)
         if (selecting_) {
             selecting_ = false;
             selectActiveWidgets();
-            update();
+            scene()->update();
         }
     } else if (event->button() == Qt::RightButton) {
         scrolling_ = false;
@@ -128,12 +154,15 @@ void MapView::mouseDoubleClickEvent(QMouseEvent *event)
 void MapView::mouseMoveEvent(QMouseEvent *event)
 {
     if (selecting_) {
-        QRect rect = selectionRect();
-        foreach (LevelWidget *widget, findChildren<LevelWidget *>()) {
-            bool intersects = widget->geometry().intersects(rect);
-            widget->setActive(intersects);
+        QRectF rect = selectionRect();
+        foreach (QGraphicsItem *item, scene()->items()) {
+            const QPolygonF itemViewportBounds = mapFromScene(item->sceneBoundingRect());
+            bool intersects = !itemViewportBounds.intersected(rect).isEmpty();
+            MapItem *mapItem = dynamic_cast<MapItem *>(item);
+            if (mapItem)
+                mapItem->setActive(intersects);
         }
-        update();
+        scene()->update();
         return;
     }
 
@@ -143,12 +172,12 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
     // Dragging and scrolling are similar right now,
     // except scrolling moves all widgets and dragging
     // moves only selected ones
-    foreach (LevelWidget *widget, findChildren<LevelWidget *>()) {
-        if (dragging_ && !widget->selected())
+    foreach (QGraphicsItem *item, scene()->items()) {
+        MapItem *mapItem = dynamic_cast<MapItem *>(item);
+        if (dragging_ && !mapItem->selected())
             continue;
-        widget->move(
-                    widget->x() + event->pos().x() - prevPos_.x(),
-                    widget->y() + event->pos().y() - prevPos_.y());
+        QPointF newPos = mapItem->levelObject()->position() + event->pos() - prevPos_;
+        mapItem->levelObject()->setPosition(newPos);
         modified_ = true;
     }
     prevPos_ = event->pos();
@@ -173,23 +202,24 @@ void MapView::setModified(bool modified)
     modified_ = modified;
 }
 
-void MapView::deselectAllExcept(LevelWidget *widget)
-{
-    foreach (LevelWidget *other, findChildren<LevelWidget *>()) {
-        if (other == widget)
-            continue;
-        other->setSelected(false);
-    }
-}
-
 void MapView::selectActiveWidgets()
 {
-    foreach (LevelWidget *widget, findChildren<LevelWidget *>()) {
-        if (widget->active()) {
-            widget->setActive(false);
-            widget->setSelected(true);
+    const QList<QGraphicsItem *> items = scene()->items();
+
+    MapItem *lastItem = nullptr;
+    foreach (QGraphicsItem *item, items) {
+        MapItem *mapItem = dynamic_cast<MapItem *>(item);
+        if (!mapItem)
+            continue;
+
+        if (mapItem->active()) {
+            mapItem->setActive(false);
+            mapItem->setSelected(true);
+            lastItem = mapItem;
         }
     }
+
+    setSelectedLevelObject(lastItem ? lastItem->levelObject() : nullptr);
 }
 
 void MapView::deleteSelectedWidgets()
@@ -200,21 +230,23 @@ void MapView::deleteSelectedWidgets()
     }
 }
 
-void MapView::onWidgetSelectedChanged(bool selected)
+void MapView::setSelectedLevelObject(LevelObject *object)
 {
-    Q_UNUSED(selected);
-    LevelWidget *widget = qobject_cast<LevelWidget *>(sender());
-    if (!widget)
-        return;
-    emit widgetSelectionChanged(widget);
+    if (selectedLevelObject_ != object) {
+        selectedLevelObject_ = object;
+        emit selectedLevelObjectChanged(object);
+    }
 }
 
-void MapView::onWidgetPositionChanged()
+void MapView::selectSingleItem(MapItem *item)
 {
-    LevelWidget *widget = qobject_cast<LevelWidget *>(sender());
-    if (!widget)
-        return;
-    emit widgetPositionChanged(widget);
+    foreach (QGraphicsItem *child, scene()->items()) {
+        MapItem *childMapItem = dynamic_cast<MapItem *>(child);
+        if (childMapItem)
+            childMapItem->setSelected(childMapItem == item);
+    }
+
+    setSelectedLevelObject(item ? item->levelObject() : nullptr);
 }
 
 QRect MapView::selectionRect() const
@@ -222,14 +254,4 @@ QRect MapView::selectionRect() const
     QPoint pos(mapFromGlobal(QCursor::pos()));
     return QRect(startPos_.x(), startPos_.y(),
                  pos.x() - startPos_.x(), pos.y() - startPos_.y());
-}
-
-void MapView::addLevelWidget(LevelWidget *widget)
-{
-    if (widget->parent() == nullptr)
-        widget->setParent(this);
-    connect(widget, SIGNAL(selectedChanged(bool)),
-            this, SLOT(onWidgetSelectedChanged(bool)));
-    connect(widget, SIGNAL(positionChanged()),
-            this, SLOT(onWidgetPositionChanged()));
 }
