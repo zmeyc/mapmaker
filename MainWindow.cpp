@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(splitter);
 
-//    QTimer::singleShot(0, this, SLOT(loadLevel()));
+    QTimer::singleShot(0, this, SLOT(loadLevel()));
 }
 
 MainWindow::~MainWindow()
@@ -63,7 +63,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (result == QMessageBox::Yes) {
         LevelLoader *levelLoader = LevelLoader::sharedInstance();
         if (!levelLoader->saveToFile(
-                    mapView_,
+                    mapView_->mapScene(),
                     Settings::sharedInstance()->mapFilename())) {
             QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
             event->ignore();
@@ -77,7 +77,7 @@ void MainWindow::loadLevel()
 {
     LevelLoader *levelLoader = LevelLoader::sharedInstance();
     Settings *settings = Settings::sharedInstance();
-    if (!levelLoader->loadFromFile(mapView_, settings->mapFilename())) {
+    if (!levelLoader->loadFromFile(mapView_->mapScene(), settings->mapFilename())) {
         QMessageBox::StandardButton result =
             QMessageBox::warning(this, "Error",
                                  levelLoader->lastErrorDescription(),

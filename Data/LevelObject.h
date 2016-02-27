@@ -26,6 +26,7 @@ public:
 
     QPointF position() const;
     void setPosition(const QPointF &pos);
+    void setPosition(qreal x, qreal y);
 
     QSizeF size() const;
 

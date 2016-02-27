@@ -6,9 +6,9 @@
 #include <QJsonArray>
 
 #include "LevelLoader.h"
-#include "MapView.h"
-#include "Controls/LevelWidget.h"
 #include "Models/LevelObjectsModel.h"
+#include "Models/MapScene.h"
+#include "MapItems/MapItem.h"
 #include "Data/LevelObject.h"
 #include "Utils/Utils.h"
 
@@ -24,7 +24,7 @@ LevelLoader *LevelLoader::sharedInstance()
     return instance;
 }
 
-bool LevelLoader::saveToFile(MapView *mapView, const QString &filename)
+bool LevelLoader::saveToFile(MapScene *scene, const QString &filename)
 {
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
@@ -35,15 +35,20 @@ bool LevelLoader::saveToFile(MapView *mapView, const QString &filename)
     QJsonObject level;
 
     QJsonArray objects;
-    foreach (LevelWidget *widget, mapView->findChildren<LevelWidget *>()) {
+    foreach (QGraphicsItem *item, scene->items()) {
+        MapItem *mapItem = dynamic_cast<MapItem *>(item);
+        LevelObject *levelObject = mapItem ? mapItem->levelObject() : nullptr;
+        if (!levelObject)
+            continue;
+
         QJsonObject obj;
-        obj["x"] = widget->pos().x();
-        obj["y"] = widget->pos().y();
-        if (widget->flipX())
+        obj["x"] = levelObject->position().x();
+        obj["y"] = levelObject->position().y();
+        if (levelObject->flipX())
             obj["flipX"] = true;
-        if (widget->flipY())
+        if (levelObject->flipY())
             obj["flipY"] = true;
-        obj["name"] = widget->levelObject()->name();
+        obj["name"] = levelObject->name();
         objects.append(obj);
     }
 
@@ -69,7 +74,7 @@ void LevelLoader::setLastErrorDescription(const QString &lastErrorDescription)
     lastErrorDescription_ = lastErrorDescription;
 }
 
-bool LevelLoader::loadFromFile(MapView *mapView, const QString &filename)
+bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
 {
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -110,14 +115,11 @@ bool LevelLoader::loadFromFile(MapView *mapView, const QString &filename)
             continue;
         }
 
-        // TODO
-//        LevelWidget *objWidget = new LevelWidget(mapView);
-//        objWidget->setLevelObject(levelObject);
-//        objWidget->move(x, y);
-//        objWidget->setFlipX(flipX);
-//        objWidget->setFlipY(flipY);
-//        objWidget->show();
-//        mapView->addLevelWidget(objWidget);
+        MapItem *item = new MapItem(levelObject->clone());
+        item->levelObject()->setPosition(x, y);
+        item->levelObject()->setFlipX(flipX);
+        item->levelObject()->setFlipY(flipY);
+        scene->addItem(item);
     }
 
     if (!notFoundList.isEmpty()) {

@@ -66,6 +66,11 @@ void LevelObject::setPosition(const QPointF &pos)
     }
 }
 
+void LevelObject::setPosition(qreal x, qreal y)
+{
+    setPosition(QPointF(x, y));
+}
+
 QSizeF LevelObject::size() const
 {
     return image_.size();
