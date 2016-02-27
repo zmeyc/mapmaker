@@ -20,17 +20,16 @@ class PropertyBrowser : public QtTreePropertyBrowser
 public:
     explicit PropertyBrowser(QWidget *parent = 0);
 
-
     LevelObject *levelObject() const { return levelObject_; }
-
-    // FIXME: connect to widget's signal directly
-    void updatePosition();
-
-signals:
 
 public slots:
     void setLevelObject(LevelObject *object);
+    void resetLevelObject();
     void updatePosition(const QPointF &pos);
+
+protected:
+    void connectSignals(LevelObject *object);
+    void disconnectSignals(LevelObject *object);
 
 protected:
     QtGroupPropertyManager *groupManager_ = nullptr;

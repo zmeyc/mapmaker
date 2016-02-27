@@ -58,10 +58,8 @@ PropertyBrowser::PropertyBrowser(QWidget *parent)
 
 void PropertyBrowser::setLevelObject(LevelObject *object)
 {
-    if (levelObject_) {
-        disconnect(levelObject_, nullptr,
-                   this, nullptr);
-    }
+    if (levelObject_)
+        disconnectSignals(levelObject_);
 
     levelObject_ = object;
 
@@ -69,15 +67,33 @@ void PropertyBrowser::setLevelObject(LevelObject *object)
         addProperty(standardGroup_);
         addProperty(customGroup_);
         updatePosition(levelObject_->position());
-        connect(levelObject_, SIGNAL(positionChanged(QPointF)),
-                this, SLOT(updatePosition(QPointF)));
+        connectSignals(levelObject_);
     } else {
         clear();
     }
+}
+
+void PropertyBrowser::resetLevelObject()
+{
+    setLevelObject(nullptr);
 }
 
 void PropertyBrowser::updatePosition(const QPointF &pos)
 {
     intManager_->setValue(x_, pos.x());
     intManager_->setValue(y_, pos.y());
+}
+
+void PropertyBrowser::connectSignals(LevelObject *object)
+{
+    connect(object, SIGNAL(positionChanged(QPointF)),
+            this, SLOT(updatePosition(QPointF)));
+    connect(object, SIGNAL(destroyed(QObject*)),
+            this, SLOT(resetLevelObject()));
+}
+
+void PropertyBrowser::disconnectSignals(LevelObject *object)
+{
+    disconnect(object, nullptr,
+               this, nullptr);
 }
