@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QTimer>
+#include <QMenuBar>
 
 #include "MainWindow.h"
 #include "MapView.h"
@@ -40,6 +41,8 @@ MainWindow::MainWindow(QWidget *parent)
     splitter->setSizes(QList<int>() << 400 << 200);
 
     setCentralWidget(splitter);
+
+    createMenu();
 
     QTimer::singleShot(0, this, SLOT(loadLevel()));
 }
@@ -88,4 +91,17 @@ void MainWindow::loadLevel()
             close();
     }
 
+}
+
+void MainWindow::createMenu()
+{
+    Settings *settings = Settings::sharedInstance();
+
+    QMenuBar *bar = menuBar();
+    QMenu *mapMenu = bar->addMenu(tr("&View"));
+    QKeySequence showGridShortcut(tr("Ctrl+'", "View|Show Grid"));
+    QAction *showGridAction = mapMenu->addAction(
+                tr("Show Grid"), settings, SLOT(setShowGrid(bool)), showGridShortcut);
+    showGridAction->setCheckable(true);
+    showGridAction->setChecked(settings->showGrid());
 }

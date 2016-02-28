@@ -11,6 +11,7 @@
 #include "Models/LevelObjectsModel.h"
 #include "Models/MapScene.h"
 #include "Controls/LevelWidget.h"
+#include "Utils/Settings.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
 
@@ -19,8 +20,7 @@ const char mimeType[] = "application/x-levelobject";
 MapView::MapView(QWidget *parent)
     : QGraphicsView(parent)
 {
-    //WidgetUtils::setBackgroundColor(this, Qt::white);
-    //setBackgroundBrush(Qt::blue);
+    Settings *settings = Settings::sharedInstance();
     setBackgroundBrush(Qt::lightGray);
 
     setAcceptDrops(true);
@@ -28,6 +28,10 @@ MapView::MapView(QWidget *parent)
     setViewportUpdateMode(FullViewportUpdate);
 
     setScene(new MapScene(this));
+    //setSceneRect(0, 0, 0, 0);
+
+    connect(settings, SIGNAL(showGridChanged(bool)),
+            this, SLOT(onShowGridChanged(bool)));
 }
 
 MapScene *MapView::mapScene() const
@@ -44,21 +48,8 @@ void MapView::drawBackground(QPainter *painter, const QRectF &rect)
 
 void MapView::drawForeground(QPainter *painter, const QRectF &rect)
 {
-    qdbg << "MapView::drawForeground()" << endl;
+    //qdbg << "MapView::drawForeground()" << endl;
     QGraphicsView::drawForeground(painter, rect);
-
-}
-
-void MapView::drawItems(QPainter *painter, int numItems, QGraphicsItem *items[], const QStyleOptionGraphicsItem options[])
-{
-    qdbg << "MapView::drawItems()" << endl;
-    QGraphicsView::drawItems(painter, numItems, items, options);
-}
-
-void MapView::paintEvent(QPaintEvent *event)
-{
-    qdbg << "MapView::paintEvent()" << endl;
-    QGraphicsView::paintEvent(event);
 
     if (selecting_) {
         QPainter painter(viewport());
@@ -67,9 +58,15 @@ void MapView::paintEvent(QPaintEvent *event)
     }
 }
 
+void MapView::paintEvent(QPaintEvent *event)
+{
+    //qdbg << "MapView::paintEvent()" << endl;
+    QGraphicsView::paintEvent(event);
+}
+
 void MapView::dragEnterEvent(QDragEnterEvent *event)
 {
-    qdbg << "dragEvent: mime=" << event->mimeData()->formats().first() << endl;
+    //qdbg << "dragEvent: mime=" << event->mimeData()->formats().first() << endl;
     if (!event->mimeData()->hasFormat(mimeType))
         return;
     event->acceptProposedAction();
@@ -258,6 +255,12 @@ void MapView::selectSingleItem(MapItem *item)
     }
 
     setSelectedLevelObject(item ? item->levelObject() : nullptr);
+}
+
+void MapView::onShowGridChanged(bool showGrid)
+{
+    Q_UNUSED(showGrid);
+    scene()->update();
 }
 
 QRect MapView::selectionRect() const

@@ -17,6 +17,12 @@ public:
 
     MapScene *mapScene() const;
 
+    void drawBackground(QPainter *painter, const QRectF &rect) override;
+    void drawForeground(QPainter *painter, const QRectF &rect) override;
+    void drawItems(QPainter *painter, int numItems,
+                   QGraphicsItem *items[],
+                   const QStyleOptionGraphicsItem options[]) override;
+
     void paintEvent(QPaintEvent *event) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -47,6 +53,7 @@ public slots:
 protected slots:
     void setSelectedLevelObject(LevelObject *object);
     void selectSingleItem(MapItem *item);
+    void onShowGridChanged(bool showGrid);
 
 protected:
     friend class LevelLoader;

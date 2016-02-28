@@ -7,7 +7,7 @@
 
 Settings::Settings(QObject *parent) : QObject(parent)
 {
-
+    gridSize_ = QSizeF(32.0, 32.0);
 }
 
 Settings *Settings::sharedInstance()
@@ -56,4 +56,17 @@ QString Settings::imagesDirectory() const
 void Settings::setImagesDirectory(const QString &imagesDirectory)
 {
     imagesDirectory_ = imagesDirectory;
+}
+
+bool Settings::showGrid() const
+{
+    return showGrid_;
+}
+
+void Settings::setShowGrid(bool showGrid)
+{
+    if (showGrid_ != showGrid) {
+        showGrid_ = showGrid;
+        emit showGridChanged(showGrid);
+    }
 }

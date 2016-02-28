@@ -23,6 +23,8 @@ protected slots:
     void loadLevel();
 
 protected:
+    void createMenu();
+
     MapView *mapView_ = nullptr;
     PropertyBrowser *propertyBrowser_ = nullptr;
 };

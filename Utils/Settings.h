@@ -4,6 +4,7 @@
 #define SETTINGS_H
 
 #include <QObject>
+#include <QSizeF>
 
 class Settings : public QObject
 {
@@ -21,13 +22,19 @@ public:
     QString imagesDirectory() const;
     void setImagesDirectory(const QString &imagesDirectory);
 
+    bool showGrid() const;
+    Q_SLOT void setShowGrid(bool showGrid);
+
 signals:
+    void showGridChanged(bool showGrid);
 
 public slots:
 
 protected:
     QString mapFilename_;
     QString imagesDirectory_;
+    bool showGrid_ = false;
+    QSizeF gridSize_;
 };
 
 #endif // SETTINGS_H
