@@ -80,3 +80,13 @@ void Settings::setGridSize(const QSizeF &gridSize)
 {
     gridSize_ = gridSize;
 }
+
+bool Settings::snapToGrid() const
+{
+    return snapToGrid_;
+}
+
+void Settings::setSnapToGrid(bool snapToGrid)
+{
+    snapToGrid_ = snapToGrid;
+}

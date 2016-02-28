@@ -26,6 +26,7 @@ MapView::MapView(QWidget *parent)
     setAcceptDrops(true);
     setFocusPolicy(Qt::StrongFocus);
     setViewportUpdateMode(FullViewportUpdate);
+    //setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
     setScene(new MapScene(this));
     //setSceneRect(0, 0, 0, 0);
@@ -171,6 +172,9 @@ void MapView::mouseDoubleClickEvent(QMouseEvent *event)
 void MapView::mouseMoveEvent(QMouseEvent *event)
 {
     if (selecting_) {
+        // FIXME: optimize
+        //QRect rect = selectionRect().normalized();
+        //foreach (QGraphicsItem *item, scene()->items(mapToScene(rect))) {
         QRectF rect = selectionRect();
         foreach (QGraphicsItem *item, scene()->items()) {
             const QPolygonF itemViewportBounds = mapFromScene(item->sceneBoundingRect());
@@ -183,21 +187,36 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
         return;
     }
 
-    if (!dragging_ && !scrolling_)
-        return;
+    if (scrolling_) {
+//        QPointF scenePos = mapToScene(event->pos());
+//        QPointF prev = mapToScene(prevPos_);
+//        QPointF diff = scenePos - prev;
+//        scroll(diff.x(), diff.y());
 
-    // Dragging and scrolling are similar right now,
-    // except scrolling moves all widgets and dragging
-    // moves only selected ones
-    foreach (QGraphicsItem *item, scene()->items()) {
-        MapItem *mapItem = dynamic_cast<MapItem *>(item);
-        if (dragging_ && !mapItem->selected())
-            continue;
-        QPointF newPos = mapItem->levelObject()->position() + event->pos() - prevPos_;
-        mapItem->levelObject()->setPosition(newPos);
-        modified_ = true;
+        prevPos_ = event->pos();
+        return;
     }
-    prevPos_ = event->pos();
+
+    if (dragging_) {
+        // Dragging and scrolling are similar right now,
+        // except scrolling moves all widgets and dragging
+        // moves only selected ones
+        QVarLengthArray<MapItem *> items;
+        QRectF boundingRect;
+        foreach (QGraphicsItem *item, scene()->items()) {
+            MapItem *mapItem = dynamic_cast<MapItem *>(item);
+            if (!mapItem->selected())
+                continue;
+            boundingRect = boundingRect.united(mapItem->boundingRect());
+            items.append(mapItem);
+//            QPointF newPos = mapItem->levelObject()->position() + event->pos() - prevPos_;
+//            mapItem->levelObject()->setPosition(newPos);
+//            modified_ = true;
+        }
+        //boundingRect.left() / settings_->gridSize().width()
+
+        prevPos_ = event->pos();
+    }
 }
 
 void MapView::keyPressEvent(QKeyEvent *event)

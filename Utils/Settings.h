@@ -28,6 +28,9 @@ public:
     QSizeF gridSize() const;
     void setGridSize(const QSizeF &gridSize);
 
+    bool snapToGrid() const;
+    void setSnapToGrid(bool snapToGrid);
+
 signals:
     void showGridChanged(bool showGrid);
 
@@ -38,6 +41,7 @@ protected:
     QString imagesDirectory_;
     bool showGrid_ = false;
     QSizeF gridSize_;
+    bool snapToGrid_ = false;
 };
 
 #endif // SETTINGS_H

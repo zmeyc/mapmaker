@@ -98,10 +98,18 @@ void MainWindow::createMenu()
     Settings *settings = Settings::sharedInstance();
 
     QMenuBar *bar = menuBar();
+
     QMenu *mapMenu = bar->addMenu(tr("&View"));
+
     QKeySequence showGridShortcut(tr("Ctrl+'", "View|Show Grid"));
     QAction *showGridAction = mapMenu->addAction(
                 tr("Show Grid"), settings, SLOT(setShowGrid(bool)), showGridShortcut);
     showGridAction->setCheckable(true);
     showGridAction->setChecked(settings->showGrid());
+
+    QKeySequence snapToGridShortcut(tr("Ctrl+Shift+;", "View|Snap to Grid"));
+    QAction *snapToGridAction = mapMenu->addAction(
+                tr("Snap to Grid"), settings, SLOT(setSnapToGrid(bool)), snapToGridShortcut);
+    snapToGridAction->setCheckable(true);
+    snapToGridAction->setChecked(settings->snapToGrid());
 }
