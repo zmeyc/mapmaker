@@ -1,5 +1,6 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
+#include <QtMath>
 #include <QDragEnterEvent>
 #include <QMimeData>
 #include <QByteArray>
@@ -135,7 +136,11 @@ void MapView::mousePressEvent(QMouseEvent *event)
                 if (!item->selected())
                     selectSingleItem(item);
             }
+            startPos_ = event->pos();
             prevPos_ = event->pos();
+            draggedItems_ = selectedItems();
+            dragInitialBounds_ = itemsBoundingRect(draggedItems_);
+            dragPrevBounds_ = dragInitialBounds_;
             dragging_ = true;
         } else {
             if (!(qApp->keyboardModifiers() & Qt::ShiftModifier))
@@ -177,7 +182,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
         //foreach (QGraphicsItem *item, scene()->items(mapToScene(rect))) {
         QRectF rect = selectionRect();
         foreach (QGraphicsItem *item, scene()->items()) {
-            const QPolygonF itemViewportBounds = mapFromScene(item->sceneBoundingRect());
+            QPolygonF itemViewportBounds = mapFromScene(item->sceneBoundingRect());
             bool intersects = !itemViewportBounds.intersected(rect).isEmpty();
             MapItem *mapItem = dynamic_cast<MapItem *>(item);
             if (mapItem)
@@ -198,24 +203,18 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
     }
 
     if (dragging_) {
-        // Dragging and scrolling are similar right now,
-        // except scrolling moves all widgets and dragging
-        // moves only selected ones
-        QVarLengthArray<MapItem *> items;
-        QRectF boundingRect;
-        foreach (QGraphicsItem *item, scene()->items()) {
-            MapItem *mapItem = dynamic_cast<MapItem *>(item);
-            if (!mapItem->selected())
-                continue;
-            boundingRect = boundingRect.united(mapItem->boundingRect());
-            items.append(mapItem);
-//            QPointF newPos = mapItem->levelObject()->position() + event->pos() - prevPos_;
-//            mapItem->levelObject()->setPosition(newPos);
-//            modified_ = true;
-        }
-        //boundingRect.left() / settings_->gridSize().width()
+        QRectF shiftedRect = dragInitialBounds_.translated(event->pos() - startPos_);
+        QSizeF gridSize = settings_->gridSize();
 
-        prevPos_ = event->pos();
+        QRectF targetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ false);
+
+        QPointF shift = targetRect.topLeft() - dragPrevBounds_.topLeft();
+        foreach (MapItem *item, draggedItems_) {
+            QPointF pos = item->levelObject()->position();
+            item->levelObject()->setPosition(pos + shift);
+        }
+
+        dragPrevBounds_ = targetRect;
     }
 }
 
@@ -240,7 +239,7 @@ void MapView::setModified(bool modified)
 
 void MapView::selectActiveWidgets()
 {
-    const QList<QGraphicsItem *> items = scene()->items();
+    QList<QGraphicsItem *> items = scene()->items();
 
     MapItem *lastItem = nullptr;
     foreach (QGraphicsItem *item, items) {
@@ -311,4 +310,97 @@ QRect MapView::selectionRect() const
     QPoint pos(mapFromGlobal(QCursor::pos()));
     return QRect(startPos_.x(), startPos_.y(),
                  pos.x() - startPos_.x(), pos.y() - startPos_.y());
+}
+
+QList<MapItem *> MapView::selectedItems() const
+{
+    QList<MapItem *> items;
+    foreach (QGraphicsItem *item, scene()->items()) {
+        MapItem *mapItem = dynamic_cast<MapItem *>(item);
+        if (mapItem && mapItem->selected())
+            items.append(mapItem);
+    }
+
+    return items;
+}
+
+QRectF MapView::itemsBoundingRect(const QList<MapItem *> &items) const
+{
+    QRectF rect;
+    foreach (MapItem *item, items)
+        rect = rect.united(item->boundingRect().translated(item->pos()));
+
+    return rect;
+}
+
+void MapView::snapToGrid(qreal firstLine, qreal secondLine, qreal gridSize, qreal *newFirstLine, qreal *newSecondLine) const
+{
+    if (gridSize == 0) {
+        if (newFirstLine)
+            *newFirstLine = firstLine;
+        if (newSecondLine)
+            *newSecondLine = secondLine;
+
+        return;
+    }
+
+    struct NearestLine {
+        qreal line;
+        qreal dist;
+    };
+
+    auto nearestGridLine = [](qreal line, qreal gridSize) -> NearestLine {
+        Q_ASSERT(gridSize > 0);
+        NearestLine first, second;
+        first.line = qFloor(line / gridSize) * gridSize;
+        first.dist = qAbs(line - first.line);
+        second.line = first.line + gridSize;
+        second.dist = qAbs(line - second.line);
+        return first.dist < second.dist ? first : second;
+    };
+
+    if (firstLine == secondLine) {
+        NearestLine nearest = nearestGridLine(firstLine, gridSize);
+        if (newFirstLine)
+            *newFirstLine = nearest.line;
+        if (newSecondLine)
+            *newSecondLine = nearest.line;
+
+        return;
+    }
+
+    NearestLine firstNearest = nearestGridLine(firstLine, gridSize);
+    NearestLine secondNearest = nearestGridLine(secondLine, gridSize);
+
+    if (firstNearest.dist < secondNearest.dist) {
+        qreal shift = firstNearest.line - firstLine;
+        if (newFirstLine)
+            *newFirstLine = firstNearest.line;
+        if (newSecondLine)
+            *newSecondLine = secondLine + shift;
+    } else {
+        qreal shift = secondNearest.line - secondLine;
+        if (newFirstLine)
+            *newFirstLine = firstLine + shift;
+        if (newSecondLine)
+            *newSecondLine = secondNearest.line;
+    }
+}
+
+QRectF MapView::snapToGrid(const QRectF &rect, const QSizeF &grid, bool bothSides) const
+{
+    qreal right = bothSides ? rect.right() : rect.left();
+    qreal bottom = bothSides ? rect.bottom() : rect.top();
+
+    qreal newLeft = 0;
+    qreal newRight = 0;
+    qreal newTop = 0;
+    qreal newBottom = 0;
+
+    snapToGrid(rect.left(), right, grid.width(), &newLeft, bothSides ? &newRight : nullptr);
+    snapToGrid(rect.top(), bottom, grid.height(), &newTop, bothSides ? &newBottom: nullptr);
+
+    return bothSides
+            ? QRectF(QPointF(newLeft, newTop), QPointF(newRight, newBottom))
+            : QRectF(QPointF(newLeft, newTop), rect.size());
 }
