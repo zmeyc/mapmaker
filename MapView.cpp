@@ -21,9 +21,11 @@ MapView::MapView(QWidget *parent)
 {
     //WidgetUtils::setBackgroundColor(this, Qt::white);
     //setBackgroundBrush(Qt::blue);
+    setBackgroundBrush(Qt::lightGray);
 
     setAcceptDrops(true);
     setFocusPolicy(Qt::StrongFocus);
+    setViewportUpdateMode(FullViewportUpdate);
 
     setScene(new MapScene(this));
 }
@@ -33,24 +35,30 @@ MapScene *MapView::mapScene() const
     return qobject_cast<MapScene *>(scene());
 }
 
+void MapView::drawBackground(QPainter *painter, const QRectF &rect)
+{
+    QGraphicsView::drawBackground(painter, rect);
+
+    painter->fillRect(sceneRect(), Qt::white);
+}
+
+void MapView::drawForeground(QPainter *painter, const QRectF &rect)
+{
+    qdbg << "MapView::drawForeground()" << endl;
+    QGraphicsView::drawForeground(painter, rect);
+
+}
+
+void MapView::drawItems(QPainter *painter, int numItems, QGraphicsItem *items[], const QStyleOptionGraphicsItem options[])
+{
+    qdbg << "MapView::drawItems()" << endl;
+    QGraphicsView::drawItems(painter, numItems, items, options);
+}
+
 void MapView::paintEvent(QPaintEvent *event)
 {
-    {
-        QPainter painter(viewport());
-        QPainterPath path;
-        path.addRect(rect());
-        painter.fillPath(path, Qt::white);
-        path.addPolygon(mapFromScene(sceneRect()));
-        painter.fillPath(path, Qt::lightGray);
-    }
-
+    qdbg << "MapView::paintEvent()" << endl;
     QGraphicsView::paintEvent(event);
-
-//    {
-//        QPainter painter(viewport());
-//        painter.setPen(QPen(Qt::red, 10));
-//        painter.drawPoint(mapFromScene(QPointF(0, 0)));
-//    }
 
     if (selecting_) {
         QPainter painter(viewport());
