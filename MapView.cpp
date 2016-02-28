@@ -49,8 +49,12 @@ void MapView::drawBackground(QPainter *painter, const QRectF &rect)
 
     if (settings_->showGrid()) {
         QRectF r = sceneRect();
-        painter->translate(r.left(), r.top());
-        r.translate(-r.left(), -r.top());
+
+        QSizeF grid = settings_->gridSize();
+        QPointF shift(qFloor(r.left() / grid.width()) * grid.width(),
+                      qFloor(r.top() / grid.height()) * grid.height());
+        painter->translate(shift);
+        r.translate(-shift);
         painter->fillRect(r, gridPixmap_);
     } else {
         painter->fillRect(sceneRect(), Qt::white);
@@ -208,7 +212,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
 
         QRectF targetRect;
         if (settings_->snapToGrid())
-            targetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ false);
+            targetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ true);
         else
             targetRect = shiftedRect;
 
