@@ -58,6 +58,11 @@ protected:
     friend class LevelLoader;
 
     QRect selectionRect() const;
+    QList<MapItem *> selectedItems() const;
+    QRectF itemsBoundingRect(const QList<MapItem *> &items) const;
+
+    void snapToGrid(qreal firstLine, qreal secondLine, qreal gridSize, qreal *newFirstLine, qreal *newSecondLine) const;
+    QRectF snapToGrid(const QRectF &rect, const QSizeF &gridSize, bool bothSides = false) const;
 
     Settings *settings_ = nullptr;
     bool dragging_ = false;
@@ -67,6 +72,10 @@ protected:
     QPoint prevPos_;
     bool modified_ = false;
     QPixmap gridPixmap_;
+
+    QList<MapItem *> draggedItems_;
+    QRectF dragInitialBounds_;
+    QRectF dragPrevBounds_;
 
     LevelObject *selectedLevelObject_ = nullptr;
 };
