@@ -25,6 +25,9 @@ public:
     bool showGrid() const;
     Q_SLOT void setShowGrid(bool showGrid);
 
+    QSizeF gridSize() const;
+    void setGridSize(const QSizeF &gridSize);
+
 signals:
     void showGridChanged(bool showGrid);
 

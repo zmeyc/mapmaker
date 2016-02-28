@@ -4,7 +4,9 @@
 #define MAPVIEW_H
 
 #include <QGraphicsView>
+#include <QPixmap>
 
+class Settings;
 class LevelObject;
 class MapScene;
 class MapItem;
@@ -19,9 +21,6 @@ public:
 
     void drawBackground(QPainter *painter, const QRectF &rect) override;
     void drawForeground(QPainter *painter, const QRectF &rect) override;
-    void drawItems(QPainter *painter, int numItems,
-                   QGraphicsItem *items[],
-                   const QStyleOptionGraphicsItem options[]) override;
 
     void paintEvent(QPaintEvent *event) override;
 
@@ -60,12 +59,14 @@ protected:
 
     QRect selectionRect() const;
 
+    Settings *settings_ = nullptr;
     bool dragging_ = false;
     bool scrolling_ = false;
     bool selecting_ = false;
     QPoint startPos_;
     QPoint prevPos_;
     bool modified_ = false;
+    QPixmap gridPixmap_;
 
     LevelObject *selectedLevelObject_ = nullptr;
 };

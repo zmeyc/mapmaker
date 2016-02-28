@@ -70,3 +70,13 @@ void Settings::setShowGrid(bool showGrid)
         emit showGridChanged(showGrid);
     }
 }
+
+QSizeF Settings::gridSize() const
+{
+    return gridSize_;
+}
+
+void Settings::setGridSize(const QSizeF &gridSize)
+{
+    gridSize_ = gridSize;
+}

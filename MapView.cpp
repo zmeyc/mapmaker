@@ -20,7 +20,7 @@ const char mimeType[] = "application/x-levelobject";
 MapView::MapView(QWidget *parent)
     : QGraphicsView(parent)
 {
-    Settings *settings = Settings::sharedInstance();
+    settings_ = Settings::sharedInstance();
     setBackgroundBrush(Qt::lightGray);
 
     setAcceptDrops(true);
@@ -30,7 +30,9 @@ MapView::MapView(QWidget *parent)
     setScene(new MapScene(this));
     //setSceneRect(0, 0, 0, 0);
 
-    connect(settings, SIGNAL(showGridChanged(bool)),
+    onShowGridChanged(settings_->showGrid());
+
+    connect(settings_, SIGNAL(showGridChanged(bool)),
             this, SLOT(onShowGridChanged(bool)));
 }
 
@@ -43,7 +45,14 @@ void MapView::drawBackground(QPainter *painter, const QRectF &rect)
 {
     QGraphicsView::drawBackground(painter, rect);
 
-    painter->fillRect(sceneRect(), Qt::white);
+    if (settings_->showGrid()) {
+        QRectF r = sceneRect();
+        painter->translate(r.left(), r.top());
+        r.translate(-r.left(), -r.top());
+        painter->fillRect(r, gridPixmap_);
+    } else {
+        painter->fillRect(sceneRect(), Qt::white);
+    }
 }
 
 void MapView::drawForeground(QPainter *painter, const QRectF &rect)
@@ -260,6 +269,18 @@ void MapView::selectSingleItem(MapItem *item)
 void MapView::onShowGridChanged(bool showGrid)
 {
     Q_UNUSED(showGrid);
+
+    if (showGrid) {
+        QSize gridSize = settings_->gridSize().toSize();
+        gridPixmap_ = QPixmap(gridSize);
+        gridPixmap_.fill(Qt::white);
+        QPainter painter(&gridPixmap_);
+        painter.drawPoint(0, 0);
+        //painter.drawPoint(gridSize.width(), gridSize.height());
+    } else {
+        gridPixmap_ = QPixmap();
+    }
+
     scene()->update();
 }
 
