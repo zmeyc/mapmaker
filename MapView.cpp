@@ -212,7 +212,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
 
         QRectF targetRect;
         if (settings_->snapToGrid())
-            targetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ false);
+            targetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ true);
         else
             targetRect = shiftedRect;
 
