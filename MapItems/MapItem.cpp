@@ -32,7 +32,18 @@ void MapItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
     QRectF rect = boundingRect();
 
-    painter->drawImage(rect.topLeft(), obj_->image());
+    //painter->drawImage(rect.topLeft(), obj_->image());
+    painter->save();
+    QTransform transf = painter->transform();
+    bool flipX = obj_->flipX();
+    bool flipY = obj_->flipY();
+    transf.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+    painter->setTransform(transf);
+    QImage image = obj_->image();
+    painter->drawImage(rect.topLeft(),
+                       image);
+    painter->restore();
+
     if (selected_) {
         painter->setPen(Qt::DashLine);
         painter->drawRect(rect);
