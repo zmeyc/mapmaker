@@ -275,7 +275,10 @@ void MapView::onShowGridChanged(bool showGrid)
         gridPixmap_ = QPixmap(gridSize);
         gridPixmap_.fill(Qt::white);
         QPainter painter(&gridPixmap_);
-        painter.drawPoint(0, 0);
+        //painter.drawPoint(0, 0);
+        painter.setPen(Qt::darkGray);
+        painter.drawLine(0, 0, gridSize.width(), 0);
+        painter.drawLine(0, 0, 0, gridSize.height());
         //painter.drawPoint(gridSize.width(), gridSize.height());
     } else {
         gridPixmap_ = QPixmap();
