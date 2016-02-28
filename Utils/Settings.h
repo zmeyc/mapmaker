@@ -29,7 +29,7 @@ public:
     void setGridSize(const QSizeF &gridSize);
 
     bool snapToGrid() const;
-    void setSnapToGrid(bool snapToGrid);
+    Q_SLOT void setSnapToGrid(bool snapToGrid);
 
 signals:
     void showGridChanged(bool showGrid);

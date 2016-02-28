@@ -206,7 +206,11 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
         QRectF shiftedRect = dragInitialBounds_.translated(event->pos() - startPos_);
         QSizeF gridSize = settings_->gridSize();
 
-        QRectF targetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ false);
+        QRectF targetRect;
+        if (settings_->snapToGrid())
+            targetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ false);
+        else
+            targetRect = shiftedRect;
 
         QPointF shift = targetRect.topLeft() - dragPrevBounds_.topLeft();
         foreach (MapItem *item, draggedItems_) {
