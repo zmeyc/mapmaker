@@ -1,0 +1,9 @@
+MapMaker contributors (sorted alphabetically)
+
+Andrey Fidrya
+  * Main developer, repository maintainer
+
+Anton Karandeev
+  * Transition from QWidgets to QGraphicsScene
+  * Snap to grid feature
+
