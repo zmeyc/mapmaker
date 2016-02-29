@@ -1,12 +1,19 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
+#include <QMetaMethod>
 #include "LevelObject.h"
 #include "Utils/FileUtils.h"
 
 LevelObject::LevelObject(QObject *parent)
     : QObject(parent)
 {
-
+    // TODO: automate?
+    connect(this, SIGNAL(positionChanged(QPointF)),
+            this, SIGNAL(modified()));
+    connect(this, SIGNAL(flipXChanged(bool)),
+            this, SIGNAL(modified()));
+    connect(this, SIGNAL(flipYChanged(bool)),
+            this, SIGNAL(modified()));
 }
 
 LevelObject *LevelObject::clone(QObject *parent)
@@ -58,6 +65,16 @@ QPointF LevelObject::position() const
     return position_;
 }
 
+qreal LevelObject::x() const
+{
+    return position_.x();
+}
+
+qreal LevelObject::y() const
+{
+    return position_.y();
+}
+
 void LevelObject::setPosition(const QPointF &pos)
 {
     if (position_ != pos) {
@@ -69,6 +86,22 @@ void LevelObject::setPosition(const QPointF &pos)
 void LevelObject::setPosition(qreal x, qreal y)
 {
     setPosition(QPointF(x, y));
+}
+
+void LevelObject::setX(qreal x)
+{
+    if (position_.x() != x) {
+        position_.setX(x);
+        emit positionChanged(position_);
+    }
+}
+
+void LevelObject::setY(qreal y)
+{
+    if (position_.y() != y) {
+        position_.setY(y);
+        emit positionChanged(position_);
+    }
 }
 
 QSizeF LevelObject::size() const
@@ -83,7 +116,10 @@ bool LevelObject::flipX() const
 
 void LevelObject::setFlipX(bool flipX)
 {
-    flipX_ = flipX;
+    if (flipX_ != flipX) {
+        flipX_ = flipX;
+        emit flipXChanged(flipX);
+    }
 }
 
 bool LevelObject::flipY() const
@@ -93,5 +129,8 @@ bool LevelObject::flipY() const
 
 void LevelObject::setFlipY(bool flipY)
 {
-    flipY_ = flipY;
+    if (flipY_ != flipY) {
+        flipY_ = flipY;
+        emit flipYChanged(flipY);
+    }
 }

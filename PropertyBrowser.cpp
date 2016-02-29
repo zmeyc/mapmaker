@@ -16,7 +16,11 @@ PropertyBrowser::PropertyBrowser(QWidget *parent)
     groupManager_ = new QtGroupPropertyManager(this);
     stringManager_ = new QtStringPropertyManager(this);
     intManager_ = new QtIntPropertyManager(this);
+    connect(intManager_, SIGNAL(valueChanged(QtProperty*,int)),
+            this, SLOT(onIntValueChanged(QtProperty*,int)));
     boolManager_ = new QtBoolPropertyManager(this);
+    connect(boolManager_, SIGNAL(valueChanged(QtProperty*,bool)),
+            this, SLOT(onBoolValueChanged(QtProperty*,bool)));
 
     QtCheckBoxFactory *checkBoxFactory = new QtCheckBoxFactory(this);
     QtSpinBoxFactory *spinBoxFactory = new QtSpinBoxFactory(this);
@@ -40,13 +44,13 @@ PropertyBrowser::PropertyBrowser(QWidget *parent)
     y_->setToolTip("Y coordinate");
     standardGroup_->addSubProperty(y_);
 
-    QtProperty *flipX = boolManager_->addProperty("flipX");
-    flipX->setToolTip("Flips the object horizontally");
-    standardGroup_->addSubProperty(flipX);
+    flipX_ = boolManager_->addProperty("flipX");
+    flipX_->setToolTip("Flips the object horizontally");
+    standardGroup_->addSubProperty(flipX_);
 
-    QtProperty *flipY = boolManager_->addProperty("flipY");
-    flipY->setToolTip("Flips the object vertically");
-    standardGroup_->addSubProperty(flipY);
+    flipY_ = boolManager_->addProperty("flipY");
+    flipY_->setToolTip("Flips the object vertically");
+    standardGroup_->addSubProperty(flipY_);
 
     // Custom properties
     customGroup_ = groupManager_->addProperty("Custom");
@@ -78,16 +82,47 @@ void PropertyBrowser::resetLevelObject()
     setLevelObject(nullptr);
 }
 
+void PropertyBrowser::onIntValueChanged(QtProperty *property, int val)
+{
+    if (property->propertyName() == "x")
+        levelObject_->setX(val);
+    else if (property->propertyName() == "y")
+        levelObject_->setY(val);
+}
+
+void PropertyBrowser::onBoolValueChanged(QtProperty *property, bool val)
+{
+    // TODO: evaluate possibility of using Q_PROPERTIES for automating this
+    if (property->propertyName() == "flipX")
+        levelObject_->setFlipX(val);
+    else if (property->propertyName() == "flipY")
+        levelObject_->setFlipY(val);
+}
+
 void PropertyBrowser::updatePosition(const QPointF &pos)
 {
     intManager_->setValue(x_, pos.x());
     intManager_->setValue(y_, pos.y());
 }
 
+void PropertyBrowser::updateFlipX(bool flipX)
+{
+    boolManager_->setValue(flipX_, flipX);
+}
+
+void PropertyBrowser::updateFlipY(bool flipY)
+{
+    boolManager_->setValue(flipY_, flipY);
+}
+
 void PropertyBrowser::connectSignals(LevelObject *object)
 {
     connect(object, SIGNAL(positionChanged(QPointF)),
             this, SLOT(updatePosition(QPointF)));
+    connect(object, SIGNAL(flipXChanged(bool)),
+            this, SLOT(updateFlipX(bool)));
+    connect(object, SIGNAL(flipYChanged(bool)),
+            this, SLOT(updateFlipY(bool)));
     connect(object, SIGNAL(destroyed(QObject*)),
             this, SLOT(resetLevelObject()));
 }

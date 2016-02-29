@@ -8,6 +8,7 @@
 #include "LevelLoader.h"
 #include "Models/LevelObjectsModel.h"
 #include "Models/MapScene.h"
+#include "MapView.h"
 #include "MapItems/MapItem.h"
 #include "Data/LevelObject.h"
 #include "Utils/Utils.h"
@@ -115,11 +116,15 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
             continue;
         }
 
-        MapItem *item = new MapItem(levelObject->clone());
-        item->levelObject()->setPosition(x, y);
-        item->levelObject()->setFlipX(flipX);
-        item->levelObject()->setFlipY(flipY);
+        LevelObject *newObject = levelObject->clone();
+        newObject->setPosition(x, y);
+        newObject->setFlipX(flipX);
+        newObject->setFlipY(flipY);
+
+        MapItem *item = new MapItem(newObject);
         scene->addItem(item);
+        QObject::connect(newObject, SIGNAL(modified()),
+                         qobject_cast<MapView *>(scene->parent()), SLOT(setModified()));
     }
 
     if (!notFoundList.isEmpty()) {

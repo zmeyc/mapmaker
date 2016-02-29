@@ -31,6 +31,7 @@ public slots:
     void setSelected(bool selected);
 
 protected slots:
+    void update();
     void onPositionChanged(const QPointF &pos);
 
 protected:

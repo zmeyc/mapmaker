@@ -22,10 +22,18 @@ public:
 
     LevelObject *levelObject() const { return levelObject_; }
 
+signals:
+
 public slots:
     void setLevelObject(LevelObject *object);
     void resetLevelObject();
+
+protected slots:
+    void onIntValueChanged(QtProperty *property, int val);
+    void onBoolValueChanged(QtProperty *property, bool val);
     void updatePosition(const QPointF &pos);
+    void updateFlipX(bool flipX);
+    void updateFlipY(bool flipY);
 
 protected:
     void connectSignals(LevelObject *object);
@@ -40,6 +48,8 @@ protected:
     QtProperty *standardGroup_ = nullptr;
     QtProperty *x_ = nullptr;
     QtProperty *y_ = nullptr;
+    QtProperty *flipX_ = nullptr;
+    QtProperty *flipY_ = nullptr;
 
     QtProperty *customGroup_ = nullptr;
     LevelObject *levelObject_ = nullptr;

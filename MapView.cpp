@@ -121,8 +121,11 @@ void MapView::dropEvent(QDropEvent *event)
 
     QPoint viewportTargetPos(event->pos() - dragOffsetShifted);
 
-    MapItem *item = new MapItem(obj->clone());
-    item->levelObject()->setPosition(mapToScene(viewportTargetPos));
+    LevelObject *newObject = obj->clone();
+    newObject->setPosition(mapToScene(viewportTargetPos));
+    connect(newObject, SIGNAL(modified()),
+            this, SLOT(setModified()));
+    MapItem *item = new MapItem(newObject);
     scene()->addItem(item);
 
     modified_ = true;
@@ -220,6 +223,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
         foreach (MapItem *item, draggedItems_) {
             QPointF pos = item->levelObject()->position();
             item->levelObject()->setPosition(pos + shift);
+            modified_ = true;
         }
 
         dragPrevBounds_ = targetRect;

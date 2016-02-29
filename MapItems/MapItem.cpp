@@ -13,6 +13,10 @@ MapItem::MapItem(LevelObject *obj, QGraphicsItem *parent)
     setPos(obj->position());
     connect(obj, SIGNAL(positionChanged(QPointF)),
             this, SLOT(onPositionChanged(QPointF)));
+    connect(obj, SIGNAL(flipXChanged(bool)),
+            this, SLOT(update()));
+    connect(obj, SIGNAL(flipYChanged(bool)),
+            this, SLOT(update()));
 }
 
 QRectF MapItem::boundingRect() const
@@ -71,6 +75,11 @@ void MapItem::setSelected(bool selected)
         update();
         emit selectedChanged(selected);
     }
+}
+
+void MapItem::update()
+{
+    QGraphicsItem::update();
 }
 
 void MapItem::onPositionChanged(const QPointF &pos)

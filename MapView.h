@@ -37,7 +37,7 @@ public:
     void keyPressEvent(QKeyEvent *event) override;
 
     bool modified() const;
-    void setModified(bool modified);
+    Q_SLOT void setModified(bool modified = true);
 
     LevelObject *selectedLevelObject() const { return selectedLevelObject_; }
 
@@ -70,7 +70,7 @@ protected:
     bool selecting_ = false;
     QPoint startPos_;
     QPoint prevPos_;
-    bool modified_ = false;
+    bool modified_ = false; // TODO: move to scene?
     QPixmap gridPixmap_;
 
     QList<MapItem *> draggedItems_;

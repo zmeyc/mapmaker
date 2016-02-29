@@ -25,8 +25,12 @@ public:
     void setImage(const QImage &image);
 
     QPointF position() const;
+    qreal x() const;
+    qreal y() const;
     void setPosition(const QPointF &pos);
     void setPosition(qreal x, qreal y);
+    void setX(qreal x);
+    void setY(qreal y);
 
     QSizeF size() const;
 
@@ -37,7 +41,10 @@ public:
     void setFlipY(bool flipY);
 
 signals:
+    void modified();
     void positionChanged(const QPointF &pos);
+    void flipXChanged(bool flipX);
+    void flipYChanged(bool flipY);
 
 protected:
     QString name_;
