@@ -41,7 +41,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addLayout(pagesLayout);
-    mainLayout->addWidget(closeButton);
+    mainLayout->addWidget(closeButton, 0, Qt::AlignRight);
     setLayout(mainLayout);
 }
 
