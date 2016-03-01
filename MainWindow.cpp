@@ -18,7 +18,10 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
+    , settings_(Settings::sharedInstance())
 {
+    setWindowTitle(settings_->mapFilename() + " | MapMaker");
+
     resize(800, 600);
 
     mapView_ = new MapView(this);
@@ -68,7 +71,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         LevelLoader *levelLoader = LevelLoader::sharedInstance();
         if (!levelLoader->saveToFile(
                     mapView_->mapScene(),
-                    Settings::sharedInstance()->mapFilename())) {
+                    settings_->mapFilename())) {
             QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
             event->ignore();
         }
@@ -89,8 +92,7 @@ void MainWindow::onPreferences()
 void MainWindow::loadLevel()
 {
     LevelLoader *levelLoader = LevelLoader::sharedInstance();
-    Settings *settings = Settings::sharedInstance();
-    if (!levelLoader->loadFromFile(mapView_->mapScene(), settings->mapFilename())) {
+    if (!levelLoader->loadFromFile(mapView_->mapScene(), settings_->mapFilename())) {
         QMessageBox::StandardButton result =
             QMessageBox::warning(this, "Error",
                                  levelLoader->lastErrorDescription(),
@@ -105,8 +107,6 @@ void MainWindow::loadLevel()
 
 void MainWindow::createMenu()
 {
-    Settings *settings = Settings::sharedInstance();
-
     QMenuBar *bar = menuBar();
 
     QMenu *editMenu = bar->addMenu(tr("&Edit"));
@@ -119,13 +119,13 @@ void MainWindow::createMenu()
 
     QKeySequence showGridShortcut(tr("Ctrl+'", "View|Show Grid"));
     QAction *showGridAction = viewMenu->addAction(
-                tr("Show Grid"), settings, SLOT(setShowGrid(bool)), showGridShortcut);
+                tr("Show Grid"), settings_, SLOT(setShowGrid(bool)), showGridShortcut);
     showGridAction->setCheckable(true);
-    showGridAction->setChecked(settings->showGrid());
+    showGridAction->setChecked(settings_->showGrid());
 
     QKeySequence snapToGridShortcut(tr("Ctrl+Shift+;", "View|Snap to Grid"));
     QAction *snapToGridAction = viewMenu->addAction(
-                tr("Snap to Grid"), settings, SLOT(setSnapToGrid(bool)), snapToGridShortcut);
+                tr("Snap to Grid"), settings_, SLOT(setSnapToGrid(bool)), snapToGridShortcut);
     snapToGridAction->setCheckable(true);
-    snapToGridAction->setChecked(settings->snapToGrid());
+    snapToGridAction->setChecked(settings_->snapToGrid());
 }

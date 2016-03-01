@@ -79,7 +79,7 @@ QSizeF Settings::gridSize() const
 
 void Settings::setGridSize(const QSizeF &gridSize)
 {
-    qdbg << "Settings::setGridSize: " << gridSize << endl;
+    //qdbg << "Settings::setGridSize: " << gridSize << endl;
     if (gridSize_ != gridSize) {
         gridSize_ = gridSize;
         emit gridSizeChanged(gridSize);

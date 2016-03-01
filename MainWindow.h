@@ -5,6 +5,7 @@
 
 #include <QMainWindow>
 
+class Settings;
 class MapView;
 class LevelWidget;
 class PropertyBrowser;
@@ -26,6 +27,7 @@ protected slots:
 protected:
     void createMenu();
 
+    Settings *settings_ = nullptr;
     MapView *mapView_ = nullptr;
     PropertyBrowser *propertyBrowser_ = nullptr;
 };
