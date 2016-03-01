@@ -32,10 +32,12 @@ MapView::MapView(QWidget *parent)
     setScene(new MapScene(this));
     //setSceneRect(0, 0, 0, 0);
 
-    onShowGridChanged(settings_->showGrid());
+    updateGridPixmap();
 
     connect(settings_, SIGNAL(showGridChanged(bool)),
-            this, SLOT(onShowGridChanged(bool)));
+            this, SLOT(updateGridPixmap()));
+    connect(settings_, SIGNAL(gridSizeChanged(QSizeF)),
+            this, SLOT(updateGridPixmap()));
 }
 
 MapScene *MapView::mapScene() const
@@ -296,11 +298,9 @@ void MapView::selectSingleItem(MapItem *item)
     setSelectedLevelObject(item ? item->levelObject() : nullptr);
 }
 
-void MapView::onShowGridChanged(bool showGrid)
+void MapView::updateGridPixmap()
 {
-    Q_UNUSED(showGrid);
-
-    if (showGrid) {
+    if (settings_->showGrid()) {
         QSize gridSize = settings_->gridSize().toSize();
         gridPixmap_ = QPixmap(gridSize);
         gridPixmap_.fill(Qt::white);

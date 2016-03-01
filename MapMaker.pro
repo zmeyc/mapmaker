@@ -29,7 +29,9 @@ SOURCES += main.cpp\
     PropertyBrowser.cpp \
     MapView.cpp \
     Models/MapScene.cpp \
-    MapItems/MapItem.cpp
+    MapItems/MapItem.cpp \
+    ../mapmaker/Dialogs/SettingsDialog/SettingsDialog.cpp \
+    Dialogs/SettingsDialog/GridPage.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -44,4 +46,6 @@ HEADERS  += MainWindow.h \
     PropertyBrowser.h \
     MapView.h \
     Models/MapScene.h \
-    MapItems/MapItem.h
+    MapItems/MapItem.h \
+    ../mapmaker/Dialogs/SettingsDialog/SettingsDialog.h \
+    Dialogs/SettingsDialog/GridPage.h

@@ -20,6 +20,7 @@ public:
     void closeEvent(QCloseEvent *event) override;
 
 protected slots:
+    void onPreferences();
     void loadLevel();
 
 protected:

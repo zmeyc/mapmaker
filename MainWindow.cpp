@@ -12,6 +12,7 @@
 #include "Controls/LevelWidget.h"
 #include "PropertyBrowser.h"
 #include "Controllers/LevelLoader.h"
+#include "Dialogs/SettingsDialog/SettingsDialog.h"
 #include "Utils/Settings.h"
 #include "Utils/Utils.h"
 
@@ -76,6 +77,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
+void MainWindow::onPreferences()
+{
+    SettingsDialog *dialog = new SettingsDialog(this);
+    dialog->setWindowModality(Qt::WindowModal);
+    dialog->setWindowFlags((dialog->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->exec();
+}
+
 void MainWindow::loadLevel()
 {
     LevelLoader *levelLoader = LevelLoader::sharedInstance();
@@ -99,16 +109,22 @@ void MainWindow::createMenu()
 
     QMenuBar *bar = menuBar();
 
-    QMenu *mapMenu = bar->addMenu(tr("&View"));
+    QMenu *editMenu = bar->addMenu(tr("&Edit"));
+
+    QKeySequence preferencesShortcut(tr("Ctrl+K", "Edit|Preferences..."));
+    editMenu->addAction(
+                tr("Preferences..."), this, SLOT(onPreferences()), preferencesShortcut);
+
+    QMenu *viewMenu = bar->addMenu(tr("&View"));
 
     QKeySequence showGridShortcut(tr("Ctrl+'", "View|Show Grid"));
-    QAction *showGridAction = mapMenu->addAction(
+    QAction *showGridAction = viewMenu->addAction(
                 tr("Show Grid"), settings, SLOT(setShowGrid(bool)), showGridShortcut);
     showGridAction->setCheckable(true);
     showGridAction->setChecked(settings->showGrid());
 
     QKeySequence snapToGridShortcut(tr("Ctrl+Shift+;", "View|Snap to Grid"));
-    QAction *snapToGridAction = mapMenu->addAction(
+    QAction *snapToGridAction = viewMenu->addAction(
                 tr("Snap to Grid"), settings, SLOT(setSnapToGrid(bool)), snapToGridShortcut);
     snapToGridAction->setCheckable(true);
     snapToGridAction->setChecked(settings->snapToGrid());

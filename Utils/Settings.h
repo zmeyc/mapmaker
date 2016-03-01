@@ -27,12 +27,15 @@ public:
 
     QSizeF gridSize() const;
     void setGridSize(const QSizeF &gridSize);
+    Q_SLOT void setGridSize(qreal uniformSize);
+    Q_SLOT void setGridSize(int uniformSize);
 
     bool snapToGrid() const;
     Q_SLOT void setSnapToGrid(bool snapToGrid);
 
 signals:
     void showGridChanged(bool showGrid);
+    void gridSizeChanged(const QSizeF &gridSize);
 
 public slots:
 

@@ -107,7 +107,7 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
         int flipX = obj["flipX"].toBool();
         int flipY = obj["flipY"].toBool();
 
-        qdbg << "name=" << name << ", x=" << x << ", y=" << y << endl;
+        //qdbg << "name=" << name << ", x=" << x << ", y=" << y << endl;
         LevelObject *levelObject = LevelObjectsModel::sharedInstance()->levelObjectByName(name);
         if (!levelObject) {
             if (!notFoundList.isEmpty())

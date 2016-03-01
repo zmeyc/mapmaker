@@ -73,12 +73,27 @@ void Settings::setShowGrid(bool showGrid)
 
 QSizeF Settings::gridSize() const
 {
-    return gridSize_;
+    return QSizeF(qMax(1.0, gridSize_.width()),
+                  qMax(1.0, gridSize_.height()));
 }
 
 void Settings::setGridSize(const QSizeF &gridSize)
 {
-    gridSize_ = gridSize;
+    qdbg << "Settings::setGridSize: " << gridSize << endl;
+    if (gridSize_ != gridSize) {
+        gridSize_ = gridSize;
+        emit gridSizeChanged(gridSize);
+    }
+}
+
+void Settings::setGridSize(qreal uniformSize)
+{
+    setGridSize(QSizeF(uniformSize, uniformSize));
+}
+
+void Settings::setGridSize(int uniformSize)
+{
+    setGridSize((qreal)uniformSize);
 }
 
 bool Settings::snapToGrid() const

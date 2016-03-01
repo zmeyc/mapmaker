@@ -33,7 +33,7 @@ bool LevelObjectsModel::addImagesFromDirectory(const QString &directory)
         QString filename = it.next();
         QImage image;
         if (image.load(filename)) {
-            qvrb << "Loaded: " << filename << endl;
+            //qvrb << "Loaded: " << filename << endl;
         } else {
             qerr << "Unable to load: " << filename << endl;
             allLoaded = false;
@@ -115,7 +115,7 @@ QMimeData *LevelObjectsModel::mimeData(const QModelIndexList &indexes) const
     if (indexes.empty())
         return nullptr;
     LevelObject *obj = entries_.at(indexes.front().row());
-    qdbg << "LevelObjectsModel: mimeData: row=" << indexes.front().row() << ", obj.name=" << obj->name() << endl;
+    //qdbg << "LevelObjectsModel: mimeData: row=" << indexes.front().row() << ", obj.name=" << obj->name() << endl;
     QByteArray encodedData;
     QDataStream dataStream(&encodedData, QIODevice::WriteOnly);
     dataStream << obj->name().toUtf8() << dragOffset_;

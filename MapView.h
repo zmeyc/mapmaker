@@ -52,7 +52,7 @@ public slots:
 protected slots:
     void setSelectedLevelObject(LevelObject *object);
     void selectSingleItem(MapItem *item);
-    void onShowGridChanged(bool showGrid);
+    void updateGridPixmap();
 
 protected:
     friend class LevelLoader;
