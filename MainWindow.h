@@ -21,11 +21,15 @@ public:
     void closeEvent(QCloseEvent *event) override;
 
 protected slots:
+    void updateWindowTitle();
+    void onOpen();
     void onPreferences();
     void loadLevel();
 
 protected:
-    void createMenu();
+    void createFileMenu();
+    void createEditMenu();
+    void createViewMenu();
 
     Settings *settings_ = nullptr;
     MapView *mapView_ = nullptr;

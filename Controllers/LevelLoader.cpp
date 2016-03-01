@@ -98,6 +98,7 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
     QJsonObject level = document.object();
     QJsonArray objects = level["objects"].toArray();
     QString notFoundList;
+    LevelObjectsModel *model = LevelObjectsModel::sharedInstance();
     foreach (const QJsonValue &value, objects) {
         QJsonObject obj = value.toObject();
 
@@ -108,12 +109,13 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
         int flipY = obj["flipY"].toBool();
 
         //qdbg << "name=" << name << ", x=" << x << ", y=" << y << endl;
-        LevelObject *levelObject = LevelObjectsModel::sharedInstance()->levelObjectByName(name);
+        LevelObject *levelObject = model->levelObjectByName(name);
         if (!levelObject) {
             if (!notFoundList.isEmpty())
                 notFoundList += ", ";
             notFoundList += name;
-            continue;
+
+            levelObject = model->placeholder();
         }
 
         LevelObject *newObject = levelObject->clone();
@@ -128,7 +130,7 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
     }
 
     if (!notFoundList.isEmpty()) {
-        lastErrorDescription_ = "Some objects were not found and will be deleted: " +
+        lastErrorDescription_ = "Some objects were not found: " +
                 notFoundList;
         return false;
     }

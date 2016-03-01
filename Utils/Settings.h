@@ -34,6 +34,7 @@ public:
     Q_SLOT void setSnapToGrid(bool snapToGrid);
 
 signals:
+    void mapFilenameChanged(const QString &mapFilename);
     void showGridChanged(bool showGrid);
     void gridSizeChanged(const QSizeF &gridSize);
 

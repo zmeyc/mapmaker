@@ -24,12 +24,12 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("MapMaker");
     QApplication::setApplicationVersion("1.0");
 
-    Settings *settings = Settings::sharedInstance();
-    if (!settings->parseCommandLine())
-        return 1;
+    //Settings *settings = Settings::sharedInstance();
+    //if (!settings->parseCommandLine())
+    //    return 1;
 
-    LevelObjectsModel::sharedInstance()->addImagesFromDirectory(
-                settings->imagesDirectory());
+    //LevelObjectsModel::sharedInstance()->addImagesFromDirectory(
+    //            settings->imagesDirectory());
 
     MainWindow w;
     w.show();

@@ -12,7 +12,7 @@ const char mimeType[] = "application/x-levelobject";
 LevelObjectsModel::LevelObjectsModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-
+    placeholder_ = new LevelObject;
 }
 
 LevelObjectsModel *LevelObjectsModel::sharedInstance()
@@ -132,4 +132,9 @@ QPoint LevelObjectsModel::dragOffset() const
 void LevelObjectsModel::setDragOffset(const QPoint &dragOffset)
 {
     dragOffset_ = dragOffset;
+}
+
+LevelObject *LevelObjectsModel::placeholder() const
+{
+    return placeholder_;
 }

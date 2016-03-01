@@ -36,18 +36,22 @@ void MapItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
     QRectF rect = boundingRect();
 
-    bool flipX = obj_->flipX();
-    bool flipY = obj_->flipY();
-    if (!flipX && !flipY) {
-        painter->drawImage(rect.topLeft(), obj_->image());
+    QImage image = obj_->image();
+    if (image.isNull()) {
+        // TODO: need width to draw a placeholder
     } else {
-        painter->save();
-        QTransform transf = painter->transform();
-        transf.scale(flipX ? -1 : 1, flipY ? -1 : 1);
-        painter->setTransform(transf);
-        QImage image = obj_->image();
-        painter->drawImage(rect.topLeft(), image);
-        painter->restore();
+        bool flipX = obj_->flipX();
+        bool flipY = obj_->flipY();
+        if (!flipX && !flipY) {
+            painter->drawImage(rect.topLeft(), obj_->image());
+        } else {
+            painter->save();
+            QTransform transf = painter->transform();
+            transf.scale(flipX ? -1 : 1, flipY ? -1 : 1);
+            painter->setTransform(transf);
+            painter->drawImage(rect.topLeft(), image);
+            painter->restore();
+        }
     }
 
     if (selected_) {

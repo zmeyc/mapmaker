@@ -5,6 +5,8 @@
 #include <QCloseEvent>
 #include <QTimer>
 #include <QMenuBar>
+#include <QFileDialog>
+#include <QStandardPaths>
 
 #include "MainWindow.h"
 #include "MapView.h"
@@ -15,12 +17,15 @@
 #include "Dialogs/SettingsDialog/SettingsDialog.h"
 #include "Utils/Settings.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , settings_(Settings::sharedInstance())
 {
-    setWindowTitle(settings_->mapFilename() + " | MapMaker");
+    connect(settings_, SIGNAL(mapFilenameChanged(QString)),
+            this, SLOT(updateWindowTitle()));
+    updateWindowTitle();
 
     resize(800, 600);
 
@@ -46,9 +51,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(splitter);
 
-    createMenu();
+    createFileMenu();
+    createEditMenu();
+    createViewMenu();
 
-    QTimer::singleShot(0, this, SLOT(loadLevel()));
+    if (!settings_->mapFilename().isEmpty())
+        QTimer::singleShot(0, this, SLOT(loadLevel()));
 }
 
 MainWindow::~MainWindow()
@@ -80,6 +88,32 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
+void MainWindow::updateWindowTitle()
+{
+    QString title;
+    if (settings_->mapFilename().isEmpty()) {
+        title = "MapMaker";
+    } else {
+        QFileInfo fileInfo(settings_->mapFilename());
+        title = fileInfo.fileName() + " | MapMaker";
+    }
+    setWindowTitle(title);
+}
+
+void MainWindow::onOpen()
+{
+    QStringList locations = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    QString dataLocation;
+    if (!locations.empty())
+        dataLocation = locations.first();
+
+    QString mapFilename = QFileDialog::getOpenFileName(this,
+             tr("MapMaker"), dataLocation,
+             tr("MapMaker Files (*.mmj);;All files (*.*)"));
+    settings_->setMapFilename(mapFilename);
+    loadLevel();
+}
+
 void MainWindow::onPreferences()
 {
     SettingsDialog *dialog = new SettingsDialog(this);
@@ -105,17 +139,27 @@ void MainWindow::loadLevel()
 
 }
 
-void MainWindow::createMenu()
+void MainWindow::createFileMenu()
 {
-    QMenuBar *bar = menuBar();
+    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
 
-    QMenu *editMenu = bar->addMenu(tr("&Edit"));
+    QKeySequence openShortcut(tr("Ctrl+O", "File|Open..."));
+    fileMenu->addAction(tr("Open..."),
+                        this, SLOT(onOpen()), openShortcut);
+}
+
+void MainWindow::createEditMenu()
+{
+    QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
 
     QKeySequence preferencesShortcut(tr("Ctrl+K", "Edit|Preferences..."));
-    editMenu->addAction(
-                tr("Preferences..."), this, SLOT(onPreferences()), preferencesShortcut);
+    editMenu->addAction(tr("Preferences..."),
+                        this, SLOT(onPreferences()), preferencesShortcut);
+}
 
-    QMenu *viewMenu = bar->addMenu(tr("&View"));
+void MainWindow::createViewMenu()
+{
+    QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
 
     QKeySequence showGridShortcut(tr("Ctrl+'", "View|Show Grid"));
     QAction *showGridAction = viewMenu->addAction(

@@ -29,6 +29,8 @@ public:
     QPoint dragOffset() const;
     void setDragOffset(const QPoint &dragOffset);
 
+    LevelObject *placeholder() const;
+
 signals:
 
 public slots:
@@ -36,6 +38,7 @@ public slots:
 protected:
     QVector<LevelObject *> entries_;
     QPoint dragOffset_;
+    LevelObject *placeholder_ = nullptr;
 };
 
 #endif // LEVELOBJECTSMODEL_H

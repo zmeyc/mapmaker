@@ -45,7 +45,10 @@ QString Settings::mapFilename() const
 
 void Settings::setMapFilename(const QString &mapFilename)
 {
-    mapFilename_ = mapFilename;
+    if (mapFilename_ != mapFilename) {
+        mapFilename_ = mapFilename;
+        emit mapFilenameChanged(mapFilename);
+    }
 }
 
 QString Settings::imagesDirectory() const
