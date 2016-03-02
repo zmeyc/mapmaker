@@ -38,7 +38,13 @@ void MapItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
 
     QImage image = obj_->image();
     if (image.isNull()) {
-        // TODO: need width to draw a placeholder
+        painter->save();
+        painter->setPen(Qt::black);
+        painter->setBrush(Qt::gray);
+        painter->drawRect(rect);
+        painter->drawText(rect, Qt::AlignCenter | Qt::AlignVCenter,
+                          !obj_->name().isEmpty() ? obj_->name() : tr("No name"));
+        painter->restore();
     } else {
         bool flipX = obj_->flipX();
         bool flipY = obj_->flipY();

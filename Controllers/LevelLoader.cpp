@@ -117,19 +117,21 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
         int flipY = obj["flipY"].toBool();
 
         //qdbg << "name=" << name << ", x=" << x << ", y=" << y << endl;
-        LevelObject *levelObject = model->levelObjectByName(name);
-        if (!levelObject) {
+        LevelObject *newObject = nullptr;
+        LevelObject *proto = model->levelObjectByName(name);
+        if (proto) {
+            newObject = proto->clone();
+            newObject->setFlipX(flipX);
+            newObject->setFlipY(flipY);
+
+        } else {
+            newObject = model->placeholder()->clone();
+            newObject->setName(name);
             notFound.insert(name);
-
-            levelObject = model->placeholder();
         }
-
-        LevelObject *newObject = levelObject->clone();
         newObject->setPosition(x, y);
-        newObject->setFlipX(flipX);
-        newObject->setFlipY(flipY);
-        if (levelObject->image().isNull() && levelObject->size().isNull())
-            levelObject->setSize(size);
+        if (!size.isNull())
+            newObject->setSize(size);
 
         MapItem *item = new MapItem(newObject);
         scene->addItem(item);
