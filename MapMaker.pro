@@ -23,7 +23,6 @@ SOURCES += main.cpp\
     Utils/Utils.cpp \
     Data/LevelObject.cpp \
     Utils/FileUtils.cpp \
-    Controls/LevelWidget.cpp \
     Controllers/LevelLoader.cpp \
     Utils/Settings.cpp \
     PropertyBrowser.cpp \
@@ -40,7 +39,6 @@ HEADERS  += MainWindow.h \
     Utils/Utils.h \
     Data/LevelObject.h \
     Utils/FileUtils.h \
-    Controls/LevelWidget.h \
     Controllers/LevelLoader.h \
     Utils/Settings.h \
     PropertyBrowser.h \
