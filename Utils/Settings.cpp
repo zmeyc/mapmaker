@@ -23,18 +23,27 @@ bool Settings::parseCommandLine()
                                      "Usage: mapmaker map.json imagesDirectory");
     parser.addHelpOption();
     parser.addVersionOption();
+
+    QCommandLineOption mapFilenameOption(QStringList() << "m" << "map",
+                                         tr("Map filename"),
+                                         /* valueName */ tr("map.mmj"),
+                                         /* defaultValue */ QString());
+    parser.addOption(mapFilenameOption);
+
+    QCommandLineOption imagesDirectoryOption(QStringList() << "i" << "imgdir",
+                                             tr("Images directory"),
+                                             /* valueName */ tr("directory"),
+                                             /* defaultValue */ QString());
+    parser.addOption(imagesDirectoryOption);
+
     if (parser.parse(qApp->arguments())) {
         parser.process(qApp->arguments());
     } else {
         qerr << parser.errorText() << endl;
     }
 
-    if (qApp->arguments().count() != 3) {
-        qerr << parser.helpText();
-        return false;
-    }
-    mapFilename_ = qApp->arguments().at(1);
-    imagesDirectory_ = qApp->arguments().at(2);
+    mapFilename_ = parser.value(mapFilenameOption);
+    imagesDirectory_ = parser.value(imagesDirectoryOption);
     return true;
 }
 

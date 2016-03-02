@@ -6,9 +6,12 @@
 
 LevelObject::LevelObject(QObject *parent)
     : QObject(parent)
+    , size_(0, 0)
 {
     // TODO: automate?
     connect(this, SIGNAL(positionChanged(QPointF)),
+            this, SIGNAL(modified()));
+    connect(this, SIGNAL(sizeChanged(QSizeF)),
             this, SIGNAL(modified()));
     connect(this, SIGNAL(flipXChanged(bool)),
             this, SIGNAL(modified()));
@@ -23,6 +26,7 @@ LevelObject *LevelObject::clone(QObject *parent)
     obj->filename_ = filename_;
     obj->image_ = image_;
     obj->position_ = position_;
+    obj->size_ = size_;
     obj->flipX_ = flipX_;
     obj->flipY_ = flipY_;
     return obj;
