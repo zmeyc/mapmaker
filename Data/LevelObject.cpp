@@ -58,6 +58,7 @@ QImage LevelObject::image() const
 void LevelObject::setImage(const QImage &image)
 {
     image_ = image;
+    size_ = image.size();
 }
 
 QPointF LevelObject::position() const
@@ -106,7 +107,15 @@ void LevelObject::setY(qreal y)
 
 QSizeF LevelObject::size() const
 {
-    return image_.size();
+    return size_;
+}
+
+void LevelObject::setSize(const QSizeF &size)
+{
+    if (size_ != size) {
+        size_ = size;
+        emit sizeChanged(size_);
+    }
 }
 
 bool LevelObject::flipX() const

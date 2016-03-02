@@ -33,6 +33,7 @@ public:
     void setY(qreal y);
 
     QSizeF size() const;
+    void setSize(const QSizeF &size);
 
     bool flipX() const;
     void setFlipX(bool flipX);
@@ -43,6 +44,7 @@ public:
 signals:
     void modified();
     void positionChanged(const QPointF &pos);
+    void sizeChanged(const QSizeF &size);
     void flipXChanged(bool flipX);
     void flipYChanged(bool flipY);
 
@@ -51,6 +53,7 @@ protected:
     QString filename_;
     QImage image_;
     QPointF position_;
+    QSizeF size_;
     bool flipX_ = false;
     bool flipY_ = false;
 };

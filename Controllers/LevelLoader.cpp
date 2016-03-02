@@ -49,6 +49,10 @@ bool LevelLoader::saveToFile(MapScene *scene, const QString &filename)
             obj["flipX"] = true;
         if (levelObject->flipY())
             obj["flipY"] = true;
+        if (levelObject->size().width())
+            obj["width"] = levelObject->size().width();
+        if (levelObject->size().height())
+            obj["height"] = levelObject->size().height();
         obj["name"] = levelObject->name();
         objects.append(obj);
     }
