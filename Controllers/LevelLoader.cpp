@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QSet>
 
 #include "LevelLoader.h"
 #include "Models/LevelObjectsModel.h"
@@ -83,11 +84,11 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
 {
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
-        lastErrorDescription_ = "Unable to open the level, continue?";
+        lastErrorDescription_ = "Unable to open the level";
         return false;
     }
     if (!file.exists()) {
-        lastErrorDescription_ = "Level does not exist, create?";
+        lastErrorDescription_ = "Level does not exist";
         return false;
     }
 
@@ -101,7 +102,7 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
 
     QJsonObject level = document.object();
     QJsonArray objects = level["objects"].toArray();
-    QString notFoundList;
+    QSet<QString> notFound;
     LevelObjectsModel *model = LevelObjectsModel::sharedInstance();
     foreach (const QJsonValue &value, objects) {
         QJsonObject obj = value.toObject();
@@ -118,9 +119,7 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
         //qdbg << "name=" << name << ", x=" << x << ", y=" << y << endl;
         LevelObject *levelObject = model->levelObjectByName(name);
         if (!levelObject) {
-            if (!notFoundList.isEmpty())
-                notFoundList += ", ";
-            notFoundList += name;
+            notFound.insert(name);
 
             levelObject = model->placeholder();
         }
@@ -138,9 +137,11 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
                          qobject_cast<MapView *>(scene->parent()), SLOT(setModified()));
     }
 
-    if (!notFoundList.isEmpty()) {
+    if (!notFound.isEmpty()) {
+        QStringList objects = notFound.toList();
+        qSort(objects);
         lastErrorDescription_ = "Some objects were not found: " +
-                notFoundList;
+                 objects.join(", ");
         return false;
     }
 

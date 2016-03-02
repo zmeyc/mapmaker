@@ -127,14 +127,12 @@ void MainWindow::loadLevel()
 {
     LevelLoader *levelLoader = LevelLoader::sharedInstance();
     if (!levelLoader->loadFromFile(mapView_->mapScene(), settings_->mapFilename())) {
-        QMessageBox::StandardButton result =
+        /* QMessageBox::StandardButton result = */
             QMessageBox::warning(this, "Error",
                                  levelLoader->lastErrorDescription(),
-                                 QMessageBox::Yes | QMessageBox::Cancel);
-        if (result == QMessageBox::Yes)
-            mapView_->setModified(true);
-        else
-            close();
+                                 QMessageBox::Ok);
+        // If loading completed with errors, treat the map as modified
+        mapView_->setModified(true);
     }
 
 }
