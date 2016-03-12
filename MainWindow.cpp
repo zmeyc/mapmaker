@@ -53,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     createFileMenu();
     createEditMenu();
+    createMapMenu();
     createViewMenu();
 
     if (!settings_->mapFilename().isEmpty())
@@ -153,6 +154,11 @@ void MainWindow::createEditMenu()
     QKeySequence preferencesShortcut(tr("Ctrl+K", "Edit|Preferences..."));
     editMenu->addAction(tr("Preferences..."),
                         this, SLOT(onPreferences()), preferencesShortcut);
+}
+
+void MainWindow::createMapMenu()
+{
+    QMenu *mapMenu = menuBar()->addMenu(tr("&Map"));
 }
 
 void MainWindow::createViewMenu()

@@ -29,6 +29,7 @@ protected slots:
 protected:
     void createFileMenu();
     void createEditMenu();
+    void createMapMenu();
     void createViewMenu();
 
     Settings *settings_ = nullptr;
