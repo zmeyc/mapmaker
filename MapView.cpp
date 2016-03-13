@@ -272,11 +272,12 @@ void MapView::selectActiveWidgets()
 
 void MapView::deleteSelectedWidgets()
 {
-    // FIXME
-//    foreach (LevelWidget *widget, findChildren<LevelWidget *>()) {
-//        if (widget->selected())
-//            delete widget;
-//    }
+    foreach (QGraphicsItem *item, scene()->items()) {
+        MapItem *mapItem = dynamic_cast<MapItem *>(item);
+        if (mapItem && mapItem->selected()) {
+            delete mapItem;
+        }
+    }
 }
 
 void MapView::setSelectedLevelObject(LevelObject *object)
