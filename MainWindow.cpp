@@ -11,7 +11,6 @@
 #include "MainWindow.h"
 #include "MapView.h"
 #include "ObjectBrowser.h"
-#include "Controls/LevelWidget.h"
 #include "PropertyBrowser.h"
 #include "Controllers/LevelLoader.h"
 #include "Dialogs/SettingsDialog/SettingsDialog.h"

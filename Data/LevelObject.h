@@ -44,6 +44,7 @@ public:
 signals:
     void modified();
     void positionChanged(const QPointF &pos);
+    void willChangeSize(const QSizeF &newSize);
     void sizeChanged(const QSizeF &size);
     void flipXChanged(bool flipX);
     void flipYChanged(bool flipY);

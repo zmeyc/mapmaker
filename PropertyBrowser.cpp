@@ -7,7 +7,6 @@
 #include <ThirdParty/qtpropertybrowser/src/QtCheckBoxFactory>
 #include <ThirdParty/qtpropertybrowser/src/QtSpinBoxFactory>
 #include "PropertyBrowser.h"
-#include "Controls/LevelWidget.h"
 #include "Data/LevelObject.h"
 
 PropertyBrowser::PropertyBrowser(QWidget *parent)

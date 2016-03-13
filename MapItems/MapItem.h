@@ -33,6 +33,7 @@ public slots:
 protected slots:
     void update();
     void onPositionChanged(const QPointF &pos);
+    void onWillChangeSize(const QSizeF &newSize);
 
 protected:
     bool active_ = false;

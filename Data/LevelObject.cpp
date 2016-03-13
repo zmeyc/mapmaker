@@ -117,6 +117,7 @@ QSizeF LevelObject::size() const
 void LevelObject::setSize(const QSizeF &size)
 {
     if (size_ != size) {
+        emit willChangeSize(size);
         size_ = size;
         emit sizeChanged(size_);
     }

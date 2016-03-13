@@ -11,7 +11,6 @@
 #include "MapItems/MapItem.h"
 #include "Models/LevelObjectsModel.h"
 #include "Models/MapScene.h"
-#include "Controls/LevelWidget.h"
 #include "Utils/Settings.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
@@ -273,10 +272,11 @@ void MapView::selectActiveWidgets()
 
 void MapView::deleteSelectedWidgets()
 {
-    foreach (LevelWidget *widget, findChildren<LevelWidget *>()) {
-        if (widget->selected())
-            delete widget;
-    }
+    // FIXME
+//    foreach (LevelWidget *widget, findChildren<LevelWidget *>()) {
+//        if (widget->selected())
+//            delete widget;
+//    }
 }
 
 void MapView::setSelectedLevelObject(LevelObject *object)

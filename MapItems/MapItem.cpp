@@ -17,11 +17,14 @@ MapItem::MapItem(LevelObject *obj, QGraphicsItem *parent)
             this, SLOT(update()));
     connect(obj, SIGNAL(flipYChanged(bool)),
             this, SLOT(update()));
+
+    connect(obj, SIGNAL(willChangeSize(QSizeF)),
+            this, SLOT(onWillChangeSize(QSizeF)));
 }
 
 QRectF MapItem::boundingRect() const
 {
-    QSizeF size = obj_->image().size();
+    QSizeF size = obj_->size();
     if (size.isEmpty())
         size = QSizeF(100, 50);
 
@@ -95,4 +98,10 @@ void MapItem::update()
 void MapItem::onPositionChanged(const QPointF &pos)
 {
     setPos(pos);
+}
+
+void MapItem::onWillChangeSize(const QSizeF &newSize)
+{
+    Q_UNUSED(newSize);
+    prepareGeometryChange();
 }
