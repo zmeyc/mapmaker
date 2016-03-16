@@ -6,11 +6,14 @@
 #include <QObject>
 #include <QImage>
 #include <QPointF>
+#include <QMap>
 
 class LevelObject: public QObject
 {
     Q_OBJECT
 public:
+    using Properties = QMap<QString, QString>;
+
     explicit LevelObject(QObject *parent = nullptr);
 
     LevelObject *clone(QObject *parent = nullptr);
@@ -41,6 +44,11 @@ public:
     bool flipY() const;
     void setFlipY(bool flipY);
 
+    QString customProperty(const QString &key);
+    void setCustomProperty(const QString &key, const QString &value);
+    void resetCustomProperty(const QString &key);
+    Properties customProperties();
+
 signals:
     void modified();
     void positionChanged(const QPointF &pos);
@@ -48,6 +56,7 @@ signals:
     void sizeChanged(const QSizeF &size);
     void flipXChanged(bool flipX);
     void flipYChanged(bool flipY);
+    void customPropertyChanged(const QString &key, const QString &value);
 
 protected:
     QString name_;
@@ -57,6 +66,7 @@ protected:
     QSizeF size_;
     bool flipX_ = false;
     bool flipY_ = false;
+    Properties customProperties_;
 };
 
 #endif // LEVELOBJECT_H

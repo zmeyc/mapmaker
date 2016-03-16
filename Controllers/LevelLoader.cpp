@@ -55,6 +55,16 @@ bool LevelLoader::saveToFile(MapScene *scene, const QString &filename)
         if (levelObject->size().height())
             obj["height"] = levelObject->size().height();
         obj["name"] = levelObject->name();
+        LevelObject::Properties properties = levelObject->customProperties();
+        if (!properties.isEmpty()) {
+            QVariantMap v;
+            for (LevelObject::Properties::iterator i = properties.begin();
+                 i != properties.end(); ++i)
+            {
+                v[i.key()] = i.value();
+            }
+            obj["properties"] = QJsonValue::fromVariant(v);
+        }
         objects.append(obj);
     }
 
@@ -115,6 +125,7 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
         QSizeF size(width, height);
         int flipX = obj["flipX"].toBool();
         int flipY = obj["flipY"].toBool();
+        QVariantMap properties = obj["properties"].toVariant().toMap();
 
         //qdbg << "name=" << name << ", x=" << x << ", y=" << y << endl;
         LevelObject *newObject = nullptr;
@@ -132,6 +143,11 @@ bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
         newObject->setPosition(x, y);
         if (!size.isNull())
             newObject->setSize(size);
+        for (QVariantMap::iterator i = properties.begin();
+             i != properties.end(); ++i)
+        {
+            newObject->setCustomProperty(i.key(), i.value().toString());
+        }
 
         MapItem *item = new MapItem(newObject);
         scene->addItem(item);

@@ -17,6 +17,8 @@ LevelObject::LevelObject(QObject *parent)
             this, SIGNAL(modified()));
     connect(this, SIGNAL(flipYChanged(bool)),
             this, SIGNAL(modified()));
+    connect(this, SIGNAL(customPropertyChanged(QString,QString)),
+            this, SIGNAL(modified()));
 }
 
 LevelObject *LevelObject::clone(QObject *parent)
@@ -29,6 +31,7 @@ LevelObject *LevelObject::clone(QObject *parent)
     obj->size_ = size_;
     obj->flipX_ = flipX_;
     obj->flipY_ = flipY_;
+    obj->customProperties_ = customProperties_;
     return obj;
 }
 
@@ -147,4 +150,28 @@ void LevelObject::setFlipY(bool flipY)
         flipY_ = flipY;
         emit flipYChanged(flipY);
     }
+}
+
+QString LevelObject::customProperty(const QString &key)
+{
+    Properties::iterator i = customProperties_.find(key);
+    if (i == customProperties_.end())
+        return QString();
+    return i.value();
+}
+
+void LevelObject::setCustomProperty(const QString &key, const QString &value)
+{
+    customProperties_[key] = value;
+    emit customPropertyChanged(key, value);
+}
+
+void LevelObject::resetCustomProperty(const QString &key)
+{
+    customProperties_.remove(key);
+}
+
+LevelObject::Properties LevelObject::customProperties()
+{
+    return customProperties_;
 }

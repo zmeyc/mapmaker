@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     Models/MapScene.cpp \
     MapItems/MapItem.cpp \
     ../mapmaker/Dialogs/SettingsDialog/SettingsDialog.cpp \
-    Dialogs/SettingsDialog/GridPage.cpp
+    Dialogs/SettingsDialog/GridPage.cpp \
+    ../mapmaker/Dialogs/NewPropertyDialog/NewPropertyDialog.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -46,4 +47,5 @@ HEADERS  += MainWindow.h \
     Models/MapScene.h \
     MapItems/MapItem.h \
     ../mapmaker/Dialogs/SettingsDialog/SettingsDialog.h \
-    Dialogs/SettingsDialog/GridPage.h
+    Dialogs/SettingsDialog/GridPage.h \
+    ../mapmaker/Dialogs/NewPropertyDialog/NewPropertyDialog.h

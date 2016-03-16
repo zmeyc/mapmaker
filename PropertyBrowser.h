@@ -23,27 +23,33 @@ public:
     LevelObject *levelObject() const { return levelObject_; }
 
 signals:
+    void hasLevelObject(bool has);
 
 public slots:
     void setLevelObject(LevelObject *object);
     void resetLevelObject();
 
 protected slots:
+    void onAddProperty();
     void onIntValueChanged(QtProperty *property, int val);
     void onBoolValueChanged(QtProperty *property, bool val);
+    void onStringValueChanged(QtProperty *property, const QString &val);
+    void onCustomPropertyValueChanged(QtProperty *property, const QString &val);
     void updatePosition(const QPointF &pos);
     void updateFlipX(bool flipX);
     void updateFlipY(bool flipY);
+    void onCustomPropertyChanged(const QString &key, const QString &value);
 
 protected:
-    void connectSignals(LevelObject *object);
-    void disconnectSignals(LevelObject *object);
+    void connectToPropertiesOf(LevelObject *object);
+    void disconnectFromPropertiesOf(LevelObject *object);
 
 protected:
     QtGroupPropertyManager *groupManager_ = nullptr;
-    QtStringPropertyManager *stringManager_ = nullptr;
     QtIntPropertyManager *intManager_ = nullptr;
     QtBoolPropertyManager *boolManager_ = nullptr;
+    QtStringPropertyManager *stringManager_ = nullptr;
+    QtStringPropertyManager *customPropertyManager_ = nullptr;
 
     QtProperty *standardGroup_ = nullptr;
     QtProperty *x_ = nullptr;
