@@ -42,7 +42,10 @@ QString LevelObject::name() const
 
 void LevelObject::setName(const QString &name)
 {
-    name_ = name;
+    if (name_ != name) {
+        name_ = name;
+        emit nameChanged(name);
+    }
 }
 
 QString LevelObject::filename() const

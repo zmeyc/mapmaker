@@ -42,10 +42,10 @@ PropertyBrowser::PropertyBrowser(QWidget *parent)
     // Standard properties
     standardGroup_ = groupManager_->addProperty("Standard");
 
-    QtProperty *name = stringManager_->addProperty("name");
-    name->setToolTip("Object name");
-    name->setEnabled(false);
-    standardGroup_->addSubProperty(name);
+    name_ = stringManager_->addProperty("name");
+    name_->setToolTip("Object name");
+    name_->setEnabled(false);
+    standardGroup_->addSubProperty(name_);
 
     x_ = intManager_->addProperty("x");
     x_->setToolTip("X coordinate");
@@ -142,14 +142,19 @@ void PropertyBrowser::onBoolValueChanged(QtProperty *property, bool val)
 
 void PropertyBrowser::onStringValueChanged(QtProperty *property, const QString &val)
 {
-    Q_UNUSED(property);
-    Q_UNUSED(val);
+    if (property->propertyName() == "name")
+        levelObject_->setName(val);
 }
 
 void PropertyBrowser::onCustomPropertyValueChanged(QtProperty *property, const QString &val)
 {
     levelObject_->setCustomProperty(property->propertyName(),
                                     val);
+}
+
+void PropertyBrowser::updateName(const QString &name)
+{
+    stringManager_->setValue(name_, name);
 }
 
 void PropertyBrowser::updatePosition(const QPointF &pos)
@@ -189,6 +194,10 @@ void PropertyBrowser::connectToPropertiesOf(LevelObject *object)
         customGroup_->addSubProperty(property);
         customPropertyManager_->setValue(property, i.value());
     }
+
+    connect(object, SIGNAL(nameChanged(QString)),
+            this, SLOT(updateName(QString)));
+    updateName(levelObject_->name());
 
     connect(object, SIGNAL(positionChanged(QPointF)),
             this, SLOT(updatePosition(QPointF)));

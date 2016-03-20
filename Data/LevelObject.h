@@ -51,6 +51,7 @@ public:
 
 signals:
     void modified();
+    void nameChanged(const QString &name);
     void positionChanged(const QPointF &pos);
     void willChangeSize(const QSizeF &newSize);
     void sizeChanged(const QSizeF &size);
