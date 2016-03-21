@@ -253,7 +253,9 @@ void MapView::setModified(bool modified)
 void MapView::resetScene()
 {
     MapScene *scene = mapScene();
-    delete scene;
+    scene->clear();
+    if (scene->parent() == this)
+        delete scene;
     scene = new MapScene(this);
     setScene(scene);
 }
