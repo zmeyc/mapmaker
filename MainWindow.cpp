@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     rightColumnSplitter->setOrientation(Qt::Vertical);
     rightColumnSplitter->addWidget(objectBrowser);
     rightColumnSplitter->addWidget(propertyBrowser_);
-    rightColumnSplitter->setSizes(QList<int>() << 400 << 200);
+    rightColumnSplitter->setSizes(QList<int>() << 350 << 250);
 
     QSplitter *splitter = new QSplitter(this);
     splitter->addWidget(mapView_);

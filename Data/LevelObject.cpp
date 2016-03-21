@@ -129,6 +129,20 @@ void LevelObject::setSize(const QSizeF &size)
     }
 }
 
+void LevelObject::setWidth(qreal width)
+{
+    if (size_.width() != width) {
+        setSize(QSize(width, size_.height()));
+    }
+}
+
+void LevelObject::setHeight(qreal height)
+{
+    if (size_.height() != height) {
+        setSize(QSize(size_.width(), height));
+    }
+}
+
 bool LevelObject::flipX() const
 {
     return flipX_;

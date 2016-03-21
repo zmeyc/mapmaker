@@ -55,6 +55,16 @@ PropertyBrowser::PropertyBrowser(QWidget *parent)
     y_->setToolTip("Y coordinate");
     standardGroup_->addSubProperty(y_);
 
+    width_ = intManager_->addProperty("width");
+    width_->setToolTip("Width");
+    width_->setEnabled(false);
+    standardGroup_->addSubProperty(width_);
+
+    height_ = intManager_->addProperty("height");
+    height_->setToolTip("Height");
+    height_->setEnabled(false);
+    standardGroup_->addSubProperty(height_);
+
     flipX_ = boolManager_->addProperty("flipX");
     flipX_->setToolTip("Flips the object horizontally");
     standardGroup_->addSubProperty(flipX_);
@@ -129,6 +139,10 @@ void PropertyBrowser::onIntValueChanged(QtProperty *property, int val)
         levelObject_->setX(val + levelObject_->size().width() / 2);
     else if (property->propertyName() == "y")
         levelObject_->setY(val + levelObject_->size().height() / 2);
+    else if (property->propertyName() == "width")
+        levelObject_->setWidth(val);
+    else if (property->propertyName() == "height")
+        levelObject_->setHeight(val);
 }
 
 void PropertyBrowser::onBoolValueChanged(QtProperty *property, bool val)
@@ -170,6 +184,12 @@ void PropertyBrowser::updatePosition(LevelObject *levelObject, const QPointF &po
     intManager_->setValue(y_, pos.y() - levelObject->size().height() / 2);
 }
 
+void PropertyBrowser::updateSize(const QSizeF &size)
+{
+    intManager_->setValue(width_, size.width());
+    intManager_->setValue(height_, size.height());
+}
+
 void PropertyBrowser::updateFlipX(bool flipX)
 {
     boolManager_->setValue(flipX_, flipX);
@@ -209,6 +229,10 @@ void PropertyBrowser::connectToPropertiesOf(LevelObject *object)
     connect(object, SIGNAL(positionChanged(QPointF)),
             this, SLOT(updatePosition(QPointF)));
     updatePosition(object, levelObject_->position());
+
+    connect(object, SIGNAL(sizeChanged(QSizeF)),
+            this, SLOT(updateSize(QSizeF)));
+    updateSize(levelObject_->size());
 
     connect(object, SIGNAL(flipXChanged(bool)),
             this, SLOT(updateFlipX(bool)));

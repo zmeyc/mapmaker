@@ -38,6 +38,7 @@ protected slots:
     void updateName(const QString &name);
     void updatePosition(const QPointF &pos);
     void updatePosition(LevelObject *levelObject, const QPointF &pos);
+    void updateSize(const QSizeF &size);
     void updateFlipX(bool flipX);
     void updateFlipY(bool flipY);
     void onCustomPropertyChanged(const QString &key, const QString &value);
@@ -57,6 +58,8 @@ protected:
     QtProperty *name_ = nullptr;
     QtProperty *x_ = nullptr;
     QtProperty *y_ = nullptr;
+    QtProperty *width_ = nullptr;
+    QtProperty *height_ = nullptr;
     QtProperty *flipX_ = nullptr;
     QtProperty *flipY_ = nullptr;
 

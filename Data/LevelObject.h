@@ -37,6 +37,8 @@ public:
 
     QSizeF size() const;
     void setSize(const QSizeF &size);
+    void setWidth(qreal width);
+    void setHeight(qreal height);
 
     bool flipX() const;
     void setFlipX(bool flipX);
