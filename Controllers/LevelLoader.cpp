@@ -45,7 +45,7 @@ bool LevelLoader::saveToFile(MapScene *scene, const QString &filename)
 
         QJsonObject obj;
         obj["x"] = levelObject->position().x() - levelObject->size().width() / 2;
-        obj["y"] = levelObject->position().y() + levelObject->size().height() / 2;
+        obj["y"] = levelObject->position().y() - levelObject->size().height() / 2;
         if (levelObject->flipX())
             obj["flipX"] = true;
         if (levelObject->flipY())
