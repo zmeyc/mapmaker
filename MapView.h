@@ -41,6 +41,7 @@ public:
 
     LevelObject *selectedLevelObject() const { return selectedLevelObject_; }
 
+    void resetScene();
     void selectActiveWidgets();
     void deleteSelectedWidgets();
 

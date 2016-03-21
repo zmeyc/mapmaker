@@ -250,6 +250,14 @@ void MapView::setModified(bool modified)
     modified_ = modified;
 }
 
+void MapView::resetScene()
+{
+    MapScene *scene = mapScene();
+    delete scene;
+    scene = new MapScene(this);
+    setScene(scene);
+}
+
 void MapView::selectActiveWidgets()
 {
     QList<QGraphicsItem *> items = scene()->items();
@@ -276,6 +284,7 @@ void MapView::deleteSelectedWidgets()
         MapItem *mapItem = dynamic_cast<MapItem *>(item);
         if (mapItem && mapItem->selected()) {
             delete mapItem;
+            setModified(true);
         }
     }
 }

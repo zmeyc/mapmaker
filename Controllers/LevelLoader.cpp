@@ -26,7 +26,7 @@ LevelLoader *LevelLoader::sharedInstance()
     return instance;
 }
 
-bool LevelLoader::saveToFile(MapScene *scene, const QString &filename)
+bool LevelLoader::saveToFile(MapView *view, const QString &filename)
 {
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
@@ -36,6 +36,7 @@ bool LevelLoader::saveToFile(MapScene *scene, const QString &filename)
 
     QJsonObject level;
 
+    MapScene *scene = (MapScene *)view->scene();
     QJsonArray objects;
     foreach (QGraphicsItem *item, scene->items()) {
         MapItem *mapItem = dynamic_cast<MapItem *>(item);
@@ -90,8 +91,11 @@ void LevelLoader::setLastErrorDescription(const QString &lastErrorDescription)
     lastErrorDescription_ = lastErrorDescription;
 }
 
-bool LevelLoader::loadFromFile(MapScene *scene, const QString &filename)
+bool LevelLoader::loadFromFile(MapView *view, const QString &filename)
 {
+    view->resetScene();
+    MapScene *scene = (MapScene *)view->scene();
+
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
         lastErrorDescription_ = "Unable to open the level";

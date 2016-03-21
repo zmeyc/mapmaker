@@ -78,7 +78,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (result == QMessageBox::Yes) {
         LevelLoader *levelLoader = LevelLoader::sharedInstance();
         if (!levelLoader->saveToFile(
-                    mapView_->mapScene(),
+                    mapView_,
                     settings_->mapFilename())) {
             QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
             event->ignore();
@@ -126,7 +126,7 @@ void MainWindow::onPreferences()
 void MainWindow::loadLevel()
 {
     LevelLoader *levelLoader = LevelLoader::sharedInstance();
-    if (!levelLoader->loadFromFile(mapView_->mapScene(), settings_->mapFilename())) {
+    if (!levelLoader->loadFromFile(mapView_, settings_->mapFilename())) {
         /* QMessageBox::StandardButton result = */
             QMessageBox::warning(this, "Error",
                                  levelLoader->lastErrorDescription(),

@@ -5,7 +5,7 @@
 
 #include <QObject>
 
-class MapScene;
+class MapView;
 
 class LevelLoader : public QObject
 {
@@ -15,8 +15,8 @@ public:
 
     static LevelLoader *sharedInstance();
 
-    bool loadFromFile(MapScene *scene, const QString &filename);
-    bool saveToFile(MapScene *scene, const QString &filename);
+    bool loadFromFile(MapView *view, const QString &filename);
+    bool saveToFile(MapView *view, const QString &filename);
 
     QString lastErrorDescription() const;
     void setLastErrorDescription(const QString &lastErrorDescription);
