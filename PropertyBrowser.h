@@ -37,6 +37,7 @@ protected slots:
     void onCustomPropertyValueChanged(QtProperty *property, const QString &val);
     void updateName(const QString &name);
     void updatePosition(const QPointF &pos);
+    void updatePosition(LevelObject *levelObject, const QPointF &pos);
     void updateFlipX(bool flipX);
     void updateFlipY(bool flipY);
     void onCustomPropertyChanged(const QString &key, const QString &value);

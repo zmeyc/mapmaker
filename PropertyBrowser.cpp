@@ -126,9 +126,9 @@ void PropertyBrowser::onAddProperty()
 void PropertyBrowser::onIntValueChanged(QtProperty *property, int val)
 {
     if (property->propertyName() == "x")
-        levelObject_->setX(val);
+        levelObject_->setX(val + levelObject_->size().width() / 2);
     else if (property->propertyName() == "y")
-        levelObject_->setY(val);
+        levelObject_->setY(val + levelObject_->size().height() / 2);
 }
 
 void PropertyBrowser::onBoolValueChanged(QtProperty *property, bool val)
@@ -159,8 +159,15 @@ void PropertyBrowser::updateName(const QString &name)
 
 void PropertyBrowser::updatePosition(const QPointF &pos)
 {
-    intManager_->setValue(x_, pos.x());
-    intManager_->setValue(y_, pos.y());
+    LevelObject *obj = qobject_cast<LevelObject *>(sender());
+    Q_ASSERT(obj);
+    updatePosition(obj, pos);
+}
+
+void PropertyBrowser::updatePosition(LevelObject *levelObject, const QPointF &pos)
+{
+    intManager_->setValue(x_, pos.x() - levelObject->size().width() / 2);
+    intManager_->setValue(y_, pos.y() - levelObject->size().height() / 2);
 }
 
 void PropertyBrowser::updateFlipX(bool flipX)
@@ -201,7 +208,7 @@ void PropertyBrowser::connectToPropertiesOf(LevelObject *object)
 
     connect(object, SIGNAL(positionChanged(QPointF)),
             this, SLOT(updatePosition(QPointF)));
-    updatePosition(levelObject_->position());
+    updatePosition(object, levelObject_->position());
 
     connect(object, SIGNAL(flipXChanged(bool)),
             this, SLOT(updateFlipX(bool)));
