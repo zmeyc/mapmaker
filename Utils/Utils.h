@@ -49,4 +49,10 @@ QTextStream &operator<<(QTextStream &s, const QRectF &r);
 
 QString capitalize(const QString &s);
 
+template <typename T>
+QString ptrToString(T *ptr) {
+    return QString("0x%1").arg((quintptr)ptr,
+                               QT_POINTER_SIZE * 2, 16, QChar('0'));
+}
+
 #endif // UTILS_H

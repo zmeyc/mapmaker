@@ -9,9 +9,9 @@ MapItem::MapItem(LevelObject *obj, QGraphicsItem *parent)
     commonInit();
 }
 
-MapItem::MapItem(MapItem *other)
-    : QGraphicsItem(other->parentItem())
-    , obj_(other->obj_->clone())
+MapItem::MapItem(const MapItem &other)
+    : QGraphicsItem(other.parentItem())
+    , obj_(other.obj_->clone())
 {
     commonInit();
 }

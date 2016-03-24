@@ -11,7 +11,12 @@ DeleteCommand::DeleteCommand(QGraphicsScene *scene,
     , scene_(scene)
     , mapItem_(mapItem)
 {
-    qdbg << "DeleteCommand::DeleteCommand()" << endl;
+    qerr << "DeleteCommand[" << ptrToString(this) <<
+            "]::DeleteCommand(): mapItem=" << ptrToString(mapItem) <<
+            ", scene=" << ptrToString(mapItem->scene()) << endl;
+
+    mapItem->ref.ref();
+
     QString name;
     LevelObject *obj = mapItem->levelObject();
     if (obj)
@@ -19,16 +24,44 @@ DeleteCommand::DeleteCommand(QGraphicsScene *scene,
     else
         name = "object";
     setText(QObject::tr("Delete") + " '" + name + "'");
+    QObject::connect(mapItem_, SIGNAL(destroyed(QObject*)),
+                     this, SLOT(onMapItemDestroyed()));
+
+}
+
+DeleteCommand::~DeleteCommand()
+{
+    qerr << "~DeleteCommand[" << ptrToString(this) <<
+            "]::DeleteCommand(): mapItem=" << ptrToString(mapItem_) << endl;
+    if (mapItem_ && false == mapItem_->ref.deref()) {
+        if (!mapItem_->scene())
+            delete mapItem_;
+    }
 }
 
 void DeleteCommand::redo()
 {
-    qdbg << "DeleteCommand::redo()" << endl;
-    scene_->removeItem(mapItem_);
+    qerr << "DeleteCommand[" << ptrToString(this) <<
+            "]::redo(): mapItem=" << ptrToString(mapItem_) <<
+            ", scene=" << ptrToString(mapItem_->scene()) << endl;
+    if (mapItem_)
+        scene_->removeItem(mapItem_);
 }
 
 void DeleteCommand::undo()
 {
-    qdbg << "DeleteCommand::undo()" << endl;
-    scene_->addItem(mapItem_);
+    qerr << "DeleteCommand[" << ptrToString(this) <<
+            "]::undo(): mapItem=" << ptrToString(mapItem_) <<
+            ", scene=" << ptrToString(mapItem_->scene()) << endl;
+    if (mapItem_)
+        scene_->addItem(mapItem_);
+}
+
+void DeleteCommand::onMapItemDestroyed()
+{
+    MapItem *mapItem = (MapItem *)sender();
+    qerr << "DeleteCommand[" << ptrToString(this) <<
+            "]::onMapItemDestroyed(): mapItem=" << ptrToString(mapItem) <<
+            ", scene=" << ptrToString(mapItem->scene()) << endl;
+    mapItem_ = nullptr; // destroyed by scene
 }

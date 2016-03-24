@@ -3,16 +3,17 @@
 
 #include <QObject>
 #include <QGraphicsItem>
+#include <QSharedData>
 
 class LevelObject;
 
-class MapItem : public QObject, public QGraphicsItem
+class MapItem : public QObject, public QGraphicsItem, public QSharedData
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
 public:
     explicit MapItem(LevelObject *levelObject, QGraphicsItem *parent = nullptr);
-    explicit MapItem(MapItem *other);
+    explicit MapItem(const MapItem &other);
 
     LevelObject *levelObject() const { return obj_; }
 
