@@ -47,6 +47,7 @@ public:
 
 signals:
     void selectedLevelObjectChanged(LevelObject *item);
+    void sceneCreated(QGraphicsScene *scene);
 
 public slots:
 

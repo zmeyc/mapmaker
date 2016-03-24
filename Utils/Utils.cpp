@@ -42,3 +42,8 @@ QTextStream &operator<<(QTextStream &s, const QRectF &r)
 {
     return s << "{ " << r.topLeft() << " " << r.size() << " }";
 }
+
+QString capitalize(const QString &s)
+{
+    return s.left(1).toUpper() + s.mid(1);
+}

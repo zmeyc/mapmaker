@@ -7,6 +7,7 @@
 #include <QMenuBar>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QUndoStack>
 
 #include "MainWindow.h"
 #include "MapView.h"
@@ -14,6 +15,7 @@
 #include "PropertyBrowser.h"
 #include "Controllers/LevelLoader.h"
 #include "Dialogs/SettingsDialog/SettingsDialog.h"
+#include "Models/MapScene.h"
 #include "Utils/Settings.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
@@ -29,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
     resize(800, 600);
 
     mapView_ = new MapView(this);
+    connect(mapView_, SIGNAL(sceneCreated(QGraphicsScene*)),
+            this, SLOT(onSceneCreated(QGraphicsScene*)));
 
     ObjectBrowser *objectBrowser = new ObjectBrowser(this);
     propertyBrowser_ = new PropertyBrowser(this);
@@ -50,10 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(splitter);
 
-    createFileMenu();
-    createEditMenu();
-    createMapMenu();
-    createViewMenu();
+    onSceneCreated(mapView_->scene());
 
     if (!settings_->mapFilename().isEmpty())
         QTimer::singleShot(0, this, SLOT(loadLevel()));
@@ -137,6 +138,16 @@ void MainWindow::loadLevel()
 
 }
 
+void MainWindow::onSceneCreated(QGraphicsScene *scene)
+{
+    Q_UNUSED(scene);
+    menuBar()->clear();
+    createFileMenu();
+    createEditMenu();
+    createMapMenu();
+    createViewMenu();
+}
+
 void MainWindow::createFileMenu()
 {
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
@@ -149,6 +160,18 @@ void MainWindow::createFileMenu()
 void MainWindow::createEditMenu()
 {
     QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
+
+    QUndoStack *undoStack = mapView_->mapScene()->undoStack();
+
+    QAction *undoAction = undoStack->createUndoAction(this, tr("&Undo"));
+    undoAction->setShortcuts(QKeySequence::Undo);
+    editMenu->addAction(undoAction);
+
+    QAction *redoAction = undoStack->createRedoAction(this, tr("&Redo"));
+    redoAction->setShortcuts(QKeySequence::Redo);
+    editMenu->addAction(redoAction);
+
+    editMenu->addSeparator();
 
     QKeySequence preferencesShortcut(tr("Ctrl+K", "Edit|Preferences..."));
     editMenu->addAction(tr("Preferences..."),

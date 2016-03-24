@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     MapItems/MapItem.cpp \
     ../mapmaker/Dialogs/SettingsDialog/SettingsDialog.cpp \
     Dialogs/SettingsDialog/GridPage.cpp \
-    ../mapmaker/Dialogs/NewPropertyDialog/NewPropertyDialog.cpp
+    ../mapmaker/Dialogs/NewPropertyDialog/NewPropertyDialog.cpp \
+    ../mapmaker/Commands/DeleteCommand.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -48,4 +49,5 @@ HEADERS  += MainWindow.h \
     MapItems/MapItem.h \
     ../mapmaker/Dialogs/SettingsDialog/SettingsDialog.h \
     Dialogs/SettingsDialog/GridPage.h \
-    ../mapmaker/Dialogs/NewPropertyDialog/NewPropertyDialog.h
+    ../mapmaker/Dialogs/NewPropertyDialog/NewPropertyDialog.h \
+    ../mapmaker/Commands/DeleteCommand.h

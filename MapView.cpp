@@ -6,11 +6,13 @@
 #include <QByteArray>
 #include <QApplication>
 #include <QPainter>
+#include <QUndoStack>
 
 #include "MapView.h"
 #include "MapItems/MapItem.h"
 #include "Models/LevelObjectsModel.h"
 #include "Models/MapScene.h"
+#include "Commands/DeleteCommand.h"
 #include "Utils/Settings.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
@@ -258,6 +260,7 @@ void MapView::resetScene()
         delete scene;
     scene = new MapScene(this);
     setScene(scene);
+    emit sceneCreated(scene);
 }
 
 void MapView::selectActiveWidgets()
@@ -285,8 +288,13 @@ void MapView::deleteSelectedWidgets()
     foreach (QGraphicsItem *item, scene()->items()) {
         MapItem *mapItem = dynamic_cast<MapItem *>(item);
         if (mapItem && mapItem->selected()) {
-            delete mapItem;
+            //delete mapItem;
             setModified(true);
+
+            MapScene *scene = mapScene();
+            QUndoCommand *deleteCommand = new DeleteCommand(scene,
+                                                            mapItem);
+            scene->undoStack()->push(deleteCommand);
         }
     }
 }

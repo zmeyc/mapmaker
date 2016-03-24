@@ -6,19 +6,32 @@ MapItem::MapItem(LevelObject *obj, QGraphicsItem *parent)
     : QGraphicsItem(parent)
     , obj_(obj)
 {
-    Q_ASSERT(obj);
-    Q_ASSERT(!obj->parent());
+    commonInit();
+}
 
-    obj->setParent(this);
-    setPos(obj->position());
-    connect(obj, SIGNAL(positionChanged(QPointF)),
+MapItem::MapItem(MapItem *other)
+    : QGraphicsItem(other->parentItem())
+    , obj_(other->obj_->clone())
+{
+    commonInit();
+}
+
+
+void MapItem::commonInit()
+{
+    Q_ASSERT(obj_);
+    Q_ASSERT(!obj_->parent());
+
+    obj_->setParent(this);
+    setPos(obj_->position());
+    connect(obj_, SIGNAL(positionChanged(QPointF)),
             this, SLOT(onPositionChanged(QPointF)));
-    connect(obj, SIGNAL(flipXChanged(bool)),
+    connect(obj_, SIGNAL(flipXChanged(bool)),
             this, SLOT(update()));
-    connect(obj, SIGNAL(flipYChanged(bool)),
+    connect(obj_, SIGNAL(flipYChanged(bool)),
             this, SLOT(update()));
 
-    connect(obj, SIGNAL(willChangeSize(QSizeF)),
+    connect(obj_, SIGNAL(willChangeSize(QSizeF)),
             this, SLOT(onWillChangeSize(QSizeF)));
 }
 

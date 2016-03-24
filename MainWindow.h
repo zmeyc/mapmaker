@@ -5,6 +5,7 @@
 
 #include <QMainWindow>
 
+class QGraphicsScene;
 class Settings;
 class MapView;
 class LevelWidget;
@@ -25,6 +26,7 @@ protected slots:
     void onOpen();
     void onPreferences();
     void loadLevel();
+    void onSceneCreated(QGraphicsScene *scene);
 
 protected:
     void createFileMenu();

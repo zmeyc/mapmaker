@@ -47,4 +47,6 @@ QTextStream &operator<<(QTextStream &s, const QSizeF &sz);
 QTextStream &operator<<(QTextStream &s, const QRect &r);
 QTextStream &operator<<(QTextStream &s, const QRectF &r);
 
+QString capitalize(const QString &s);
+
 #endif // UTILS_H
