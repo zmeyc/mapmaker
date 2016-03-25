@@ -111,6 +111,8 @@ void MainWindow::onOpen()
     QString mapFilename = QFileDialog::getOpenFileName(this,
              tr("MapMaker"), dataLocation,
              tr("MapMaker Files (*.mmj);;All files (*.*)"));
+    if (mapFilename.isNull())
+        return;
     settings_->setMapFilename(mapFilename);
     loadLevel();
 }
