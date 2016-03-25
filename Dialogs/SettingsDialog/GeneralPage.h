@@ -8,6 +8,8 @@
 class QGroupBox;
 class Settings;
 
+class DirectoryLineEdit;
+
 class GeneralPage : public QWidget
 {
     Q_OBJECT
@@ -18,10 +20,14 @@ signals:
 
 public slots:
 
+protected slots:
+    void onImagesDirectoryEditingFinished();
+
 protected:
     QGroupBox *createGeneralGroupBox();
 
-    Settings *settings_;
+    Settings *settings_ = nullptr;
+    DirectoryLineEdit *imagesDirectoryEdit_ = nullptr;
 };
 
 #endif // GENERALPAGE_H

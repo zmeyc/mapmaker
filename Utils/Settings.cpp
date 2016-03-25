@@ -67,6 +67,7 @@ QString Settings::imagesDirectory() const
 
 void Settings::setImagesDirectory(const QString &imagesDirectory)
 {
+    qdbg << "Settings::setImagesDirectory: " << imagesDirectory << endl;
     imagesDirectory_ = imagesDirectory;
 }
 

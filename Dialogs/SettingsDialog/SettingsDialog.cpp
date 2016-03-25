@@ -8,6 +8,7 @@
 #include "SettingsDialog.h"
 #include "GeneralPage.h"
 #include "GridPage.h"
+#include "Utils/Settings.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent)
     : QDialog(parent)
@@ -34,6 +35,8 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     QPushButton *closeButton = new QPushButton(tr("Close"));
     closeButton->setFocusPolicy(Qt::StrongFocus);
     closeButton->setDefault(true);
+    connect(closeButton, SIGNAL(clicked(bool)),
+            Settings::sharedInstance(), SLOT(save()));
     connect(closeButton, SIGNAL(clicked(bool)),
             this, SLOT(accept()));
 
