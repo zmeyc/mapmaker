@@ -80,6 +80,7 @@ void Settings::setImagesDirectory(const QString &imagesDirectory)
 {
     commandline_.imagesDirectory_.clear();
     imagesDirectory_ = imagesDirectory;
+    settings_.setValue(imagesDirectoryKey, imagesDirectory_);
     emit imagesDirectoryChanged(imagesDirectory);
 }
 
@@ -92,6 +93,7 @@ void Settings::setShowGrid(bool showGrid)
 {
     if (showGrid_ != showGrid) {
         showGrid_ = showGrid;
+        settings_.setValue(showGridKey, showGrid_);
         emit showGridChanged(showGrid);
     }
 }
@@ -118,6 +120,7 @@ void Settings::setGridSize(qreal uniformSize)
 void Settings::setGridSize(int uniformSize)
 {
     setGridSize((qreal)uniformSize);
+    settings_.setValue(gridSizeKey, gridSize_);
 }
 
 bool Settings::snapToGrid() const
@@ -140,9 +143,6 @@ void Settings::load()
 
 void Settings::save()
 {
-    settings_.setValue(imagesDirectoryKey, imagesDirectory_);
-    settings_.setValue(showGridKey, showGrid_);
-    settings_.setValue(gridSizeKey, gridSize_);
     settings_.sync();
     qout << "Settings saved" << endl;
 }
