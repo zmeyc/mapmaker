@@ -16,6 +16,7 @@
 #include "Controllers/LevelLoader.h"
 #include "Dialogs/SettingsDialog/SettingsDialog.h"
 #include "Models/MapScene.h"
+#include "Models/LevelObjectsModel.h"
 #include "Utils/Settings.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
@@ -56,6 +57,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     onSceneCreated(mapView_->scene());
 
+    connect(settings_, SIGNAL(imagesDirectoryChanged(QString)),
+            this, SLOT(loadImages()));
+    loadImages();
+
     if (!settings_->mapFilename().isEmpty())
         QTimer::singleShot(0, this, SLOT(loadLevel()));
 }
@@ -89,6 +94,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
+void MainWindow::loadImages()
+{
+    LevelObjectsModel *model = LevelObjectsModel::sharedInstance();
+    model->reset();
+    if (!settings_->imagesDirectory().isEmpty()) {
+        model->addImagesFromDirectory(settings_->imagesDirectory());
+    }
+}
+
 void MainWindow::updateWindowTitle()
 {
     QString title;
@@ -111,6 +125,8 @@ void MainWindow::onOpen()
     QString mapFilename = QFileDialog::getOpenFileName(this,
              tr("MapMaker"), dataLocation,
              tr("MapMaker Files (*.mmj);;All files (*.*)"));
+    if (mapFilename.isNull())
+        return;
     settings_->setMapFilename(mapFilename);
     loadLevel();
 }

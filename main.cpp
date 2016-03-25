@@ -4,8 +4,6 @@
 #include <QMessageBox>
 
 #include "MainWindow.h"
-#include "Models/LevelObjectsModel.h"
-#include "Controllers/LevelLoader.h"
 #include "Utils/Settings.h"
 #include "Utils/Utils.h"
 
@@ -27,11 +25,6 @@ int main(int argc, char *argv[])
     Settings *settings = Settings::sharedInstance();
     if (!settings->parseCommandLine())
         return 1;
-
-    if (!settings->imagesDirectory().isEmpty()) {
-        LevelObjectsModel::sharedInstance()->addImagesFromDirectory(
-                    settings->imagesDirectory());
-    }
 
     MainWindow w;
     w.show();

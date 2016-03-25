@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 
 class QUndoStack;
+class LevelObject;
 
 class MapScene : public QGraphicsScene
 {
@@ -17,6 +18,9 @@ public:
 signals:
 
 public slots:
+
+protected slots:
+    void onLevelObjectUpdated(const QString &name, LevelObject *obj);
 
 protected:
     QUndoStack *undoStack_ = nullptr;

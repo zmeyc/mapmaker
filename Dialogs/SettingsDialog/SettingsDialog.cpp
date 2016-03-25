@@ -6,7 +6,9 @@
 #include "QVBoxLayout"
 #include "QPushButton"
 #include "SettingsDialog.h"
+#include "GeneralPage.h"
 #include "GridPage.h"
+#include "Utils/Settings.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent)
     : QDialog(parent)
@@ -23,14 +25,18 @@ SettingsDialog::SettingsDialog(QWidget *parent)
             this, SLOT(onCurrentItemChanged(QListWidgetItem*,QListWidgetItem*)));
 
     pages_ = new QStackedWidget;
+    pages_->addWidget(new GeneralPage);
     pages_->addWidget(new GridPage);
 
+    categories_->addItem(createCategoryItem(QIcon(), tr("General")));
     categories_->addItem(createCategoryItem(QIcon(), tr("Grid")));
     categories_->setCurrentRow(0);
 
     QPushButton *closeButton = new QPushButton(tr("Close"));
     closeButton->setFocusPolicy(Qt::StrongFocus);
     closeButton->setDefault(true);
+    connect(closeButton, SIGNAL(clicked(bool)),
+            Settings::sharedInstance(), SLOT(save()));
     connect(closeButton, SIGNAL(clicked(bool)),
             this, SLOT(accept()));
 

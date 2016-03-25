@@ -60,6 +60,7 @@ signals:
     void flipXChanged(bool flipX);
     void flipYChanged(bool flipY);
     void customPropertyChanged(const QString &key, const QString &value);
+    void imageChanged();
 
 protected:
     QString name_;

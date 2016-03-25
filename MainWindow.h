@@ -22,6 +22,7 @@ public:
     void closeEvent(QCloseEvent *event) override;
 
 protected slots:
+    void loadImages();
     void updateWindowTitle();
     void onOpen();
     void onPreferences();

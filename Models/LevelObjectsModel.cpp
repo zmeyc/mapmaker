@@ -21,11 +21,23 @@ LevelObjectsModel *LevelObjectsModel::sharedInstance()
     return instance;
 }
 
+void LevelObjectsModel::reset()
+{
+    beginResetModel();
+    foreach (LevelObject *obj, entries_) {
+        delete obj;
+    }
+    entries_.clear();
+    entriesByName_.clear();
+    endResetModel();
+}
+
 bool LevelObjectsModel::addImagesFromDirectory(const QString &directory)
 {
     bool allLoaded = true;
 
     QVector<LevelObject *> objectsToAdd;
+    QMap<QString, LevelObject *> byName;
     objectsToAdd.reserve(1024);
 
     QDirIterator it(directory, QStringList() << "*.png", QDir::Files, QDirIterator::Subdirectories);
@@ -43,11 +55,17 @@ bool LevelObjectsModel::addImagesFromDirectory(const QString &directory)
         obj->setFilename(filename);
         obj->setImage(image);
         objectsToAdd.append(obj);
+        byName[obj->name()] = obj;
     }
 
     beginResetModel();
     entries_.append(objectsToAdd);
+    entriesByName_.unite(byName);
     endResetModel();
+
+    foreach (LevelObject *obj, entries_) {
+        emit levelObjectUpdated(obj->name(), obj);
+    }
 
     return allLoaded;
 }

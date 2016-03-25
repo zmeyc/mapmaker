@@ -16,6 +16,7 @@ public:
     explicit MapItem(const MapItem &other);
 
     LevelObject *levelObject() const { return obj_; }
+    void setLevelObject(LevelObject *obj);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -23,6 +24,8 @@ public:
 
     bool active() const { return active_; }
     bool selected() const { return selected_; }
+
+    QString name() const;
 
 signals:
     void activeChanged(bool active);
@@ -36,6 +39,7 @@ protected slots:
     void update();
     void onPositionChanged(const QPointF &pos);
     void onWillChangeSize(const QSizeF &newSize);
+    void onLevelObjectDestroyed();
 
 protected:
     void commonInit();
@@ -43,6 +47,7 @@ protected:
     bool active_ = false;
     bool selected_ = false;
     LevelObject *obj_ = nullptr;
+    QString name_;
 };
 
 #endif // MAPITEM_H
