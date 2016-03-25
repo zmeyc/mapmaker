@@ -196,7 +196,7 @@ void MainWindow::createEditMenu()
 
 void MainWindow::createMapMenu()
 {
-    QMenu *mapMenu = menuBar()->addMenu(tr("&Map"));
+    //QMenu *mapMenu = menuBar()->addMenu(tr("&Map"));
 }
 
 void MainWindow::createViewMenu()
