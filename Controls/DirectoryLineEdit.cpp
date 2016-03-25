@@ -39,10 +39,13 @@ void DirectoryLineEdit::setText(const QString &text)
 void DirectoryLineEdit::onBrowseClicked()
 {
     QFileDialog dialog;
+    dialog.setDirectory(lineEdit_->text());
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setOption(QFileDialog::ShowDirsOnly);
+    //dialog.setOption(QFileDialog::DontUseNativeDialog);
     if (dialog.exec() == QDialog::Accepted) {
-        QString path = dialog.directory().canonicalPath();
+        QString path = dialog.directory().absolutePath();
         lineEdit_->setText(QDir::toNativeSeparators(path));
+        emit editingFinished();
     }
 }
