@@ -29,12 +29,12 @@ SOURCES += main.cpp\
     MapView.cpp \
     Models/MapScene.cpp \
     MapItems/MapItem.cpp \
-    ../mapmaker/Dialogs/SettingsDialog/SettingsDialog.cpp \
+    Dialogs/SettingsDialog/SettingsDialog.cpp \
     Dialogs/SettingsDialog/GridPage.cpp \
-    ../mapmaker/Dialogs/NewPropertyDialog/NewPropertyDialog.cpp \
-    ../mapmaker/Commands/DeleteCommand.cpp \
+    Dialogs/NewPropertyDialog/NewPropertyDialog.cpp \
+    Commands/DeleteCommand.cpp \
     Dialogs/SettingsDialog/GeneralPage.cpp \
-    Controls/DirectoryLineEdit.cpp
+    Controls/DirectoryLineEdit.cpp \
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -49,9 +49,9 @@ HEADERS  += MainWindow.h \
     MapView.h \
     Models/MapScene.h \
     MapItems/MapItem.h \
-    ../mapmaker/Dialogs/SettingsDialog/SettingsDialog.h \
+    Dialogs/SettingsDialog/SettingsDialog.h \
     Dialogs/SettingsDialog/GridPage.h \
-    ../mapmaker/Dialogs/NewPropertyDialog/NewPropertyDialog.h \
-    ../mapmaker/Commands/DeleteCommand.h \
+    Dialogs/NewPropertyDialog/NewPropertyDialog.h \
+    Commands/DeleteCommand.h \
     Dialogs/SettingsDialog/GeneralPage.h \
     Controls/DirectoryLineEdit.h

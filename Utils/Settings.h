@@ -26,6 +26,9 @@ public:
     bool showGrid() const;
     Q_SLOT void setShowGrid(bool showGrid);
 
+    bool autoSizeGrid() const;
+    Q_SLOT void setAutoSizeGrid(bool autoSizeGrid);
+
     QSizeF gridSize() const;
     void setGridSize(const QSizeF &gridSize);
     Q_SLOT void setGridSize(qreal uniformSize);
@@ -38,6 +41,7 @@ signals:
     void mapFilenameChanged(const QString &mapFilename);
     void imagesDirectoryChanged(const QString &imagesDirectory);
     void showGridChanged(bool showGrid);
+    bool autoSizeGridChanged(bool autoSizeGrid);
     void gridSizeChanged(const QSizeF &gridSize);
 
 public slots:
@@ -58,6 +62,7 @@ protected:
 
     // Grid
     bool showGrid_ = false;
+    bool autoSizeGrid_ = false;
     QSizeF gridSize_;
     bool snapToGrid_ = false;
 };

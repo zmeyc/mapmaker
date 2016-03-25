@@ -5,8 +5,9 @@
 #include "Settings.h"
 #include "Utils/Utils.h"
 
-const char *imagesDirectoryKey = "general/imagesDirectory";
+const char *imagesDirectoryKey = "imagesDirectory";
 const char *showGridKey = "grid/showGrid";
+const char *autoSizeGridKey = "grid/autoSizeGrid";
 const char *gridSizeKey = "grid/gridSize";
 
 Settings::Settings(QObject *parent)
@@ -96,6 +97,20 @@ void Settings::setShowGrid(bool showGrid)
         showGrid_ = showGrid;
         settings_.setValue(showGridKey, showGrid_);
         emit showGridChanged(showGrid);
+    }
+}
+
+bool Settings::autoSizeGrid() const
+{
+    return autoSizeGrid_;
+}
+
+void Settings::setAutoSizeGrid(bool autoSizeGrid)
+{
+    if (autoSizeGrid_ != autoSizeGrid) {
+        autoSizeGrid_ = autoSizeGrid;
+        settings_.setValue(autoSizeGridKey, autoSizeGrid_);
+        emit autoSizeGridChanged(autoSizeGrid);
     }
 }
 
