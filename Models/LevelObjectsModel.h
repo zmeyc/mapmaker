@@ -16,6 +16,7 @@ public:
 
     static LevelObjectsModel *sharedInstance();
 
+    void reset();
     bool addImagesFromDirectory(const QString &directory);
     LevelObject *levelObjectByName(const QString &name);
 
@@ -32,11 +33,13 @@ public:
     LevelObject *placeholder() const;
 
 signals:
+    void levelObjectUpdated(const QString &name, LevelObject *obj);
 
 public slots:
 
 protected:
     QVector<LevelObject *> entries_;
+    QMap<QString, LevelObject *> entriesByName_;
     QPoint dragOffset_;
     LevelObject *placeholder_ = nullptr;
 };

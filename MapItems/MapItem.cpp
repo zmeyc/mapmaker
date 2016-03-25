@@ -16,12 +16,23 @@ MapItem::MapItem(const MapItem &other)
     commonInit();
 }
 
+void MapItem::setLevelObject(LevelObject *obj)
+{
+    if (obj_) {
+        disconnect(obj_, nullptr, this, nullptr);
+        delete obj_;
+    }
+    obj_ = obj->clone();
+    commonInit();
+}
+
 
 void MapItem::commonInit()
 {
     Q_ASSERT(obj_);
     Q_ASSERT(!obj_->parent());
 
+    name_ = obj_->name();
     obj_->setParent(this);
     setPos(obj_->position());
     connect(obj_, SIGNAL(positionChanged(QPointF)),
@@ -30,9 +41,18 @@ void MapItem::commonInit()
             this, SLOT(update()));
     connect(obj_, SIGNAL(flipYChanged(bool)),
             this, SLOT(update()));
+    connect(obj_, SIGNAL(imageChanged()),
+            this, SLOT(update()));
 
     connect(obj_, SIGNAL(willChangeSize(QSizeF)),
             this, SLOT(onWillChangeSize(QSizeF)));
+    connect(obj_, SIGNAL(destroyed(QObject*)),
+            this, SLOT(onLevelObjectDestroyed()));
+}
+
+QString MapItem::name() const
+{
+    return name_;
 }
 
 QRectF MapItem::boundingRect() const
@@ -117,4 +137,9 @@ void MapItem::onWillChangeSize(const QSizeF &newSize)
 {
     Q_UNUSED(newSize);
     prepareGeometryChange();
+}
+
+void MapItem::onLevelObjectDestroyed()
+{
+    obj_ = nullptr;
 }

@@ -16,6 +16,7 @@
 #include "Controllers/LevelLoader.h"
 #include "Dialogs/SettingsDialog/SettingsDialog.h"
 #include "Models/MapScene.h"
+#include "Models/LevelObjectsModel.h"
 #include "Utils/Settings.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
@@ -56,6 +57,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     onSceneCreated(mapView_->scene());
 
+    connect(settings_, SIGNAL(imagesDirectoryChanged(QString)),
+            this, SLOT(loadImages()));
+    loadImages();
+
     if (!settings_->mapFilename().isEmpty())
         QTimer::singleShot(0, this, SLOT(loadLevel()));
 }
@@ -86,6 +91,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
         }
     } else if (result == QMessageBox::Cancel){
         event->ignore();
+    }
+}
+
+void MainWindow::loadImages()
+{
+    LevelObjectsModel *model = LevelObjectsModel::sharedInstance();
+    model->reset();
+    if (!settings_->imagesDirectory().isEmpty()) {
+        model->addImagesFromDirectory(settings_->imagesDirectory());
     }
 }
 

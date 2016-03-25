@@ -68,7 +68,8 @@ QImage LevelObject::image() const
 void LevelObject::setImage(const QImage &image)
 {
     image_ = image;
-    size_ = image.size();
+    setSize(image.size());
+    emit imageChanged();
 }
 
 QPointF LevelObject::position() const
