@@ -53,7 +53,9 @@ void MapView::drawBackground(QPainter *painter, const QRectF &rect)
     if (settings_->showGrid()) {
         QRectF r = sceneRect();
 
-        QSizeF grid = settings_->gridSize();
+        QSizeF gridSize = settings_->gridSize();
+        QSizeF grid(qMax(1.0, gridSize.width()),
+                    qMax(1.0, gridSize.height()));
         QPointF shift(qFloor(r.left() / grid.width()) * grid.width(),
                       qFloor(r.top() / grid.height()) * grid.height());
         painter->translate(shift);

@@ -5,9 +5,18 @@
 #include "Settings.h"
 #include "Utils/Utils.h"
 
-Settings::Settings(QObject *parent) : QObject(parent)
+const char *imagesDirectoryKey = "general/imagesDirectory";
+const char *showGridKey = "grid/showGrid";
+const char *gridSizeKey = "grid/gridSize";
+
+Settings::Settings(QObject *parent)
+    : QObject(parent)
+    , settings_(QSettings::IniFormat,
+                QSettings::UserScope,
+                QCoreApplication::organizationName(),
+                QCoreApplication::applicationName())
 {
-    gridSize_ = QSizeF(32.0, 32.0);
+    load();
 }
 
 Settings *Settings::sharedInstance()
@@ -43,7 +52,7 @@ bool Settings::parseCommandLine()
     }
 
     mapFilename_ = parser.value(mapFilenameOption);
-    imagesDirectory_ = parser.value(imagesDirectoryOption);
+    commandline_.imagesDirectory_ = parser.value(imagesDirectoryOption);
     return true;
 }
 
@@ -62,13 +71,17 @@ void Settings::setMapFilename(const QString &mapFilename)
 
 QString Settings::imagesDirectory() const
 {
+    if (!commandline_.imagesDirectory_.isEmpty())
+        return commandline_.imagesDirectory_;
     return imagesDirectory_;
 }
 
 void Settings::setImagesDirectory(const QString &imagesDirectory)
 {
     qdbg << "Settings::setImagesDirectory: " << imagesDirectory << endl;
+    commandline_.imagesDirectory_.clear();
     imagesDirectory_ = imagesDirectory;
+    emit imagesDirectoryChanged(imagesDirectory);
 }
 
 bool Settings::showGrid() const
@@ -86,8 +99,7 @@ void Settings::setShowGrid(bool showGrid)
 
 QSizeF Settings::gridSize() const
 {
-    return QSizeF(qMax(1.0, gridSize_.width()),
-                  qMax(1.0, gridSize_.height()));
+    return gridSize_;
 }
 
 void Settings::setGridSize(const QSizeF &gridSize)
@@ -117,4 +129,21 @@ bool Settings::snapToGrid() const
 void Settings::setSnapToGrid(bool snapToGrid)
 {
     snapToGrid_ = snapToGrid;
+}
+
+void Settings::load()
+{
+    imagesDirectory_ = settings_.value(imagesDirectoryKey).toString();
+    showGrid_ = settings_.value(showGridKey, false).toBool();
+    gridSize_ = settings_.value(gridSizeKey, QSizeF(32.0, 32.0)).toSizeF();
+    qout << "Settings loaded" << endl;
+}
+
+void Settings::save()
+{
+    settings_.setValue(imagesDirectoryKey, imagesDirectory_);
+    settings_.setValue(showGridKey, showGrid_);
+    settings_.setValue(gridSizeKey, gridSize_);
+    settings_.sync();
+    qout << "Settings saved" << endl;
 }

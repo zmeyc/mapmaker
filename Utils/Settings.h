@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QSizeF>
+#include <QSettings>
 
 class Settings : public QObject
 {
@@ -35,14 +36,27 @@ public:
 
 signals:
     void mapFilenameChanged(const QString &mapFilename);
+    void imagesDirectoryChanged(const QString &imagesDirectory);
     void showGridChanged(bool showGrid);
     void gridSizeChanged(const QSizeF &gridSize);
 
 public slots:
+    void save();
 
 protected:
+    void load();
+
+    struct {
+        QString imagesDirectory_;
+    } commandline_;
+
+    QSettings settings_;
     QString mapFilename_;
+
+    // General
     QString imagesDirectory_;
+
+    // Grid
     bool showGrid_ = false;
     QSizeF gridSize_;
     bool snapToGrid_ = false;
