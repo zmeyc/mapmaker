@@ -6,6 +6,7 @@
 #include "QVBoxLayout"
 #include "QPushButton"
 #include "SettingsDialog.h"
+#include "GeneralPage.h"
 #include "GridPage.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent)
@@ -23,8 +24,10 @@ SettingsDialog::SettingsDialog(QWidget *parent)
             this, SLOT(onCurrentItemChanged(QListWidgetItem*,QListWidgetItem*)));
 
     pages_ = new QStackedWidget;
+    pages_->addWidget(new GeneralPage);
     pages_->addWidget(new GridPage);
 
+    categories_->addItem(createCategoryItem(QIcon(), tr("General")));
     categories_->addItem(createCategoryItem(QIcon(), tr("Grid")));
     categories_->setCurrentRow(0);
 

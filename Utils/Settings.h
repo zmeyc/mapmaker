@@ -20,7 +20,7 @@ public:
     void setMapFilename(const QString &mapFilename);
 
     QString imagesDirectory() const;
-    void setImagesDirectory(const QString &imagesDirectory);
+    Q_SLOT void setImagesDirectory(const QString &imagesDirectory);
 
     bool showGrid() const;
     Q_SLOT void setShowGrid(bool showGrid);
