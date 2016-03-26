@@ -14,6 +14,8 @@ MapItem::MapItem(const MapItem &other)
     , obj_(other.obj_->clone())
 {
     commonInit();
+    active_ = other.active_;
+    selected_ = other.selected_;
 }
 
 void MapItem::setLevelObject(LevelObject *obj)

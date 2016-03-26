@@ -57,17 +57,27 @@ protected slots:
     void updateGridPixmap();
 
 protected:
+    using MapItems = QList<MapItem *>;
+
+    enum DragState {
+        NotDragging,
+        AboutToDrag,
+        Dragging
+    };
+
     friend class LevelLoader;
 
     QRect selectionRect() const;
-    QList<MapItem *> selectedItems() const;
-    QRectF itemsBoundingRect(const QList<MapItem *> &items) const;
+    MapItems selectedItems() const;
+    QRectF itemsBoundingRect(const MapItems &items) const;
 
     void snapToGrid(qreal firstLine, qreal secondLine, qreal gridSize, qreal *newFirstLine, qreal *newSecondLine) const;
     QRectF snapToGrid(const QRectF &rect, const QSizeF &gridSize, bool bothSides = false) const;
+    MapItems cloneItems(const MapItems &items);
+    void selectItems(const MapItems &items, bool select);
 
     Settings *settings_ = nullptr;
-    bool dragging_ = false;
+    DragState dragState_ = NotDragging;
     bool scrolling_ = false;
     bool selecting_ = false;
     QPoint startPos_;
@@ -75,7 +85,7 @@ protected:
     bool modified_ = false; // TODO: move to scene?
     QPixmap gridPixmap_;
 
-    QList<MapItem *> draggedItems_;
+    MapItems draggedItems_;
     QRectF dragInitialBounds_;
     QRectF dragPrevBounds_;
 

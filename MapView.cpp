@@ -153,7 +153,7 @@ void MapView::mousePressEvent(QMouseEvent *event)
             draggedItems_ = selectedItems();
             dragInitialBounds_ = itemsBoundingRect(draggedItems_);
             dragPrevBounds_ = dragInitialBounds_;
-            dragging_ = true;
+            dragState_ = AboutToDrag;
         } else {
             if (!(qApp->keyboardModifiers() & Qt::ShiftModifier))
                 selectSingleItem(nullptr);
@@ -170,7 +170,7 @@ void MapView::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
     if (event->button() == Qt::LeftButton) {
-        dragging_ = false;
+        dragState_ = NotDragging;
         if (selecting_) {
             selecting_ = false;
             selectActiveWidgets();
@@ -214,7 +214,20 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
         return;
     }
 
-    if (dragging_) {
+    if (dragState_ == AboutToDrag || dragState_ == Dragging) {
+        if (dragState_ == AboutToDrag) {
+            qdbg << "MapView::mouseMoveEvent(): About to drag" << endl;
+            if (qApp->keyboardModifiers() & Qt::AltModifier) {
+                qdbg << "MapView::mouseMoveEvent(): Cloned items" << endl;
+                MapItems oldItems = draggedItems_;
+                draggedItems_ = cloneItems(oldItems);
+                selectItems(oldItems, false);
+            }
+            dragState_ = Dragging;
+        } else {
+            qdbg << "MapView::mouseMoveEvent(): Dragging" << endl;
+        }
+
         QRectF shiftedRect = dragInitialBounds_.translated(event->pos() - startPos_);
         QSizeF gridSize = settings_->finalGridSize();
 
@@ -442,4 +455,24 @@ QRectF MapView::snapToGrid(const QRectF &rect, const QSizeF &grid, bool bothSide
     return bothSides
             ? QRectF(QPointF(newLeft, newTop), QPointF(newRight, newBottom))
             : QRectF(QPointF(newLeft, newTop), rect.size());
+}
+
+MapView::MapItems MapView::cloneItems(const MapItems &items)
+{
+    MapItems result;
+    result.reserve(items.size());
+    foreach (MapItem *item, items) {
+        MapItem *item2 = new MapItem(*item);
+        scene()->addItem(item2);
+        modified_ = true;
+        result.append(item2);
+    }
+    return result;
+}
+
+void MapView::selectItems(const MapItems &items, bool select)
+{
+    foreach (MapItem *item, items) {
+        item->setSelected(select);
+    }
 }
