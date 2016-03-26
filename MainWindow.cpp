@@ -21,6 +21,9 @@
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 
+const QString mapFilenameFilter = QObject::tr(
+            "MapMaker Files (*.mmj);;All files (*.*)");
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , settings_(Settings::sharedInstance())
@@ -137,8 +140,8 @@ void MainWindow::onOpen()
     }
 
     QString mapFilename = QFileDialog::getOpenFileName(this,
-             tr("MapMaker"), dataLocation,
-             tr("MapMaker Files (*.mmj);;All files (*.*)"));
+             tr("Open Map"), dataLocation,
+             mapFilenameFilter);
     if (mapFilename.isNull())
         return;
     settings_->setMapFilename(mapFilename);
@@ -147,12 +150,38 @@ void MainWindow::onOpen()
 
 void MainWindow::onSave()
 {
-
+    LevelLoader *levelLoader = LevelLoader::sharedInstance();
+    if (!levelLoader->saveToFile(
+                mapView_,
+                settings_->mapFilename())) {
+        QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
+    }
 }
 
 void MainWindow::onSaveAs()
 {
+    //QString lastMapFilename = settings_->mapFilename();
+    //QDir mapDir = QFileInfo(lastMapFilename).absoluteDir();
 
+    QFileDialog dialog;
+    dialog.setWindowTitle(tr("Save Map As"));
+    //dialog.setDirectory(mapDir);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setNameFilter(mapFilenameFilter);
+    dialog.selectFile(settings_->mapFilename());
+    //dialog.setOption(QFileDialog::DontUseNativeDialog);
+    if (dialog.exec() == QDialog::Accepted && !dialog.selectedFiles().isEmpty()) {
+        QString filename = dialog.selectedFiles().first();
+        LevelLoader *levelLoader = LevelLoader::sharedInstance();
+        if (!levelLoader->saveToFile(
+                    mapView_,
+                    filename)) {
+            QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
+            return;
+        }
+        settings_->setMapFilename(filename);
+    }
 }
 
 void MainWindow::onPreferences()
