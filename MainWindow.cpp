@@ -123,10 +123,16 @@ void MainWindow::onNew()
 
 void MainWindow::onOpen()
 {
-    QStringList locations = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
-    QString dataLocation;
-    if (!locations.empty())
-        dataLocation = locations.first();
+    QString lastMapFilename = settings_->mapFilename();
+    QDir mapDir = QFileInfo(lastMapFilename).absoluteDir();
+    QString mapPath = mapDir.absolutePath();
+
+    QString dataLocation = mapPath;
+    if (dataLocation.isEmpty()) {
+        QStringList locations = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+        if (!locations.empty())
+            dataLocation = locations.first();
+    }
 
     QString mapFilename = QFileDialog::getOpenFileName(this,
              tr("MapMaker"), dataLocation,
@@ -135,6 +141,16 @@ void MainWindow::onOpen()
         return;
     settings_->setMapFilename(mapFilename);
     loadLevel();
+}
+
+void MainWindow::onSave()
+{
+
+}
+
+void MainWindow::onSaveAs()
+{
+
 }
 
 void MainWindow::onPreferences()
@@ -181,6 +197,16 @@ void MainWindow::createFileMenu()
     QKeySequence openShortcut(tr("Ctrl+O", "File|Open..."));
     fileMenu->addAction(tr("Open..."),
                         this, SLOT(onOpen()), openShortcut);
+
+    fileMenu->addSeparator();
+
+    QKeySequence saveShortcut(tr("Ctrl+S", "File|Save"));
+    fileMenu->addAction(tr("Save"),
+                        this, SLOT(onSave()), saveShortcut);
+
+    QKeySequence saveAsShortcut(tr("Shift+Ctrl+S", "File|Save As"));
+    fileMenu->addAction(tr("Save As"),
+                        this, SLOT(onSaveAs()), saveAsShortcut);
 }
 
 void MainWindow::createEditMenu()
