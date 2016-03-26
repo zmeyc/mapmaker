@@ -107,12 +107,18 @@ void MainWindow::updateWindowTitle()
 {
     QString title;
     if (settings_->mapFilename().isEmpty()) {
-        title = "MapMaker";
+        title = "New Document | MapMaker";
     } else {
         QFileInfo fileInfo(settings_->mapFilename());
         title = fileInfo.fileName() + " | MapMaker";
     }
     setWindowTitle(title);
+}
+
+void MainWindow::onNew()
+{
+    settings_->resetMapFilename();
+    mapView_->resetScene();
 }
 
 void MainWindow::onOpen()
@@ -167,6 +173,10 @@ void MainWindow::onSceneCreated(QGraphicsScene *scene)
 void MainWindow::createFileMenu()
 {
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
+
+    QKeySequence newShortcut(tr("Ctrl+N", "File|New"));
+    fileMenu->addAction(tr("New"),
+                        this, SLOT(onNew()), newShortcut);
 
     QKeySequence openShortcut(tr("Ctrl+O", "File|Open..."));
     fileMenu->addAction(tr("Open..."),

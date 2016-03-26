@@ -24,6 +24,7 @@ public:
 protected slots:
     void loadImages();
     void updateWindowTitle();
+    void onNew();
     void onOpen();
     void onPreferences();
     void loadLevel();

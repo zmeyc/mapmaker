@@ -19,6 +19,7 @@ public:
 
     QString mapFilename() const;
     void setMapFilename(const QString &mapFilename);
+    void resetMapFilename();
 
     QString imagesDirectory() const;
     Q_SLOT void setImagesDirectory(const QString &imagesDirectory);

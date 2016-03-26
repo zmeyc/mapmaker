@@ -70,6 +70,11 @@ void Settings::setMapFilename(const QString &mapFilename)
     }
 }
 
+void Settings::resetMapFilename()
+{
+    setMapFilename(QString());
+}
+
 QString Settings::imagesDirectory() const
 {
     if (!commandline_.imagesDirectory_.isEmpty())
