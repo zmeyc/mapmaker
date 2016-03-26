@@ -29,6 +29,9 @@ public:
     bool autoSizeGrid() const;
     Q_SLOT void setAutoSizeGrid(bool autoSizeGrid);
 
+    // Grid size affected by autoSizeGrid option
+    QSizeF finalGridSize() const;
+    // User-configured grid size
     QSizeF gridSize() const;
     void setGridSize(const QSizeF &gridSize);
     Q_SLOT void setGridSize(qreal uniformSize);
@@ -45,7 +48,8 @@ signals:
     void imagesDirectoryChanged(const QString &imagesDirectory);
     void showGridChanged(bool showGrid);
     bool autoSizeGridChanged(bool autoSizeGrid);
-    void gridSizeChanged(const QSizeF &gridSize);
+    void gridSizeChanged(const QSizeF &combinedGridSize);
+    void finalGridSizeChanged(const QSizeF &combinedGridSize);
 
 public slots:
     void save();

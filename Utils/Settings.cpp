@@ -110,21 +110,26 @@ void Settings::setAutoSizeGrid(bool autoSizeGrid)
     if (autoSizeGrid_ == autoSizeGrid)
         return;
 
-    QSizeF previousGridSize = gridSize();
+    QSizeF previousGridSize = finalGridSize();
 
     autoSizeGrid_ = autoSizeGrid;
     settings_.setValue(autoSizeGridKey, autoSizeGrid_);
     emit autoSizeGridChanged(autoSizeGrid);
 
-    QSizeF newGridSize = gridSize();
+    QSizeF newGridSize = finalGridSize();
     if (previousGridSize != newGridSize)
-        emit gridSizeChanged(newGridSize);
+        emit finalGridSizeChanged(newGridSize);
+}
+
+QSizeF Settings::finalGridSize() const
+{
+    if (autoSizeGrid_ && !selectedLevelObjectSize_.isEmpty())
+        return selectedLevelObjectSize_;
+    return gridSize_;
 }
 
 QSizeF Settings::gridSize() const
 {
-    if (autoSizeGrid_ && !selectedLevelObjectSize_.isEmpty())
-        return selectedLevelObjectSize_;
     return gridSize_;
 }
 
@@ -133,14 +138,15 @@ void Settings::setGridSize(const QSizeF &gridSize)
     if (gridSize_ == gridSize)
         return;
 
-    QSizeF previousGridSize(this->gridSize());
+    QSizeF previousGridSize = this->finalGridSize();
 
     gridSize_ = gridSize;
     settings_.setValue(gridSizeKey, gridSize_);
+    emit gridSizeChanged(gridSize);
 
-    QSizeF newGridSize = this->gridSize();
+    QSizeF newGridSize = this->finalGridSize();
     if (previousGridSize != newGridSize)
-        emit gridSizeChanged(newGridSize);
+        emit finalGridSizeChanged(newGridSize);
 }
 
 void Settings::setGridSize(qreal uniformSize)
@@ -164,13 +170,13 @@ void Settings::setSelectedLevelObjectSize(const QSizeF &selectedLevelObjectSize)
     if (selectedLevelObjectSize_ == selectedLevelObjectSize)
         return;
 
-    QSizeF previousGridSize = gridSize();
+    QSizeF previousGridSize = finalGridSize();
 
     selectedLevelObjectSize_ = selectedLevelObjectSize;
 
-    QSizeF newGridSize = gridSize();
+    QSizeF newGridSize = finalGridSize();
     if (previousGridSize != newGridSize)
-        emit gridSizeChanged(newGridSize);
+        emit finalGridSizeChanged(newGridSize);
 
 }
 

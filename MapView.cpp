@@ -37,7 +37,7 @@ MapView::MapView(QWidget *parent)
 
     connect(settings_, SIGNAL(showGridChanged(bool)),
             this, SLOT(updateGridPixmap()));
-    connect(settings_, SIGNAL(gridSizeChanged(QSizeF)),
+    connect(settings_, SIGNAL(finalGridSizeChanged(QSizeF)),
             this, SLOT(updateGridPixmap()));
 }
 
@@ -53,7 +53,7 @@ void MapView::drawBackground(QPainter *painter, const QRectF &rect)
     if (settings_->showGrid()) {
         QRectF r = sceneRect();
 
-        QSizeF gridSize = settings_->gridSize();
+        QSizeF gridSize = settings_->finalGridSize();
         QSizeF grid(qMax(1.0, gridSize.width()),
                     qMax(1.0, gridSize.height()));
         QPointF shift(qFloor(r.left() / grid.width()) * grid.width(),
@@ -216,7 +216,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
 
     if (dragging_) {
         QRectF shiftedRect = dragInitialBounds_.translated(event->pos() - startPos_);
-        QSizeF gridSize = settings_->gridSize();
+        QSizeF gridSize = settings_->finalGridSize();
 
         QRectF targetRect;
         if (settings_->snapToGrid())
@@ -328,7 +328,7 @@ void MapView::updateGridPixmap()
 {
     //qdbg << "MapView::updateGridPixmap()" << endl;
     if (settings_->showGrid()) {
-        QSize gridSize = settings_->gridSize().toSize();
+        QSize gridSize = settings_->finalGridSize().toSize();
         gridPixmap_ = QPixmap(gridSize);
         gridPixmap_.fill(Qt::white);
         QPainter painter(&gridPixmap_);
