@@ -306,6 +306,10 @@ void MapView::setSelectedLevelObject(LevelObject *object)
     if (selectedLevelObject_ != object) {
         selectedLevelObject_ = object;
         emit selectedLevelObjectChanged(object);
+        QSizeF size;
+        if (object)
+            size = object->size();
+        settings_->setSelectedLevelObjectSize(size);
     }
 }
 
@@ -322,6 +326,7 @@ void MapView::selectSingleItem(MapItem *item)
 
 void MapView::updateGridPixmap()
 {
+    //qdbg << "MapView::updateGridPixmap()" << endl;
     if (settings_->showGrid()) {
         QSize gridSize = settings_->gridSize().toSize();
         gridPixmap_ = QPixmap(gridSize);

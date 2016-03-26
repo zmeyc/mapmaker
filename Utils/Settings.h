@@ -34,6 +34,9 @@ public:
     Q_SLOT void setGridSize(qreal uniformSize);
     Q_SLOT void setGridSize(int uniformSize);
 
+    QSizeF selectedLevelObjectSize() const;
+    void setSelectedLevelObjectSize(const QSizeF &selectedLevelObjectSize);
+
     bool snapToGrid() const;
     Q_SLOT void setSnapToGrid(bool snapToGrid);
 
@@ -64,6 +67,7 @@ protected:
     bool showGrid_ = false;
     bool autoSizeGrid_ = false;
     QSizeF gridSize_;
+    QSizeF selectedLevelObjectSize_;
     bool snapToGrid_ = false;
 };
 

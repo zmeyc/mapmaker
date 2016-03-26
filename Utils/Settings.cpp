@@ -107,25 +107,40 @@ bool Settings::autoSizeGrid() const
 
 void Settings::setAutoSizeGrid(bool autoSizeGrid)
 {
-    if (autoSizeGrid_ != autoSizeGrid) {
-        autoSizeGrid_ = autoSizeGrid;
-        settings_.setValue(autoSizeGridKey, autoSizeGrid_);
-        emit autoSizeGridChanged(autoSizeGrid);
-    }
+    if (autoSizeGrid_ == autoSizeGrid)
+        return;
+
+    QSizeF previousGridSize = gridSize();
+
+    autoSizeGrid_ = autoSizeGrid;
+    settings_.setValue(autoSizeGridKey, autoSizeGrid_);
+    emit autoSizeGridChanged(autoSizeGrid);
+
+    QSizeF newGridSize = gridSize();
+    if (previousGridSize != newGridSize)
+        emit gridSizeChanged(newGridSize);
 }
 
 QSizeF Settings::gridSize() const
 {
+    if (autoSizeGrid_ && !selectedLevelObjectSize_.isEmpty())
+        return selectedLevelObjectSize_;
     return gridSize_;
 }
 
 void Settings::setGridSize(const QSizeF &gridSize)
 {
-    //qdbg << "Settings::setGridSize: " << gridSize << endl;
-    if (gridSize_ != gridSize) {
-        gridSize_ = gridSize;
-        emit gridSizeChanged(gridSize);
-    }
+    if (gridSize_ == gridSize)
+        return;
+
+    QSizeF previousGridSize(this->gridSize());
+
+    gridSize_ = gridSize;
+    settings_.setValue(gridSizeKey, gridSize_);
+
+    QSizeF newGridSize = this->gridSize();
+    if (previousGridSize != newGridSize)
+        emit gridSizeChanged(newGridSize);
 }
 
 void Settings::setGridSize(qreal uniformSize)
@@ -136,7 +151,27 @@ void Settings::setGridSize(qreal uniformSize)
 void Settings::setGridSize(int uniformSize)
 {
     setGridSize((qreal)uniformSize);
-    settings_.setValue(gridSizeKey, gridSize_);
+}
+
+
+QSizeF Settings::selectedLevelObjectSize() const
+{
+    return selectedLevelObjectSize_;
+}
+
+void Settings::setSelectedLevelObjectSize(const QSizeF &selectedLevelObjectSize)
+{
+    if (selectedLevelObjectSize_ == selectedLevelObjectSize)
+        return;
+
+    QSizeF previousGridSize = gridSize();
+
+    selectedLevelObjectSize_ = selectedLevelObjectSize;
+
+    QSizeF newGridSize = gridSize();
+    if (previousGridSize != newGridSize)
+        emit gridSizeChanged(newGridSize);
+
 }
 
 bool Settings::snapToGrid() const
@@ -153,6 +188,7 @@ void Settings::load()
 {
     imagesDirectory_ = settings_.value(imagesDirectoryKey).toString();
     showGrid_ = settings_.value(showGridKey, false).toBool();
+    autoSizeGrid_ = settings_.value(autoSizeGridKey, false).toBool();
     gridSize_ = settings_.value(gridSizeKey, QSizeF(32.0, 32.0)).toSizeF();
     qout << "Settings loaded" << endl;
 }
