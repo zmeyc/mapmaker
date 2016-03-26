@@ -61,6 +61,8 @@ MainWindow::MainWindow(QWidget *parent)
             this, SLOT(loadImages()));
     loadImages();
 
+    qdbg << "MainWindow::MainWindow(): mapFilename=" <<
+            settings_->mapFilename() << endl;
     if (!settings_->mapFilename().isEmpty())
         QTimer::singleShot(0, this, SLOT(loadLevel()));
 }

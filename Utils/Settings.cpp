@@ -6,6 +6,7 @@
 #include "Utils/Utils.h"
 
 const char *imagesDirectoryKey = "imagesDirectory";
+const char *mapFilenameKey = "mapFilename";
 const char *showGridKey = "grid/showGrid";
 const char *autoSizeGridKey = "grid/autoSizeGrid";
 const char *gridSizeKey = "grid/gridSize";
@@ -17,6 +18,7 @@ Settings::Settings(QObject *parent)
                 QCoreApplication::organizationName(),
                 QCoreApplication::applicationName())
 {
+    qdbg << "Settings::Settings()" << endl;
     load();
 }
 
@@ -30,7 +32,7 @@ bool Settings::parseCommandLine()
 {
     QCommandLineParser parser;
     parser.setApplicationDescription("MapMaker\n\n"
-                                     "Usage: mapmaker map.json imagesDirectory");
+                                     "Usage: mapmaker -m map.json -i imagesDirectory");
     parser.addHelpOption();
     parser.addVersionOption();
 
@@ -52,7 +54,9 @@ bool Settings::parseCommandLine()
         qerr << parser.errorText() << endl;
     }
 
-    mapFilename_ = parser.value(mapFilenameOption);
+    QString mapFilename = parser.value(mapFilenameOption);;
+    if (!mapFilename.isEmpty())
+        mapFilename_ = mapFilename;
     commandline_.imagesDirectory_ = parser.value(imagesDirectoryOption);
     return true;
 }
@@ -64,10 +68,12 @@ QString Settings::mapFilename() const
 
 void Settings::setMapFilename(const QString &mapFilename)
 {
-    if (mapFilename_ != mapFilename) {
-        mapFilename_ = mapFilename;
-        emit mapFilenameChanged(mapFilename);
-    }
+    if (mapFilename_ == mapFilename)
+        return;
+
+    mapFilename_ = mapFilename;
+    settings_.setValue(mapFilenameKey, mapFilename);
+    emit mapFilenameChanged(mapFilename);
 }
 
 void Settings::resetMapFilename()
@@ -197,6 +203,7 @@ void Settings::setSnapToGrid(bool snapToGrid)
 
 void Settings::load()
 {
+    mapFilename_ = settings_.value(mapFilenameKey).toString();
     imagesDirectory_ = settings_.value(imagesDirectoryKey).toString();
     showGrid_ = settings_.value(showGridKey, false).toBool();
     autoSizeGrid_ = settings_.value(autoSizeGridKey, false).toBool();
