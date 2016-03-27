@@ -187,6 +187,16 @@ void MainWindow::onSaveAs()
     }
 }
 
+void MainWindow::onCopy()
+{
+
+}
+
+void MainWindow::onPaste()
+{
+
+}
+
 void MainWindow::onPreferences()
 {
     SettingsDialog *dialog = new SettingsDialog(this);
@@ -256,6 +266,16 @@ void MainWindow::createEditMenu()
     QAction *redoAction = undoStack->createRedoAction(this, tr("&Redo"));
     redoAction->setShortcuts(QKeySequence::Redo);
     editMenu->addAction(redoAction);
+
+    editMenu->addSeparator();
+
+    QAction *copyAction = editMenu->addAction(
+                tr("&Copy"), this, SLOT(onCopy()), QKeySequence::Copy);
+    copyAction->setStatusTip(tr("Copy selected objects to the clipboard"));
+
+    QAction *pasteAction = editMenu->addAction(
+                tr("&Paste"), this, SLOT(onPaste()), QKeySequence::Paste);
+    pasteAction->setStatusTip(tr("Paste the clipboard's contents"));
 
     editMenu->addSeparator();
 
