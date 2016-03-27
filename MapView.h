@@ -44,7 +44,8 @@ public:
     void resetScene();
     void selectActiveItems();
     void deleteSelectedItems();
-    void moveSelectedItemsBy(int dx, int dy);
+    void deleteItem(MapItem *item);
+    void moveOrCloneSelectedItemsBy(int dx, int dy);
 
 signals:
     void selectedLevelObjectChanged(LevelObject *item);
