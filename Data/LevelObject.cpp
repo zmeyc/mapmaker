@@ -2,6 +2,7 @@
 
 #include <QMetaMethod>
 #include "LevelObject.h"
+#include "Models/LevelObjectsModel.h"
 #include "Utils/FileUtils.h"
 
 LevelObject::LevelObject(QObject *parent)
@@ -32,6 +33,71 @@ LevelObject *LevelObject::clone(QObject *parent)
     obj->flipX_ = flipX_;
     obj->flipY_ = flipY_;
     obj->customProperties_ = customProperties_;
+    return obj;
+}
+
+QJsonObject LevelObject::toJsonObject() const
+{
+    QJsonObject json;
+    json["x"] = position().x() - size().width() / 2;
+    json["y"] = position().y() - size().height() / 2;
+    if (flipX())
+        json["flipX"] = true;
+    if (flipY())
+        json["flipY"] = true;
+    if (size().width())
+        json["width"] = size().width();
+    if (size().height())
+        json["height"] = size().height();
+    json["name"] = name();
+    LevelObject::Properties properties = customProperties();
+    if (!properties.isEmpty()) {
+        QVariantMap v;
+        for (LevelObject::Properties::iterator i = properties.begin();
+             i != properties.end(); ++i)
+        {
+            v[i.key()] = i.value();
+        }
+        json["properties"] = QJsonValue::fromVariant(v);
+    }
+    return json;
+}
+
+LevelObject *LevelObject::createFromJson(const QJsonObject &json,
+                                         QObject *parent)
+{
+    LevelObjectsModel *model = LevelObjectsModel::sharedInstance();
+
+    QString name = json["name"].toString();
+    qreal width = json["width"].toDouble();
+    qreal height = json["height"].toDouble();
+    qreal x = json["x"].toDouble() + width / 2;
+    qreal y = json["y"].toDouble() + height / 2;
+    QSizeF size(width, height);
+    int flipX = json["flipX"].toBool();
+    int flipY = json["flipY"].toBool();
+    QVariantMap properties = json["properties"].toVariant().toMap();
+
+    //qdbg << "name=" << name << ", x=" << x << ", y=" << y << endl;
+    LevelObject *obj = nullptr;
+    LevelObject *proto = model->levelObjectByName(name);
+    if (proto) {
+        obj = proto->clone(parent);
+        obj->setFlipX(flipX);
+        obj->setFlipY(flipY);
+
+    } else {
+        obj = model->placeholder()->clone(parent);
+        obj->setName(name);
+    }
+    obj->setPosition(x, y);
+    if (!size.isNull())
+        obj->setSize(size);
+    for (QVariantMap::iterator i = properties.begin();
+         i != properties.end(); ++i)
+    {
+        obj->setCustomProperty(i.key(), i.value().toString());
+    }
     return obj;
 }
 
@@ -178,9 +244,9 @@ void LevelObject::setFlipY(bool flipY)
     }
 }
 
-QString LevelObject::customProperty(const QString &key)
+QString LevelObject::customProperty(const QString &key) const
 {
-    Properties::iterator i = customProperties_.find(key);
+    Properties::const_iterator i = customProperties_.find(key);
     if (i == customProperties_.end())
         return QString();
     return i.value();
@@ -197,7 +263,7 @@ void LevelObject::resetCustomProperty(const QString &key)
     customProperties_.remove(key);
 }
 
-LevelObject::Properties LevelObject::customProperties()
+LevelObject::Properties LevelObject::customProperties() const
 {
     return customProperties_;
 }

@@ -7,6 +7,7 @@
 #include <QImage>
 #include <QPointF>
 #include <QMap>
+#include <QJsonObject>
 
 class LevelObject: public QObject
 {
@@ -17,6 +18,10 @@ public:
     explicit LevelObject(QObject *parent = nullptr);
 
     LevelObject *clone(QObject *parent = nullptr);
+
+    QJsonObject toJsonObject() const;
+    static LevelObject *createFromJson(const QJsonObject &obj,
+                                       QObject *parent = nullptr);
 
     QString name() const;
     void setName(const QString &name);
@@ -47,10 +52,10 @@ public:
     bool flipY() const;
     void setFlipY(bool flipY);
 
-    QString customProperty(const QString &key);
+    QString customProperty(const QString &key) const;
     void setCustomProperty(const QString &key, const QString &value);
     void resetCustomProperty(const QString &key);
-    Properties customProperties();
+    Properties customProperties() const;
 
 signals:
     void modified();

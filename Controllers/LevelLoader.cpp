@@ -7,8 +7,8 @@
 #include <QSet>
 
 #include "LevelLoader.h"
-#include "Models/LevelObjectsModel.h"
 #include "Models/MapScene.h"
+#include "Models/LevelObjectsModel.h"
 #include "MapView.h"
 #include "MapItems/MapItem.h"
 #include "Data/LevelObject.h"
@@ -40,33 +40,12 @@ bool LevelLoader::saveToFile(MapView *view, const QString &filename)
     QJsonArray objects;
     foreach (QGraphicsItem *item, scene->items()) {
         MapItem *mapItem = dynamic_cast<MapItem *>(item);
-        LevelObject *levelObject = mapItem ? mapItem->levelObject() : nullptr;
-        if (!levelObject)
+        LevelObject *obj = mapItem ? mapItem->levelObject() : nullptr;
+        if (!obj)
             continue;
 
-        QJsonObject obj;
-        obj["x"] = levelObject->position().x() - levelObject->size().width() / 2;
-        obj["y"] = levelObject->position().y() - levelObject->size().height() / 2;
-        if (levelObject->flipX())
-            obj["flipX"] = true;
-        if (levelObject->flipY())
-            obj["flipY"] = true;
-        if (levelObject->size().width())
-            obj["width"] = levelObject->size().width();
-        if (levelObject->size().height())
-            obj["height"] = levelObject->size().height();
-        obj["name"] = levelObject->name();
-        LevelObject::Properties properties = levelObject->customProperties();
-        if (!properties.isEmpty()) {
-            QVariantMap v;
-            for (LevelObject::Properties::iterator i = properties.begin();
-                 i != properties.end(); ++i)
-            {
-                v[i.key()] = i.value();
-            }
-            obj["properties"] = QJsonValue::fromVariant(v);
-        }
-        objects.append(obj);
+        QJsonObject json = obj->toJsonObject();
+        objects.append(json);
     }
 
     level["objects"] = objects;
@@ -116,46 +95,17 @@ bool LevelLoader::loadFromFile(MapView *view, const QString &filename)
 
     QJsonObject level = document.object();
     QJsonArray objects = level["objects"].toArray();
-    QSet<QString> notFound;
     LevelObjectsModel *model = LevelObjectsModel::sharedInstance();
+    QSet<QString> notFound;
     foreach (const QJsonValue &value, objects) {
-        QJsonObject obj = value.toObject();
+        QJsonObject json = value.toObject();
+        LevelObject *obj = LevelObject::createFromJson(json);
+        if (obj == model->placeholder())
+            notFound.insert(obj->name());
 
-        QString name = obj["name"].toString();
-        qreal width = obj["width"].toDouble();
-        qreal height = obj["height"].toDouble();
-        qreal x = obj["x"].toDouble() + width / 2;
-        qreal y = obj["y"].toDouble() + height / 2;
-        QSizeF size(width, height);
-        int flipX = obj["flipX"].toBool();
-        int flipY = obj["flipY"].toBool();
-        QVariantMap properties = obj["properties"].toVariant().toMap();
-
-        //qdbg << "name=" << name << ", x=" << x << ", y=" << y << endl;
-        LevelObject *newObject = nullptr;
-        LevelObject *proto = model->levelObjectByName(name);
-        if (proto) {
-            newObject = proto->clone();
-            newObject->setFlipX(flipX);
-            newObject->setFlipY(flipY);
-
-        } else {
-            newObject = model->placeholder()->clone();
-            newObject->setName(name);
-            notFound.insert(name);
-        }
-        newObject->setPosition(x, y);
-        if (!size.isNull())
-            newObject->setSize(size);
-        for (QVariantMap::iterator i = properties.begin();
-             i != properties.end(); ++i)
-        {
-            newObject->setCustomProperty(i.key(), i.value().toString());
-        }
-
-        MapItem *item = new MapItem(newObject);
+        MapItem *item = new MapItem(obj);
         scene->addItem(item);
-        QObject::connect(newObject, SIGNAL(modified()),
+        QObject::connect(obj, SIGNAL(modified()),
                          qobject_cast<MapView *>(scene->parent()), SLOT(setModified()));
     }
 
