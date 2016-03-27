@@ -7,6 +7,9 @@
 #include <QApplication>
 #include <QPainter>
 #include <QUndoStack>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QClipboard>
 
 #include "MapView.h"
 #include "MapItems/MapItem.h"
@@ -15,8 +18,7 @@
 #include "Utils/Settings.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
-
-const char mimeType[] = "application/x-levelobject";
+#include "Data/MimeTypes.h"
 
 MapView::MapView(QWidget *parent)
     : QGraphicsView(parent)
@@ -86,7 +88,7 @@ void MapView::paintEvent(QPaintEvent *event)
 void MapView::dragEnterEvent(QDragEnterEvent *event)
 {
     //qdbg << "dragEvent: mime=" << event->mimeData()->formats().first() << endl;
-    if (!event->mimeData()->hasFormat(mimeType))
+    if (!event->mimeData()->hasFormat(levelObjectNameMimeType))
         return;
     event->acceptProposedAction();
 }
@@ -104,14 +106,14 @@ void MapView::dragLeaveEvent(QDragLeaveEvent *event)
 void MapView::dropEvent(QDropEvent *event)
 {
     qdbg << "dropEvent: text=" << event->mimeData()->formats().first() << endl;
-    if (!event->mimeData()->hasFormat(mimeType))
+    if (!event->mimeData()->hasFormat(levelObjectNameMimeType))
         return;
     event->acceptProposedAction();
 
     QPoint dragOffset;
     QByteArray nameData;
 
-    QByteArray encodedData = event->mimeData()->data(mimeType);
+    QByteArray encodedData = event->mimeData()->data(levelObjectNameMimeType);
     QDataStream dataStream(&encodedData, QIODevice::ReadOnly);
     dataStream >> nameData >> dragOffset;
     QString name = QString::fromUtf8(nameData);
@@ -358,7 +360,17 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
 
 void MapView::copy()
 {
+    qdbg << "MapView::copy()" << endl;
+    QJsonArray objects = mapScene()->toJsonArray(/* selectedOnly */ true);
+    QJsonDocument document;
+    document.setArray(objects);
+    QByteArray json = document.toJson(QJsonDocument::Indented);
 
+    QMimeData *mimeData = new QMimeData;
+    mimeData->setData("application/json", json);
+    mimeData->setText(json);
+
+    QApplication::clipboard()->setMimeData(mimeData);
 }
 
 void MapView::paste()

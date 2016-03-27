@@ -54,4 +54,5 @@ HEADERS  += MainWindow.h \
     Dialogs/NewPropertyDialog/NewPropertyDialog.h \
     Commands/DeleteCommand.h \
     Dialogs/SettingsDialog/GeneralPage.h \
-    Controls/DirectoryLineEdit.h
+    Controls/DirectoryLineEdit.h \
+    Data/MimeTypes.h

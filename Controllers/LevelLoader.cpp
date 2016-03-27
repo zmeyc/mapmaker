@@ -37,17 +37,7 @@ bool LevelLoader::saveToFile(MapView *view, const QString &filename)
     QJsonObject level;
 
     MapScene *scene = (MapScene *)view->scene();
-    QJsonArray objects;
-    foreach (QGraphicsItem *item, scene->items()) {
-        MapItem *mapItem = dynamic_cast<MapItem *>(item);
-        LevelObject *obj = mapItem ? mapItem->levelObject() : nullptr;
-        if (!obj)
-            continue;
-
-        QJsonObject json = obj->toJsonObject();
-        objects.append(json);
-    }
-
+    QJsonArray objects = scene->toJsonArray();
     level["objects"] = objects;
     QJsonDocument document(level);
 

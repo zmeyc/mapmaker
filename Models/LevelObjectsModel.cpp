@@ -6,8 +6,7 @@
 
 #include "LevelObjectsModel.h"
 #include "Utils/Utils.h"
-
-const char mimeType[] = "application/x-levelobject";
+#include "Data/MimeTypes.h"
 
 LevelObjectsModel::LevelObjectsModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -125,7 +124,7 @@ Qt::ItemFlags LevelObjectsModel::flags(const QModelIndex &index) const
 
 QStringList LevelObjectsModel::mimeTypes() const
 {
-    return QStringList() << mimeType;
+    return QStringList() << levelObjectNameMimeType;
 }
 
 QMimeData *LevelObjectsModel::mimeData(const QModelIndexList &indexes) const
@@ -138,7 +137,7 @@ QMimeData *LevelObjectsModel::mimeData(const QModelIndexList &indexes) const
     QDataStream dataStream(&encodedData, QIODevice::WriteOnly);
     dataStream << obj->name().toUtf8() << dragOffset_;
     QMimeData *mimeData = new QMimeData;
-    mimeData->setData(mimeType, encodedData);
+    mimeData->setData(levelObjectNameMimeType, encodedData);
     return mimeData;
 }
 

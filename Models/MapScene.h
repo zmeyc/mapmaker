@@ -21,6 +21,8 @@ public:
     bool modified() const;
     Q_SLOT void setModified(bool modified = true);
 
+    QJsonArray toJsonArray(bool selectedOnly = false) const;
+
     QUndoStack *undoStack() const;
     void setUndoStack(QUndoStack *undoStack);
 

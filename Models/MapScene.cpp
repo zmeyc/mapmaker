@@ -1,6 +1,7 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
 #include <QUndoStack>
+#include <QJsonArray>
 
 #include "MapScene.h"
 #include "Models/LevelObjectsModel.h"
@@ -27,6 +28,25 @@ bool MapScene::modified() const
 void MapScene::setModified(bool modified)
 {
     modified_ = modified;
+}
+
+QJsonArray MapScene::toJsonArray(bool selectedOnly) const
+{
+    QJsonArray objects;
+    foreach (QGraphicsItem *item, items()) {
+        MapItem *mapItem = dynamic_cast<MapItem *>(item);
+        if (!mapItem)
+            continue;
+        if (selectedOnly &&!mapItem->selected())
+            continue;
+        LevelObject *obj = mapItem->levelObject();
+        if (!obj)
+            continue;
+
+        QJsonObject json = obj->toJsonObject();
+        objects.append(json);
+    }
+    return objects;
 }
 
 QUndoStack *MapScene::undoStack() const
