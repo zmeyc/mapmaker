@@ -42,8 +42,8 @@ public:
     LevelObject *selectedLevelObject() const { return selectedLevelObject_; }
 
     void resetScene();
-    void selectActiveWidgets();
-    void deleteSelectedWidgets();
+    void selectActiveItems();
+    void deleteSelectedItems();
     void moveSelectedItemsBy(int dx, int dy);
 
 signals:

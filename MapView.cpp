@@ -173,7 +173,7 @@ void MapView::mouseReleaseEvent(QMouseEvent *event)
         dragState_ = NotDragging;
         if (selecting_) {
             selecting_ = false;
-            selectActiveWidgets();
+            selectActiveItems();
             scene()->update();
         }
     } else if (event->button() == Qt::RightButton) {
@@ -252,7 +252,7 @@ void MapView::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
     case Qt::Key_Backspace:
-        deleteSelectedWidgets();
+        deleteSelectedItems();
         break;
     case Qt::Key_Right:
         moveSelectedItemsBy(1, 0);
@@ -290,7 +290,7 @@ void MapView::resetScene()
     emit sceneCreated(scene);
 }
 
-void MapView::selectActiveWidgets()
+void MapView::selectActiveItems()
 {
     QList<QGraphicsItem *> items = scene()->items();
 
@@ -310,7 +310,7 @@ void MapView::selectActiveWidgets()
     setSelectedLevelObject(lastItem ? lastItem->levelObject() : nullptr);
 }
 
-void MapView::deleteSelectedWidgets()
+void MapView::deleteSelectedItems()
 {
     foreach (QGraphicsItem *item, scene()->items()) {
         MapItem *mapItem = dynamic_cast<MapItem *>(item);
