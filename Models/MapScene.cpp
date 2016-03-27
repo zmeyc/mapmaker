@@ -82,6 +82,17 @@ void MapScene::selectItems(const MapItems &items, bool select)
     setSelectedLevelObject(nullptr);
 }
 
+void MapScene::selectAllItems(bool select)
+{
+    foreach (QGraphicsItem *item, items()) {
+        MapItem *mapItem = dynamic_cast<MapItem *>(item);
+        if (!mapItem)
+            continue;
+        mapItem->setSelected(select);
+    }
+    setSelectedLevelObject(nullptr);
+}
+
 void MapScene::deleteSelectedItems()
 {
     foreach (QGraphicsItem *item, items()) {

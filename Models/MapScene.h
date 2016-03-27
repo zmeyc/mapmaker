@@ -28,6 +28,7 @@ public:
 
     MapItems selectedItems() const;
     void selectItems(const MapItems &items, bool select);
+    void selectAllItems(bool select);
     void deleteSelectedItems();
     void deleteItem(MapItem *item);
     MapItems cloneItems(const MapItems &items);

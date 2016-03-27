@@ -6,6 +6,7 @@
 #include <QObject>
 
 class MapView;
+class MapItem;
 
 class LevelLoader : public QObject
 {
@@ -17,6 +18,9 @@ public:
 
     bool loadFromFile(MapView *view, const QString &filename);
     bool saveToFile(MapView *view, const QString &filename);
+
+    bool spawnObjects(MapView *view, const QJsonArray &objects,
+                      QList<MapItem *> *spawnedItems);
 
     QString lastErrorDescription() const;
     void setLastErrorDescription(const QString &lastErrorDescription);

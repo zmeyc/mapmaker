@@ -10,11 +10,13 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QClipboard>
+#include <QMessageBox>
 
 #include "MapView.h"
 #include "MapItems/MapItem.h"
 #include "Models/LevelObjectsModel.h"
 #include "Models/MapScene.h"
+#include "Controllers/LevelLoader.h"
 #include "Utils/Settings.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
@@ -367,7 +369,7 @@ void MapView::copy()
     QByteArray json = document.toJson(QJsonDocument::Indented);
 
     QMimeData *mimeData = new QMimeData;
-    mimeData->setData("application/json", json);
+    mimeData->setData(levelObjectsMimeType, json);
     mimeData->setText(json);
 
     QApplication::clipboard()->setMimeData(mimeData);
@@ -375,7 +377,39 @@ void MapView::copy()
 
 void MapView::paste()
 {
+    const QMimeData *mimeData = QApplication::clipboard()->mimeData();
+    if (!mimeData)
+        return;
 
+    if (!mimeData->hasFormat(levelObjectsMimeType))
+        return;
+
+    QByteArray json = mimeData->data(levelObjectsMimeType);
+    QJsonParseError parseError;
+    QJsonDocument document = QJsonDocument::fromJson(json, &parseError);
+    if (parseError.error != QJsonParseError::NoError) {
+        QString errorDescription = "JSON parse error: ";
+        errorDescription += parseError.errorString();
+        QMessageBox::critical(this, "Error", errorDescription);
+        return;
+    }
+
+    LevelLoader *levelLoader = LevelLoader::sharedInstance();
+    QJsonArray objects = document.array();
+    mapScene()->selectAllItems(false);
+    QList<MapItem *> spawnedItems;
+    bool success = levelLoader->spawnObjects(this, objects, &spawnedItems);
+    if (!success) {
+        QMessageBox::warning(this, "Error",
+                             levelLoader->lastErrorDescription(),
+                             QMessageBox::Ok);
+        // If loading completed with errors, treat the map as modified
+        mapScene()->setModified(true);
+
+        // Note that some items were possibly spawned anyway
+        // even if error occured
+    }
+    mapScene()->selectItems(spawnedItems, true);
 }
 
 void MapView::updateGridPixmap()

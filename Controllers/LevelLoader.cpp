@@ -26,6 +26,33 @@ LevelLoader *LevelLoader::sharedInstance()
     return instance;
 }
 
+bool LevelLoader::loadFromFile(MapView *view, const QString &filename)
+{
+    view->resetScene();
+
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        lastErrorDescription_ = "Unable to open the level";
+        return false;
+    }
+    if (!file.exists()) {
+        lastErrorDescription_ = "Level does not exist";
+        return false;
+    }
+
+    QByteArray data = file.readAll();
+    QJsonParseError parseError;
+    QJsonDocument document = QJsonDocument::fromJson(data, &parseError);
+    if (parseError.error != QJsonParseError::NoError) {
+        lastErrorDescription_ = "JSON parse error: " + parseError.errorString();
+        return false;
+    }
+
+    QJsonObject level = document.object();
+    QJsonArray objects = level["objects"].toArray();
+    return spawnObjects(view, objects, nullptr);
+}
+
 bool LevelLoader::saveToFile(MapView *view, const QString &filename)
 {
     QFile file(filename);
@@ -50,41 +77,15 @@ bool LevelLoader::saveToFile(MapView *view, const QString &filename)
     return true;
 }
 
-QString LevelLoader::lastErrorDescription() const
+bool LevelLoader::spawnObjects(MapView *view, const QJsonArray &objects,
+                               QList<MapItem *> *spawnedItems)
 {
-    return lastErrorDescription_;
-}
-
-void LevelLoader::setLastErrorDescription(const QString &lastErrorDescription)
-{
-    lastErrorDescription_ = lastErrorDescription;
-}
-
-bool LevelLoader::loadFromFile(MapView *view, const QString &filename)
-{
-    view->resetScene();
-    MapScene *scene = (MapScene *)view->scene();
-
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly)) {
-        lastErrorDescription_ = "Unable to open the level";
-        return false;
-    }
-    if (!file.exists()) {
-        lastErrorDescription_ = "Level does not exist";
-        return false;
+    if (spawnedItems) {
+        spawnedItems->clear();
+        spawnedItems->reserve(objects.size());
     }
 
-    QByteArray data = file.readAll();
-    QJsonParseError parseError;
-    QJsonDocument document = QJsonDocument::fromJson(data, &parseError);
-    if (parseError.error != QJsonParseError::NoError) {
-        lastErrorDescription_ = "JSON parse error: " + parseError.errorString();
-        return false;
-    }
-
-    QJsonObject level = document.object();
-    QJsonArray objects = level["objects"].toArray();
+    MapScene *scene = view->mapScene();
     LevelObjectsModel *model = LevelObjectsModel::sharedInstance();
     QSet<QString> notFound;
     foreach (const QJsonValue &value, objects) {
@@ -95,6 +96,8 @@ bool LevelLoader::loadFromFile(MapView *view, const QString &filename)
 
         MapItem *item = new MapItem(obj);
         scene->addItem(item);
+        if (spawnedItems)
+            spawnedItems->append(item);
         QObject::connect(obj, SIGNAL(modified()),
                          scene, SLOT(setModified()));
     }
@@ -109,3 +112,14 @@ bool LevelLoader::loadFromFile(MapView *view, const QString &filename)
 
     return true;
 }
+
+QString LevelLoader::lastErrorDescription() const
+{
+    return lastErrorDescription_;
+}
+
+void LevelLoader::setLastErrorDescription(const QString &lastErrorDescription)
+{
+    lastErrorDescription_ = lastErrorDescription;
+}
+
