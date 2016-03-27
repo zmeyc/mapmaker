@@ -106,7 +106,7 @@ bool LevelLoader::loadFromFile(MapView *view, const QString &filename)
         MapItem *item = new MapItem(obj);
         scene->addItem(item);
         QObject::connect(obj, SIGNAL(modified()),
-                         qobject_cast<MapView *>(scene->parent()), SLOT(setModified()));
+                         scene, SLOT(setModified()));
     }
 
     if (!notFound.isEmpty()) {

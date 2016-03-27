@@ -12,7 +12,6 @@
 #include "MapItems/MapItem.h"
 #include "Models/LevelObjectsModel.h"
 #include "Models/MapScene.h"
-#include "Commands/DeleteCommand.h"
 #include "Utils/Settings.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
@@ -129,10 +128,10 @@ void MapView::dropEvent(QDropEvent *event)
     LevelObject *newObject = obj->clone();
     newObject->setPosition(mapToScene(viewportTargetPos));
     connect(newObject, SIGNAL(modified()),
-            this, SLOT(setModified()));
+            mapScene(), SLOT(setModified()));
     MapItem *item = new MapItem(newObject);
-    scene()->addItem(item);
-    setModified(true);
+    mapScene()->addItem(item);
+    mapScene()->setModified(true);
 }
 
 void MapView::mousePressEvent(QMouseEvent *event)
@@ -236,11 +235,12 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
         else
             targetRect = shiftedRect;
 
+        MapScene *scene = qobject_cast<MapScene *>(this->scene());
         QPointF shift = targetRect.topLeft() - dragPrevBounds_.topLeft();
         foreach (MapItem *item, draggedItems_) {
             QPointF pos = item->levelObject()->position();
             item->levelObject()->setPosition(pos + shift);
-            modified_ = true;
+            scene->setModified(true);
         }
 
         dragPrevBounds_ = targetRect;
@@ -251,7 +251,7 @@ void MapView::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
     case Qt::Key_Backspace:
-        deleteSelectedItems();
+        mapScene()->deleteSelectedItems();
         break;
     case Qt::Key_Right:
         moveOrCloneSelectedItemsBy(1, 0);
@@ -266,16 +266,6 @@ void MapView::keyPressEvent(QKeyEvent *event)
         moveOrCloneSelectedItemsBy(0, -1);
         break;
     }
-}
-
-bool MapView::modified() const
-{
-    return modified_;
-}
-
-void MapView::setModified(bool modified)
-{
-    modified_ = modified;
 }
 
 void MapView::resetScene()
@@ -309,26 +299,6 @@ void MapView::selectActiveItems()
     setSelectedLevelObject(nullptr);
 }
 
-void MapView::deleteSelectedItems()
-{
-    foreach (QGraphicsItem *item, scene()->items()) {
-        MapItem *mapItem = dynamic_cast<MapItem *>(item);
-        if (mapItem && mapItem->selected()) {
-            deleteItem(mapItem);
-        }
-    }
-}
-
-void MapView::deleteItem(MapItem *item)
-{
-    //delete item;
-    setModified(true);
-
-    MapScene *scene = mapScene();
-    QUndoCommand *deleteCommand = new DeleteCommand(scene, item);
-    scene->undoStack()->push(deleteCommand);
-}
-
 void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
 {
     if (qApp->keyboardModifiers() & Qt::AltModifier) {
@@ -355,7 +325,7 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
                 if (neighbour->name() != item->name())
                     continue;
                 // Found a similar item, destroy this one
-                deleteItem(item);
+                mapScene()->deleteItem(item);
                 neighbour->setSelected(true);
                 destroyedItem = true;
             }
@@ -368,8 +338,8 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
             objPos.setX(objPos.x() + dx * itemRect.width());
             objPos.setY(objPos.y() + dy * itemRect.height());
             item2->levelObject()->setPosition(objPos);
-            scene()->addItem(item2);
-            setModified(true);
+            mapScene()->addItem(item2);
+            mapScene()->setModified(true);
 
             // Deselect the original one
             item->setSelected(false);
@@ -383,6 +353,16 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
             obj->moveBy(dx, dy);
         }
     }
+}
+
+void MapView::copy()
+{
+
+}
+
+void MapView::paste()
+{
+
 }
 
 void MapView::setSelectedLevelObject(LevelObject *object)
@@ -534,8 +514,8 @@ MapView::MapItems MapView::cloneItems(const MapItems &items)
     result.reserve(items.size());
     foreach (MapItem *item, items) {
         MapItem *item2 = new MapItem(*item);
-        scene()->addItem(item2);
-        setModified(true);
+        mapScene()->addItem(item2);
+        mapScene()->setModified(true);
         result.append(item2);
     }
     return result;

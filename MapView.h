@@ -36,15 +36,10 @@ public:
 
     void keyPressEvent(QKeyEvent *event) override;
 
-    bool modified() const;
-    Q_SLOT void setModified(bool modified = true);
-
     LevelObject *selectedLevelObject() const { return selectedLevelObject_; }
 
     void resetScene();
     void selectActiveItems();
-    void deleteSelectedItems();
-    void deleteItem(MapItem *item);
     void moveOrCloneSelectedItemsBy(int dx, int dy);
 
 signals:
@@ -52,6 +47,8 @@ signals:
     void sceneCreated(QGraphicsScene *scene);
 
 public slots:
+    void copy();
+    void paste();
 
 protected slots:
     void setSelectedLevelObject(LevelObject *object);
@@ -84,7 +81,6 @@ protected:
     bool selecting_ = false;
     QPoint startPos_;
     QPoint prevPos_;
-    bool modified_ = false; // TODO: move to scene?
     QPixmap gridPixmap_;
 
     MapItems draggedItems_;

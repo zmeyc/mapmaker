@@ -81,7 +81,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
 
-    if (mapView_->modified()) {
+    if (mapView_->mapScene()->modified()) {
         QMessageBox::StandardButton result =
             QMessageBox::warning(this, "Confirmation",
                 "Level modified. Save the changes?",
@@ -164,7 +164,7 @@ void MainWindow::onSave()
         QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
         return;
     }
-    mapView_->setModified(false);
+    mapView_->mapScene()->setModified(false);
 }
 
 void MainWindow::onSaveAs()
@@ -189,19 +189,9 @@ void MainWindow::onSaveAs()
             QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
             return;
         }
-        mapView_->setModified(false);
+        mapView_->mapScene()->setModified(false);
         settings_->setMapFilename(filename);
     }
-}
-
-void MainWindow::onCopy()
-{
-
-}
-
-void MainWindow::onPaste()
-{
-
 }
 
 void MainWindow::onPreferences()
@@ -222,9 +212,8 @@ void MainWindow::loadLevel()
                                  levelLoader->lastErrorDescription(),
                                  QMessageBox::Ok);
         // If loading completed with errors, treat the map as modified
-        mapView_->setModified(true);
+        mapView_->mapScene()->setModified(true);
     }
-
 }
 
 void MainWindow::onSceneCreated(QGraphicsScene *scene)
@@ -295,11 +284,11 @@ void MainWindow::createEditMenu()
     editMenu->addSeparator();
 
     QAction *copyAction = editMenu->addAction(
-                tr("&Copy"), this, SLOT(onCopy()), QKeySequence::Copy);
+                tr("&Copy"), mapView_, SLOT(copy()), QKeySequence::Copy);
     copyAction->setStatusTip(tr("Copy selected objects to the clipboard"));
 
     QAction *pasteAction = editMenu->addAction(
-                tr("&Paste"), this, SLOT(onPaste()), QKeySequence::Paste);
+                tr("&Paste"), mapView_, SLOT(paste()), QKeySequence::Paste);
     pasteAction->setStatusTip(tr("Paste the clipboard's contents"));
 
     editMenu->addSeparator();
