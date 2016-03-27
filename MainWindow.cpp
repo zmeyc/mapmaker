@@ -1,5 +1,7 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QSplitter>
 #include <QMessageBox>
 #include <QCloseEvent>
@@ -32,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, SLOT(updateWindowTitle()));
     updateWindowTitle();
 
-    resize(800, 600);
+    loadWindowSettings();
 
     mapView_ = new MapView(this);
     connect(mapView_, SIGNAL(sceneCreated(QGraphicsScene*)),
@@ -79,24 +81,29 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
 
-    if (!mapView_->modified())
-        return;
-
-    QMessageBox::StandardButton result =
-        QMessageBox::warning(this, "Confirmation",
-            "Level modified. Save the changes?",
-            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-    if (result == QMessageBox::Yes) {
-        LevelLoader *levelLoader = LevelLoader::sharedInstance();
-        if (!levelLoader->saveToFile(
-                    mapView_,
-                    settings_->mapFilename())) {
-            QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
+    if (mapView_->modified()) {
+        QMessageBox::StandardButton result =
+            QMessageBox::warning(this, "Confirmation",
+                "Level modified. Save the changes?",
+                QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        if (result == QMessageBox::Yes) {
+            LevelLoader *levelLoader = LevelLoader::sharedInstance();
+            if (!levelLoader->saveToFile(
+                        mapView_,
+                        settings_->mapFilename())) {
+                QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
+                event->ignore();
+                return;
+            }
+        } else if (result == QMessageBox::Cancel){
             event->ignore();
+            return;
         }
-    } else if (result == QMessageBox::Cancel){
-        event->ignore();
     }
+
+    saveWindowSettings();
+    settings_->save(); // Not done automatically on Cmd-Q
+    event->accept();
 }
 
 void MainWindow::loadImages()
@@ -228,6 +235,24 @@ void MainWindow::onSceneCreated(QGraphicsScene *scene)
     createEditMenu();
     createMapMenu();
     createViewMenu();
+}
+
+void MainWindow::loadWindowSettings()
+{
+    QByteArray geometry = settings_->geometry();
+    if (geometry.isEmpty()) {
+        QRect rect = QApplication::desktop()->availableGeometry(this);
+        resize(rect.width() * 2 / 3, rect.height() * 3 / 4);
+        move((rect.width() - width()) / 2,
+             (rect.height() - height()) / 2);
+    } else {
+        restoreGeometry(geometry);
+    }
+}
+
+void MainWindow::saveWindowSettings()
+{
+    settings_->setGeometry(saveGeometry());
 }
 
 void MainWindow::createFileMenu()

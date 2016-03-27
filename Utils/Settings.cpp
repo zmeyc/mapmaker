@@ -5,8 +5,9 @@
 #include "Settings.h"
 #include "Utils/Utils.h"
 
-const char *imagesDirectoryKey = "imagesDirectory";
 const char *mapFilenameKey = "mapFilename";
+const char *geometryKey = "window/geometry";
+const char *imagesDirectoryKey = "imagesDirectory";
 const char *showGridKey = "grid/showGrid";
 const char *autoSizeGridKey = "grid/autoSizeGrid";
 const char *gridSizeKey = "grid/gridSize";
@@ -79,6 +80,21 @@ void Settings::setMapFilename(const QString &mapFilename)
 void Settings::resetMapFilename()
 {
     setMapFilename(QString());
+}
+
+QByteArray Settings::geometry() const
+{
+    return geometry_;
+}
+
+void Settings::setGeometry(const QByteArray &geometry)
+{
+    if (geometry_ == geometry)
+        return;
+
+    geometry_ = geometry;
+    settings_.setValue(geometryKey, geometry);
+    emit geometryChanged(geometry);
 }
 
 QString Settings::imagesDirectory() const
@@ -204,6 +220,7 @@ void Settings::setSnapToGrid(bool snapToGrid)
 void Settings::load()
 {
     mapFilename_ = settings_.value(mapFilenameKey).toString();
+    geometry_ = settings_.value(geometryKey).toByteArray();
     imagesDirectory_ = settings_.value(imagesDirectoryKey).toString();
     showGrid_ = settings_.value(showGridKey, false).toBool();
     autoSizeGrid_ = settings_.value(autoSizeGridKey, false).toBool();

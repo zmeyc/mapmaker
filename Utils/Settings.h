@@ -21,6 +21,9 @@ public:
     void setMapFilename(const QString &mapFilename);
     void resetMapFilename();
 
+    QByteArray geometry() const;
+    void setGeometry(const QByteArray &geometry);
+
     QString imagesDirectory() const;
     Q_SLOT void setImagesDirectory(const QString &imagesDirectory);
 
@@ -46,6 +49,7 @@ public:
 
 signals:
     void mapFilenameChanged(const QString &mapFilename);
+    void geometryChanged(const QByteArray &geometry);
     void imagesDirectoryChanged(const QString &imagesDirectory);
     void showGridChanged(bool showGrid);
     bool autoSizeGridChanged(bool autoSizeGrid);
@@ -64,6 +68,7 @@ protected:
 
     QSettings settings_;
     QString mapFilename_;
+    QByteArray geometry_;
 
     // General
     QString imagesDirectory_;

@@ -35,6 +35,8 @@ protected slots:
     void onSceneCreated(QGraphicsScene *scene);
 
 protected:
+    void loadWindowSettings();
+    void saveWindowSettings();
     void createFileMenu();
     void createEditMenu();
     void createMapMenu();

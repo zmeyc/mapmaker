@@ -1,3 +1,5 @@
+// MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
+
 #include "GeneralPage.h"
 
 #include <QGroupBox>
