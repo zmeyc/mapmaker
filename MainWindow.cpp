@@ -155,7 +155,9 @@ void MainWindow::onSave()
                 mapView_,
                 settings_->mapFilename())) {
         QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
+        return;
     }
+    mapView_->setModified(false);
 }
 
 void MainWindow::onSaveAs()
@@ -180,6 +182,7 @@ void MainWindow::onSaveAs()
             QMessageBox::critical(this, "Error", levelLoader->lastErrorDescription());
             return;
         }
+        mapView_->setModified(false);
         settings_->setMapFilename(filename);
     }
 }
