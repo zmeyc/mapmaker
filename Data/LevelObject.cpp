@@ -116,6 +116,14 @@ void LevelObject::setY(qreal y)
     }
 }
 
+void LevelObject::moveBy(qreal dx, qreal dy)
+{
+    QPointF pos = position_;
+    pos.setX(pos.x() + dx);
+    pos.setY(pos.y() + dy);
+    setPosition(pos);
+}
+
 QSizeF LevelObject::size() const
 {
     return size_;

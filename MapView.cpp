@@ -254,6 +254,18 @@ void MapView::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Backspace:
         deleteSelectedWidgets();
         break;
+    case Qt::Key_Right:
+        moveSelectedItemsBy(1, 0);
+        break;
+    case Qt::Key_Left:
+        moveSelectedItemsBy(-1, 0);
+        break;
+    case Qt::Key_Down:
+        moveSelectedItemsBy(0, 1);
+        break;
+    case Qt::Key_Up:
+        moveSelectedItemsBy(0, -1);
+        break;
     }
 }
 
@@ -311,6 +323,15 @@ void MapView::deleteSelectedWidgets()
                                                             mapItem);
             scene->undoStack()->push(deleteCommand);
         }
+    }
+}
+
+void MapView::moveSelectedItemsBy(int dx, int dy)
+{
+    foreach (MapItem *item, selectedItems()) {
+        //item->moveBy(dx, dy);
+        LevelObject *obj = item->levelObject();
+        obj->moveBy(dx, dy);
     }
 }
 

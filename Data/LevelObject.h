@@ -34,6 +34,7 @@ public:
     void setPosition(qreal x, qreal y);
     void setX(qreal x);
     void setY(qreal y);
+    void moveBy(qreal dx, qreal dy);
 
     QSizeF size() const;
     void setSize(const QSizeF &size);

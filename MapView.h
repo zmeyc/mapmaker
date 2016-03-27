@@ -44,6 +44,7 @@ public:
     void resetScene();
     void selectActiveWidgets();
     void deleteSelectedWidgets();
+    void moveSelectedItemsBy(int dx, int dy);
 
 signals:
     void selectedLevelObjectChanged(LevelObject *item);
