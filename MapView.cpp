@@ -141,20 +141,20 @@ void MapView::mousePressEvent(QMouseEvent *event)
         if (item) {
             if (qApp->keyboardModifiers() & Qt::ControlModifier) {
                 item->setSelected(!item->selected());
-                setSelectedLevelObject(nullptr);
+                mapScene()->setSelectedLevelObject(nullptr);
             } else {
                 if (!item->selected())
-                    selectSingleItem(item);
+                    mapScene()->selectSingleItem(item);
             }
             startPos_ = event->pos();
             prevPos_ = event->pos();
-            draggedItems_ = selectedItems();
-            dragInitialBounds_ = itemsBoundingRect(draggedItems_);
+            draggedItems_ = mapScene()->selectedItems();
+            dragInitialBounds_ = mapScene()->itemsBoundingRect(draggedItems_);
             dragPrevBounds_ = dragInitialBounds_;
             dragState_ = AboutToDrag;
         } else {
             if (!(qApp->keyboardModifiers() & Qt::ShiftModifier))
-                selectSingleItem(nullptr);
+                mapScene()->selectSingleItem(nullptr);
             startPos_ = event->pos();
             selecting_ = true;
         }
@@ -218,8 +218,8 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
             if (qApp->keyboardModifiers() & Qt::AltModifier) {
                 //qdbg << "MapView::mouseMoveEvent(): Cloned items" << endl;
                 MapItems oldItems = draggedItems_;
-                draggedItems_ = cloneItems(oldItems);
-                selectItems(oldItems, false);
+                draggedItems_ = mapScene()->cloneItems(oldItems);
+                mapScene()->selectItems(oldItems, false);
             }
             dragState_ = Dragging;
         } else {
@@ -271,6 +271,7 @@ void MapView::keyPressEvent(QKeyEvent *event)
 void MapView::resetScene()
 {
     MapScene *scene = mapScene();
+    scene->setSelectedLevelObject(nullptr);
     scene->clear();
     if (scene->parent() == this)
         delete scene;
@@ -296,13 +297,13 @@ void MapView::selectActiveItems()
         }
     }
 
-    setSelectedLevelObject(nullptr);
+    mapScene()->setSelectedLevelObject(nullptr);
 }
 
 void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
 {
     if (qApp->keyboardModifiers() & Qt::AltModifier) {
-        MapItems selectedItems = this->selectedItems();
+        MapItems selectedItems = mapScene()->selectedItems();
         if (selectedItems.count() != 1)
             return; // Cloning multiple items is not supported
         foreach (MapItem *item, selectedItems) {
@@ -345,9 +346,9 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
             item->setSelected(false);
         }
 
-        setSelectedLevelObject(nullptr);
+        mapScene()->setSelectedLevelObject(nullptr);
     } else {
-        foreach (MapItem *item, selectedItems()) {
+        foreach (MapItem *item, mapScene()->selectedItems()) {
             //item->moveBy(dx, dy);
             LevelObject *obj = item->levelObject();
             obj->moveBy(dx, dy);
@@ -363,29 +364,6 @@ void MapView::copy()
 void MapView::paste()
 {
 
-}
-
-void MapView::setSelectedLevelObject(LevelObject *object)
-{
-    if (selectedLevelObject_ != object) {
-        selectedLevelObject_ = object;
-        emit selectedLevelObjectChanged(object);
-        QSizeF size;
-        if (object)
-            size = object->size();
-        settings_->setSelectedLevelObjectSize(size);
-    }
-}
-
-void MapView::selectSingleItem(MapItem *item)
-{
-    foreach (QGraphicsItem *child, scene()->items()) {
-        MapItem *childMapItem = dynamic_cast<MapItem *>(child);
-        if (childMapItem)
-            childMapItem->setSelected(childMapItem == item);
-    }
-
-    setSelectedLevelObject(item ? item->levelObject() : nullptr);
 }
 
 void MapView::updateGridPixmap()
@@ -413,27 +391,6 @@ QRect MapView::selectionRect() const
     QPoint pos(mapFromGlobal(QCursor::pos()));
     return QRect(startPos_.x(), startPos_.y(),
                  pos.x() - startPos_.x(), pos.y() - startPos_.y());
-}
-
-QList<MapItem *> MapView::selectedItems() const
-{
-    QList<MapItem *> items;
-    foreach (QGraphicsItem *item, scene()->items()) {
-        MapItem *mapItem = dynamic_cast<MapItem *>(item);
-        if (mapItem && mapItem->selected())
-            items.append(mapItem);
-    }
-
-    return items;
-}
-
-QRectF MapView::itemsBoundingRect(const QList<MapItem *> &items) const
-{
-    QRectF rect;
-    foreach (MapItem *item, items)
-        rect = rect.united(item->boundingRect().translated(item->pos()));
-
-    return rect;
 }
 
 void MapView::snapToGrid(qreal firstLine, qreal secondLine, qreal gridSize, qreal *newFirstLine, qreal *newSecondLine) const
@@ -506,25 +463,4 @@ QRectF MapView::snapToGrid(const QRectF &rect, const QSizeF &grid, bool bothSide
     return bothSides
             ? QRectF(QPointF(newLeft, newTop), QPointF(newRight, newBottom))
             : QRectF(QPointF(newLeft, newTop), rect.size());
-}
-
-MapView::MapItems MapView::cloneItems(const MapItems &items)
-{
-    MapItems result;
-    result.reserve(items.size());
-    foreach (MapItem *item, items) {
-        MapItem *item2 = new MapItem(*item);
-        mapScene()->addItem(item2);
-        mapScene()->setModified(true);
-        result.append(item2);
-    }
-    return result;
-}
-
-void MapView::selectItems(const MapItems &items, bool select)
-{
-    foreach (MapItem *item, items) {
-        item->setSelected(select);
-    }
-    setSelectedLevelObject(nullptr);
 }

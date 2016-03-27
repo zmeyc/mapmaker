@@ -43,9 +43,6 @@ MainWindow::MainWindow(QWidget *parent)
     ObjectBrowser *objectBrowser = new ObjectBrowser(this);
     propertyBrowser_ = new PropertyBrowser(this);
 
-    connect(mapView_, SIGNAL(selectedLevelObjectChanged(LevelObject*)),
-            propertyBrowser_, SLOT(setLevelObject(LevelObject*)));
-
     QSplitter *rightColumnSplitter = new QSplitter(this);
     rightColumnSplitter->setOrientation(Qt::Vertical);
     rightColumnSplitter->addWidget(objectBrowser);
@@ -224,6 +221,9 @@ void MainWindow::onSceneCreated(QGraphicsScene *scene)
     createEditMenu();
     createMapMenu();
     createViewMenu();
+
+    connect(scene, SIGNAL(selectedLevelObjectChanged(LevelObject*)),
+            propertyBrowser_, SLOT(setLevelObject(LevelObject*)));
 }
 
 void MainWindow::loadWindowSettings()

@@ -36,14 +36,11 @@ public:
 
     void keyPressEvent(QKeyEvent *event) override;
 
-    LevelObject *selectedLevelObject() const { return selectedLevelObject_; }
-
     void resetScene();
     void selectActiveItems();
     void moveOrCloneSelectedItemsBy(int dx, int dy);
 
 signals:
-    void selectedLevelObjectChanged(LevelObject *item);
     void sceneCreated(QGraphicsScene *scene);
 
 public slots:
@@ -51,8 +48,6 @@ public slots:
     void paste();
 
 protected slots:
-    void setSelectedLevelObject(LevelObject *object);
-    void selectSingleItem(MapItem *item);
     void updateGridPixmap();
 
 protected:
@@ -67,13 +62,9 @@ protected:
     friend class LevelLoader;
 
     QRect selectionRect() const;
-    MapItems selectedItems() const;
-    QRectF itemsBoundingRect(const MapItems &items) const;
 
     void snapToGrid(qreal firstLine, qreal secondLine, qreal gridSize, qreal *newFirstLine, qreal *newSecondLine) const;
     QRectF snapToGrid(const QRectF &rect, const QSizeF &gridSize, bool bothSides = false) const;
-    MapItems cloneItems(const MapItems &items);
-    void selectItems(const MapItems &items, bool select);
 
     Settings *settings_ = nullptr;
     DragState dragState_ = NotDragging;
@@ -86,8 +77,6 @@ protected:
     MapItems draggedItems_;
     QRectF dragInitialBounds_;
     QRectF dragPrevBounds_;
-
-    LevelObject *selectedLevelObject_ = nullptr;
 };
 
 #endif // MAPVIEW_H
