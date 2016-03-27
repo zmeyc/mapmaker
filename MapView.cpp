@@ -344,7 +344,7 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
                         dy * itemRect.height());
             qdbg << "itemPos=" << item->pos() << ", itemRect=" << itemRect << ", targetRect=" << targetRect << endl;
             // FIXME: why doesn't targeted selection work?
-            QList<QGraphicsItem *> neighbours = items(); // items(targetRect.toRect(), Qt::ContainsItemBoundingRect);
+            QList<QGraphicsItem *> neighbours = scene()->items(targetRect.toRect(), Qt::ContainsItemBoundingRect);
             bool destroyedItem = false;
             foreach (QGraphicsItem *gi, neighbours) {
                 MapItem *neighbour = dynamic_cast<MapItem *>(gi);
