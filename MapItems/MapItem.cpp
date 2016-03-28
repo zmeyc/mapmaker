@@ -1,8 +1,11 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
 #include <QPainter>
-#include "Data/LevelObject.h"
 #include "MapItem.h"
+#include "AppStyle.h"
+#include "Data/LevelObject.h"
+#include "Utils/WidgetUtils.h"
+#include "Utils/Utils.h"
 
 MapItem::MapItem(LevelObject *obj, QGraphicsItem *parent)
     : QGraphicsItem(parent)
@@ -100,12 +103,19 @@ void MapItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
         }
     }
 
-    if (selected_) {
-        painter->setPen(Qt::DashLine);
-        painter->drawRect(rect);
-    } else if (active_) {
-        painter->setPen(Qt::DotLine);
-        painter->drawRect(rect);
+    if (selected_ || active_) {
+        painter->save();
+
+        int dpr = painter->device()->devicePixelRatio();
+        AppStyle *style = AppStyle::sharedInstance();
+        const QPen &pen = active_ ? style->activeItemPen(dpr)
+                                  : style->selectedItemPen(dpr);
+        painter->setPen(pen);
+
+        QRectF frame = WidgetUtils::innerFrame(rect, pen, dpr);
+        painter->drawRect(frame);
+
+        painter->restore();
     }
 }
 

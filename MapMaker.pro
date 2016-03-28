@@ -35,6 +35,7 @@ SOURCES += main.cpp\
     Commands/DeleteCommand.cpp \
     Dialogs/SettingsDialog/GeneralPage.cpp \
     Controls/DirectoryLineEdit.cpp \
+    AppStyle.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -55,4 +56,5 @@ HEADERS  += MainWindow.h \
     Commands/DeleteCommand.h \
     Dialogs/SettingsDialog/GeneralPage.h \
     Controls/DirectoryLineEdit.h \
-    Data/MimeTypes.h
+    Data/MimeTypes.h \
+    AppStyle.h
