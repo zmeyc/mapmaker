@@ -8,6 +8,7 @@
 #include <QSharedData>
 
 class LevelObject;
+class DockPointsGraphicsEffect;
 
 class MapItem : public QObject, public QGraphicsItem, public QSharedData
 {
@@ -42,10 +43,12 @@ protected slots:
     void onPositionChanged(const QPointF &pos);
     void onWillChangeSize(const QSizeF &newSize);
     void onShowDockPointsChanged(bool showDockPoints);
+    void onDockPointsChanged();
     void onLevelObjectDestroyed();
 
 protected:
     void commonInit();
+    DockPointsGraphicsEffect *dockPointsEffect();
 
     bool active_ = false;
     bool selected_ = false;

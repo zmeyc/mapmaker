@@ -8,8 +8,6 @@ const int dockPointWidth = 3;
 DockPointsGraphicsEffect::DockPointsGraphicsEffect(QObject *parent)
     : QGraphicsEffect(parent)
 {
-    connect(Settings::sharedInstance(), SIGNAL(showDockPointsChanged(bool)),
-            this, SLOT(onShowDockPointsChanged(bool)));
 }
 
 QRectF DockPointsGraphicsEffect::boundingRectFor(const QRectF &sourceRect) const
