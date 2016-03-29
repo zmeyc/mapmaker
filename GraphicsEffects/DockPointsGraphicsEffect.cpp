@@ -14,7 +14,7 @@ QRectF DockPointsGraphicsEffect::boundingRectFor(const QRectF &sourceRect) const
 {
     QRectF rect = sourceRect;
     foreach (const QPointF &dockPoint, dockPoints_) {
-        rect.unite(dockPointRect(dockPoint, sourceRect));
+        rect = rect.united(dockPointRect(dockPoint, sourceRect));
     }
     return rect;
 }

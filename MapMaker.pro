@@ -36,8 +36,7 @@ SOURCES += main.cpp\
     Dialogs/SettingsDialog/GeneralPage.cpp \
     Controls/DirectoryLineEdit.cpp \
     AppStyle.cpp \
-    GraphicsEffects/DockPointsGraphicsEffect.cpp \
-    Controllers/MetaDataLoader.cpp
+    GraphicsEffects/DockPointsGraphicsEffect.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
