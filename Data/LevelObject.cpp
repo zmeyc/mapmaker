@@ -267,3 +267,9 @@ LevelObject::Properties LevelObject::customProperties() const
 {
     return customProperties_;
 }
+
+void LevelObject::addDockPoint(int x, int y)
+{
+    QPoint point(x, y);
+    dockPoints_.append(point);
+}

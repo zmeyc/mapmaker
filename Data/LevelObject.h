@@ -8,6 +8,8 @@
 #include <QPointF>
 #include <QMap>
 #include <QJsonObject>
+#include <QVector>
+#include <QPoint>
 
 class LevelObject: public QObject
 {
@@ -57,6 +59,8 @@ public:
     void resetCustomProperty(const QString &key);
     Properties customProperties() const;
 
+    void addDockPoint(int x, int y);
+
 signals:
     void modified();
     void nameChanged(const QString &name);
@@ -77,6 +81,7 @@ protected:
     bool flipX_ = false;
     bool flipY_ = false;
     Properties customProperties_;
+    QVector<QPoint> dockPoints_;
 };
 
 #endif // LEVELOBJECT_H

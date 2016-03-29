@@ -35,10 +35,10 @@ bool LevelLoader::loadFromFile(MapView *view, const QString &filename)
         lastErrorDescription_ = "Unable to open the level";
         return false;
     }
-    if (!file.exists()) {
-        lastErrorDescription_ = "Level does not exist";
-        return false;
-    }
+//    if (!file.exists()) {
+//        lastErrorDescription_ = "Level does not exist";
+//        return false;
+//    }
 
     QByteArray data = file.readAll();
     QJsonParseError parseError;

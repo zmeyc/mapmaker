@@ -5,6 +5,7 @@
 #include "MapItem.h"
 #include "AppStyle.h"
 #include "Data/LevelObject.h"
+#include "GraphicsEffects/DockPointsGraphicsEffect.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
 
@@ -135,18 +136,10 @@ void MapItem::setSelected(bool selected)
         return;
 
     if (selected) {
-        Q_ASSERT(!selectionItem_);
-//        selectionItem_ = new QGraphicsRectItem(0, 0, obj_->size().width(), obj_->size().height());
-//        selectionItem_->setParentItem(this);
-//        QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect;
-//        shadow->setColor(Qt::red);
-//        shadow->setXOffset(4);
-//        shadow->setYOffset(4);
-//        setGraphicsEffect(shadow);
+        DockPointsGraphicsEffect *dockPoints = new DockPointsGraphicsEffect;
+        setGraphicsEffect(dockPoints);
     } else {
-//        delete selectionItem_;
-//        selectionItem_ = nullptr;
-//        setGraphicsEffect(nullptr);
+        setGraphicsEffect(nullptr);
     }
 
     selected_ = selected;

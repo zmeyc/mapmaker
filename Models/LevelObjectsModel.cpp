@@ -3,6 +3,8 @@
 #include <QDirIterator>
 #include <QImage>
 #include <QMimeData>
+#include <QJsonArray>
+#include <QJsonParseError>
 
 #include "LevelObjectsModel.h"
 #include "Utils/Utils.h"
@@ -55,6 +57,13 @@ bool LevelObjectsModel::addImagesFromDirectory(const QString &directory)
         obj->setImage(image);
         objectsToAdd.append(obj);
         byName[obj->name()] = obj;
+
+        QFileInfo fileInfo(filename);
+        QString path = fileInfo.path();
+        QString basename = fileInfo.baseName();
+        QString metaFilename = path + basename + "-meta.json";
+        //qdbg << metaFilename << endl;
+        loadMetaData(obj, metaFilename);
     }
 
     beginResetModel();
@@ -154,4 +163,33 @@ void LevelObjectsModel::setDragOffset(const QPoint &dragOffset)
 LevelObject *LevelObjectsModel::placeholder() const
 {
     return placeholder_;
+}
+
+bool LevelObjectsModel::loadMetaData(LevelObject *obj, const QString &filename)
+{
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        lastErrorDescription_ = "Unable to open the image metadata file";
+        return false;
+    }
+
+    QByteArray data = file.readAll();
+    QJsonParseError parseError;
+    QJsonDocument document = QJsonDocument::fromJson(data, &parseError);
+    if (parseError.error != QJsonParseError::NoError) {
+        lastErrorDescription_ = "JSON parse error: " + parseError.errorString();
+        return false;
+    }
+
+    QJsonObject meta = document.object();
+    QJsonArray dockPoints = meta["dockPoints"].toArray();
+    foreach (const QJsonValue &value, dockPoints) {
+        QJsonObject json = value.toObject();
+        int x = json["x"].toInt();
+        int y = json["y"].toInt();
+
+        obj->addDockPoint(x, y);
+    }
+
+    return true;
 }

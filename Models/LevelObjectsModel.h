@@ -38,10 +38,13 @@ signals:
 public slots:
 
 protected:
+    bool loadMetaData(LevelObject *obj, const QString &filename);
+
     QVector<LevelObject *> entries_;
     QMap<QString, LevelObject *> entriesByName_;
     QPoint dragOffset_;
     LevelObject *placeholder_ = nullptr;
+    QString lastErrorDescription_;
 };
 
 #endif // LEVELOBJECTSMODEL_H

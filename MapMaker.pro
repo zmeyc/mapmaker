@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     Commands/DeleteCommand.cpp \
     Dialogs/SettingsDialog/GeneralPage.cpp \
     Controls/DirectoryLineEdit.cpp \
-    AppStyle.cpp
+    AppStyle.cpp \
+    GraphicsEffects/DockPointsGraphicsEffect.cpp \
+    Controllers/MetaDataLoader.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -57,4 +59,5 @@ HEADERS  += MainWindow.h \
     Dialogs/SettingsDialog/GeneralPage.h \
     Controls/DirectoryLineEdit.h \
     Data/MimeTypes.h \
-    AppStyle.h
+    AppStyle.h \
+    GraphicsEffects/DockPointsGraphicsEffect.h

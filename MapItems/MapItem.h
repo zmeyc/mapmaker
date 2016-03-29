@@ -50,7 +50,6 @@ protected:
     bool selected_ = false;
     LevelObject *obj_ = nullptr;
     QString name_;
-//    QGraphicsItem *selectionItem_ = nullptr;
 };
 
 #endif // MAPITEM_H
