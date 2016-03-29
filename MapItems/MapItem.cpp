@@ -7,6 +7,7 @@
 #include "Data/LevelObject.h"
 #include "GraphicsEffects/DockPointsGraphicsEffect.h"
 #include "Utils/WidgetUtils.h"
+#include "Utils/Settings.h"
 #include "Utils/Utils.h"
 
 MapItem::MapItem(LevelObject *obj, QGraphicsItem *parent)
@@ -57,6 +58,10 @@ void MapItem::commonInit()
             this, SLOT(onWillChangeSize(QSizeF)));
     connect(obj_, SIGNAL(destroyed(QObject*)),
             this, SLOT(onLevelObjectDestroyed()));
+
+    connect(Settings::sharedInstance(), SIGNAL(showDockPointsChanged(bool)),
+            this, SLOT(onShowDockPointsChanged(bool)));
+    onShowDockPointsChanged(Settings::sharedInstance()->showDockPoints());
 }
 
 QString MapItem::name() const
@@ -135,14 +140,6 @@ void MapItem::setSelected(bool selected)
     if (selected_ == selected)
         return;
 
-    if (selected && obj_ && !obj_->dockPoints().isEmpty()) {
-        DockPointsGraphicsEffect *dockPointsEffect = new DockPointsGraphicsEffect;
-        dockPointsEffect->setDockPoints(obj_->dockPoints());
-        setGraphicsEffect(dockPointsEffect);
-    } else {
-        setGraphicsEffect(nullptr);
-    }
-
     selected_ = selected;
     update();
     emit selectedChanged(selected);
@@ -162,6 +159,17 @@ void MapItem::onWillChangeSize(const QSizeF &newSize)
 {
     Q_UNUSED(newSize);
     prepareGeometryChange();
+}
+
+void MapItem::onShowDockPointsChanged(bool showDockPoints)
+{
+    if (showDockPoints && obj_ && !obj_->dockPoints().isEmpty()) {
+        DockPointsGraphicsEffect *dockPointsEffect = new DockPointsGraphicsEffect;
+        dockPointsEffect->setDockPoints(obj_->dockPoints());
+        setGraphicsEffect(dockPointsEffect);
+    } else {
+        setGraphicsEffect(nullptr);
+    }
 }
 
 void MapItem::onLevelObjectDestroyed()

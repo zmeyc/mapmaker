@@ -318,4 +318,18 @@ void MainWindow::createViewMenu()
                 tr("Snap to Grid"), settings_, SLOT(setSnapToGrid(bool)), snapToGridShortcut);
     snapToGridAction->setCheckable(true);
     snapToGridAction->setChecked(settings_->snapToGrid());
+
+    viewMenu->addSeparator();
+
+    QKeySequence showDockPointsShortcut(tr("Ctrl+D", "View|Show Dock Points"));
+    QAction *showDockPointsAction = viewMenu->addAction(
+                tr("Show Dock Points"), settings_, SLOT(setShowDockPoints(bool)), showDockPointsShortcut);
+    showDockPointsAction->setCheckable(true);
+    showDockPointsAction->setChecked(settings_->showDockPoints());
+
+    QKeySequence snapToDockPointsShortcut(tr("Ctrl+Shift+D", "View|Snap to Dock Points"));
+    QAction *snapToDockPointsAction = viewMenu->addAction(
+                tr("Snap to Dock Points"), settings_, SLOT(setSnapToDockPoints(bool)), snapToDockPointsShortcut);
+    snapToDockPointsAction->setCheckable(true);
+    snapToDockPointsAction->setChecked(settings_->snapToDockPoints());
 }

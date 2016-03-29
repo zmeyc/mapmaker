@@ -47,6 +47,12 @@ public:
     bool snapToGrid() const;
     Q_SLOT void setSnapToGrid(bool snapToGrid);
 
+    bool showDockPoints() const;
+    Q_SLOT void setShowDockPoints(bool showDockPoints);
+
+    bool snapToDockPoints() const;
+    Q_SLOT void setSnapToDockPoints(bool snapToDockPoints);
+
 signals:
     void mapFilenameChanged(const QString &mapFilename);
     void geometryChanged(const QByteArray &geometry);
@@ -55,6 +61,9 @@ signals:
     bool autoSizeGridChanged(bool autoSizeGrid);
     void gridSizeChanged(const QSizeF &combinedGridSize);
     void finalGridSizeChanged(const QSizeF &combinedGridSize);
+    void snapToGridChanged(bool snapToGrid);
+    void showDockPointsChanged(bool showDockPoints);
+    void snapToDockPointsChanged(bool snapToDockPoints);
 
 public slots:
     void save();
@@ -79,6 +88,10 @@ protected:
     QSizeF gridSize_;
     QSizeF selectedLevelObjectSize_;
     bool snapToGrid_ = false;
+
+    // Dock Points
+    bool showDockPoints_ = false;
+    bool snapToDockPoints_ = true;
 };
 
 #endif // SETTINGS_H

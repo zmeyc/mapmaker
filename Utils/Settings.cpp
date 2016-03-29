@@ -8,9 +8,12 @@
 const char *mapFilenameKey = "mapFilename";
 const char *geometryKey = "window/geometry";
 const char *imagesDirectoryKey = "imagesDirectory";
-const char *showGridKey = "grid/showGrid";
-const char *autoSizeGridKey = "grid/autoSizeGrid";
-const char *gridSizeKey = "grid/gridSize";
+const char *showGridKey = "view/showGrid";
+const char *autoSizeGridKey = "view/autoSizeGrid";
+const char *gridSizeKey = "view/gridSize";
+const char *snapToGridKey = "view/snapToGrid";
+const char *showDockPointsKey = "view/showDockPoints";
+const char *snapToDockPointsKey = "view/snapToDockPoints";
 
 Settings::Settings(QObject *parent)
     : QObject(parent)
@@ -120,11 +123,12 @@ bool Settings::showGrid() const
 
 void Settings::setShowGrid(bool showGrid)
 {
-    if (showGrid_ != showGrid) {
-        showGrid_ = showGrid;
-        settings_.setValue(showGridKey, showGrid_);
-        emit showGridChanged(showGrid);
-    }
+    if (showGrid_ == showGrid)
+        return;
+
+    showGrid_ = showGrid;
+    settings_.setValue(showGridKey, showGrid_);
+    emit showGridChanged(showGrid);
 }
 
 bool Settings::autoSizeGrid() const
@@ -214,7 +218,42 @@ bool Settings::snapToGrid() const
 
 void Settings::setSnapToGrid(bool snapToGrid)
 {
+    if (snapToGrid_ == snapToGrid)
+        return;
+
     snapToGrid_ = snapToGrid;
+    settings_.setValue(snapToGridKey, snapToGrid_);
+    emit snapToGridChanged(snapToGrid);
+}
+
+bool Settings::showDockPoints() const
+{
+    return showDockPoints_;
+}
+
+void Settings::setShowDockPoints(bool showDockPoints)
+{
+    if (showDockPoints_ == showDockPoints)
+        return;
+
+    showDockPoints_ = showDockPoints;
+    settings_.setValue(showDockPointsKey, showDockPoints_);
+    emit showDockPointsChanged(showDockPoints);
+}
+
+bool Settings::snapToDockPoints() const
+{
+    return snapToDockPoints_;
+}
+
+void Settings::setSnapToDockPoints(bool snapToDockPoints)
+{
+    if (snapToDockPoints_ == snapToDockPoints)
+        return;
+
+    snapToDockPoints_ = snapToDockPoints;
+    settings_.setValue(snapToDockPointsKey, snapToDockPoints_);
+    emit snapToDockPointsChanged(snapToDockPoints);
 }
 
 void Settings::load()
@@ -225,6 +264,9 @@ void Settings::load()
     showGrid_ = settings_.value(showGridKey, false).toBool();
     autoSizeGrid_ = settings_.value(autoSizeGridKey, false).toBool();
     gridSize_ = settings_.value(gridSizeKey, QSizeF(32.0, 32.0)).toSizeF();
+    snapToGrid_ = settings_.value(snapToGridKey, false).toBool();
+    showDockPoints_ = settings_.value(showDockPointsKey, true).toBool();
+    snapToDockPoints_ = settings_.value(snapToDockPointsKey, true).toBool();
     qout << "Settings loaded" << endl;
 }
 

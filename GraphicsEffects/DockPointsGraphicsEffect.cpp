@@ -1,5 +1,6 @@
 #include <Qpainter>
 #include "DockPointsGraphicsEffect.h"
+#include "Utils/Settings.h"
 #include "Utils/Utils.h"
 
 const int dockPointWidth = 3;
@@ -7,7 +8,8 @@ const int dockPointWidth = 3;
 DockPointsGraphicsEffect::DockPointsGraphicsEffect(QObject *parent)
     : QGraphicsEffect(parent)
 {
-
+    connect(Settings::sharedInstance(), SIGNAL(showDockPointsChanged(bool)),
+            this, SLOT(onShowDockPointsChanged(bool)));
 }
 
 QRectF DockPointsGraphicsEffect::boundingRectFor(const QRectF &sourceRect) const

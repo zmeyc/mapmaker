@@ -20,6 +20,8 @@ signals:
 
 public slots:
 
+protected slots:
+
 protected:
     QRectF dockPointRect(const QPointF &dockPoint, const QRectF &sourceRect) const;
 
