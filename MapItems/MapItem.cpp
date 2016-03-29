@@ -1,6 +1,7 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
 #include <QPainter>
+#include <QGraphicsEffect>
 #include "MapItem.h"
 #include "AppStyle.h"
 #include "Data/LevelObject.h"
@@ -130,11 +131,27 @@ void MapItem::setActive(bool active)
 
 void MapItem::setSelected(bool selected)
 {
-    if (selected_ != selected) {
-        selected_ = selected;
-        update();
-        emit selectedChanged(selected);
+    if (selected_ == selected)
+        return;
+
+    if (selected) {
+        Q_ASSERT(!selectionItem_);
+//        selectionItem_ = new QGraphicsRectItem(0, 0, obj_->size().width(), obj_->size().height());
+//        selectionItem_->setParentItem(this);
+//        QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect;
+//        shadow->setColor(Qt::red);
+//        shadow->setXOffset(4);
+//        shadow->setYOffset(4);
+//        setGraphicsEffect(shadow);
+    } else {
+//        delete selectionItem_;
+//        selectionItem_ = nullptr;
+//        setGraphicsEffect(nullptr);
     }
+
+    selected_ = selected;
+    update();
+    emit selectedChanged(selected);
 }
 
 void MapItem::update()
