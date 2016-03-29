@@ -166,6 +166,7 @@ void MapScene::onLevelObjectUpdated(const QString &name, LevelObject *obj)
             if (!mapObj)
                 continue;
             mapObj->setImage(obj->image());
+            mapObj->setDockPoints(obj->dockPoints());
         }
     }
 }

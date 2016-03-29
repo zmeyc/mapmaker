@@ -33,6 +33,7 @@ LevelObject *LevelObject::clone(QObject *parent)
     obj->flipX_ = flipX_;
     obj->flipY_ = flipY_;
     obj->customProperties_ = customProperties_;
+    obj->dockPoints_ = dockPoints_;
     return obj;
 }
 
@@ -268,8 +269,20 @@ LevelObject::Properties LevelObject::customProperties() const
     return customProperties_;
 }
 
+QVector<QPointF> LevelObject::dockPoints() const
+{
+    return dockPoints_;
+}
+
+void LevelObject::setDockPoints(const QVector<QPointF> &dockPoints)
+{
+    dockPoints_ = dockPoints;
+    emit dockPointsChanged();
+}
+
 void LevelObject::addDockPoint(int x, int y)
 {
     QPoint point(x, y);
     dockPoints_.append(point);
+    emit dockPointsChanged();
 }

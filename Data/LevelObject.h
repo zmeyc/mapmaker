@@ -59,6 +59,8 @@ public:
     void resetCustomProperty(const QString &key);
     Properties customProperties() const;
 
+    QVector<QPointF> dockPoints() const;
+    void setDockPoints(const QVector<QPointF> &dockPoints);
     void addDockPoint(int x, int y);
 
 signals:
@@ -71,6 +73,7 @@ signals:
     void flipYChanged(bool flipY);
     void customPropertyChanged(const QString &key, const QString &value);
     void imageChanged();
+    void dockPointsChanged();
 
 protected:
     QString name_;
@@ -81,7 +84,7 @@ protected:
     bool flipX_ = false;
     bool flipY_ = false;
     Properties customProperties_;
-    QVector<QPoint> dockPoints_;
+    QVector<QPointF> dockPoints_;
 };
 
 #endif // LEVELOBJECT_H

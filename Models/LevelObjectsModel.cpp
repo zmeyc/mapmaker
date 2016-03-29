@@ -61,7 +61,7 @@ bool LevelObjectsModel::addImagesFromDirectory(const QString &directory)
         QFileInfo fileInfo(filename);
         QString path = fileInfo.path();
         QString basename = fileInfo.baseName();
-        QString metaFilename = path + basename + "-meta.json";
+        QString metaFilename = path + "/" + basename + "-meta.json";
         //qdbg << metaFilename << endl;
         loadMetaData(obj, metaFilename);
     }

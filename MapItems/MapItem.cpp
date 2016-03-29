@@ -135,9 +135,10 @@ void MapItem::setSelected(bool selected)
     if (selected_ == selected)
         return;
 
-    if (selected) {
-        DockPointsGraphicsEffect *dockPoints = new DockPointsGraphicsEffect;
-        setGraphicsEffect(dockPoints);
+    if (selected && obj_ && !obj_->dockPoints().isEmpty()) {
+        DockPointsGraphicsEffect *dockPointsEffect = new DockPointsGraphicsEffect;
+        dockPointsEffect->setDockPoints(obj_->dockPoints());
+        setGraphicsEffect(dockPointsEffect);
     } else {
         setGraphicsEffect(nullptr);
     }
