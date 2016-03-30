@@ -53,6 +53,13 @@ public:
     bool snapToDockPoints() const;
     Q_SLOT void setSnapToDockPoints(bool snapToDockPoints);
 
+    double zoom() const;
+    Q_SLOT void setZoom(double zoom);
+    Q_SLOT void setZoom100();
+    Q_SLOT void setZoom200();
+    Q_SLOT void setZoom300();
+    Q_SLOT void setZoom400();
+
 signals:
     void mapFilenameChanged(const QString &mapFilename);
     void geometryChanged(const QByteArray &geometry);
@@ -64,6 +71,7 @@ signals:
     void snapToGridChanged(bool snapToGrid);
     void showDockPointsChanged(bool showDockPoints);
     void snapToDockPointsChanged(bool snapToDockPoints);
+    void zoomChanged(double zoom);
 
 public slots:
     void save();
@@ -92,6 +100,9 @@ protected:
     // Dock Points
     bool showDockPoints_ = false;
     bool snapToDockPoints_ = true;
+
+    // Zoom
+    double zoom_ = 1.0;
 };
 
 #endif // SETTINGS_H

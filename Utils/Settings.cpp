@@ -256,6 +256,39 @@ void Settings::setSnapToDockPoints(bool snapToDockPoints)
     emit snapToDockPointsChanged(snapToDockPoints);
 }
 
+double Settings::zoom() const
+{
+    return zoom_;
+}
+
+void Settings::setZoom(double zoom)
+{
+    if (zoom_ == zoom)
+        return;
+    zoom_ = zoom;
+    emit zoomChanged(zoom);
+}
+
+void Settings::setZoom100()
+{
+    setZoom(1.0);
+}
+
+void Settings::setZoom200()
+{
+    setZoom(2.0);
+}
+
+void Settings::setZoom300()
+{
+    setZoom(3.0);
+}
+
+void Settings::setZoom400()
+{
+    setZoom(4.0);
+}
+
 void Settings::load()
 {
     mapFilename_ = settings_.value(mapFilenameKey).toString();

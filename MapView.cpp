@@ -42,6 +42,10 @@ MapView::MapView(QWidget *parent)
             this, SLOT(updateGridPixmap()));
     connect(settings_, SIGNAL(finalGridSizeChanged(QSizeF)),
             this, SLOT(updateGridPixmap()));
+
+    connect(settings_, SIGNAL(zoomChanged(double)),
+            this, SLOT(onZoomChanged(double)));
+    onZoomChanged(settings_->zoom());
 }
 
 MapScene *MapView::mapScene() const
@@ -430,6 +434,13 @@ void MapView::updateGridPixmap()
     }
 
     scene()->update();
+}
+
+void MapView::onZoomChanged(double zoom)
+{
+    resetTransform();
+    scale(zoom, zoom);
+    zoom_ = zoom;
 }
 
 QRect MapView::selectionRect() const

@@ -318,6 +318,24 @@ void MainWindow::createViewMenu()
 {
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
 
+    QKeySequence zoom100Shortcut(tr("Ctrl+1", "View|100%"));
+    viewMenu->addAction(
+                tr("100%"), settings_, SLOT(setZoom100()), zoom100Shortcut);
+
+    QKeySequence zoom200Shortcut(tr("Ctrl+2", "View|200%"));
+    viewMenu->addAction(
+                tr("200%"), settings_, SLOT(setZoom200()), zoom200Shortcut);
+
+    QKeySequence zoom300Shortcut(tr("Ctrl+3", "View|300%"));
+    viewMenu->addAction(
+                tr("300%"), settings_, SLOT(setZoom300()), zoom300Shortcut);
+
+    QKeySequence zoom400Shortcut(tr("Ctrl+4", "View|400%"));
+    viewMenu->addAction(
+                tr("400%"), settings_, SLOT(setZoom400()), zoom400Shortcut);
+
+    viewMenu->addSeparator();
+
     QKeySequence showGridShortcut(tr("Ctrl+'", "View|Show Grid"));
     QAction *showGridAction = viewMenu->addAction(
                 tr("Show Grid"), settings_, SLOT(setShowGrid(bool)), showGridShortcut);

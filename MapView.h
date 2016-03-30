@@ -49,6 +49,7 @@ public slots:
 
 protected slots:
     void updateGridPixmap();
+    void onZoomChanged(double zoom);
 
 protected:
     using MapItems = QList<MapItem *>;
@@ -73,6 +74,7 @@ protected:
     QPoint startPos_;
     QPoint prevPos_;
     QPixmap gridPixmap_;
+    double zoom_ = 1.0;
 
     MapItems draggedItems_;
     QRectF dragInitialBounds_;
