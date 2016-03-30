@@ -38,7 +38,7 @@ signals:
 public slots:
 
 protected:
-    bool loadMetaData(LevelObject *obj, const QString &filename);
+    bool loadMetadata(LevelObject *obj, const QString &filename);
 
     QVector<LevelObject *> entries_;
     QMap<QString, LevelObject *> entriesByName_;

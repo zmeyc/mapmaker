@@ -28,6 +28,7 @@ protected slots:
     void onOpen();
     void onSave();
     void onSaveAs();
+    void onReloadImages();
     void onPreferences();
     void loadLevel();
     void onSceneCreated(QGraphicsScene *scene);

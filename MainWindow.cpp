@@ -191,6 +191,11 @@ void MainWindow::onSaveAs()
     }
 }
 
+void MainWindow::onReloadImages()
+{
+    loadImages();
+}
+
 void MainWindow::onPreferences()
 {
     SettingsDialog *dialog = new SettingsDialog(this);
@@ -265,6 +270,12 @@ void MainWindow::createFileMenu()
     QKeySequence saveAsShortcut(tr("Shift+Ctrl+S", "File|Save As"));
     fileMenu->addAction(tr("Save As"),
                         this, SLOT(onSaveAs()), saveAsShortcut);
+
+    fileMenu->addSeparator();
+
+    QKeySequence reloadImagesShortcut(tr("Ctrl+R", "File|Reload Images and Metadata"));
+    fileMenu->addAction(tr("Reload Images and Metadata"),
+                        this, SLOT(onReloadImages()), reloadImagesShortcut);
 }
 
 void MainWindow::createEditMenu()

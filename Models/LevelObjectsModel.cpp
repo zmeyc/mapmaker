@@ -63,7 +63,7 @@ bool LevelObjectsModel::addImagesFromDirectory(const QString &directory)
         QString basename = fileInfo.baseName();
         QString metaFilename = path + "/" + basename + "-meta.json";
         //qdbg << metaFilename << endl;
-        loadMetaData(obj, metaFilename);
+        loadMetadata(obj, metaFilename);
     }
 
     beginResetModel();
@@ -165,7 +165,7 @@ LevelObject *LevelObjectsModel::placeholder() const
     return placeholder_;
 }
 
-bool LevelObjectsModel::loadMetaData(LevelObject *obj, const QString &filename)
+bool LevelObjectsModel::loadMetadata(LevelObject *obj, const QString &filename)
 {
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
