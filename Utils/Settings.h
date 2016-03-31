@@ -50,6 +50,9 @@ public:
     bool showDockPoints() const;
     Q_SLOT void setShowDockPoints(bool showDockPoints);
 
+    int dockingDistance() const;
+    Q_SLOT void setDockingDistance(int dockingDistance);
+
     bool snapToDockPoints() const;
     Q_SLOT void setSnapToDockPoints(bool snapToDockPoints);
 
@@ -70,6 +73,7 @@ signals:
     void finalGridSizeChanged(const QSizeF &combinedGridSize);
     void snapToGridChanged(bool snapToGrid);
     void showDockPointsChanged(bool showDockPoints);
+    void dockingDistanceChanged(int dockingDistance);
     void snapToDockPointsChanged(bool snapToDockPoints);
     void zoomChanged(double zoom);
 
@@ -99,6 +103,7 @@ protected:
 
     // Dock Points
     bool showDockPoints_ = false;
+    int dockingDistance_ = 6;
     bool snapToDockPoints_ = true;
 
     // Zoom

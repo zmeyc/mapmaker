@@ -13,6 +13,7 @@ const char *autoSizeGridKey = "view/autoSizeGrid";
 const char *gridSizeKey = "view/gridSize";
 const char *snapToGridKey = "view/snapToGrid";
 const char *showDockPointsKey = "view/showDockPoints";
+const char *dockingDistanceKey = "view/dockingDistance";
 const char *snapToDockPointsKey = "view/snapToDockPoints";
 
 Settings::Settings(QObject *parent)
@@ -241,6 +242,21 @@ void Settings::setShowDockPoints(bool showDockPoints)
     emit showDockPointsChanged(showDockPoints);
 }
 
+int Settings::dockingDistance() const
+{
+    return dockingDistance_;
+}
+
+void Settings::setDockingDistance(int dockingDistance)
+{
+    if (dockingDistance_ == dockingDistance)
+        return;
+
+    dockingDistance_ = dockingDistance;
+    settings_.setValue(dockingDistanceKey, dockingDistance_);
+    emit dockingDistanceChanged(dockingDistance);
+}
+
 bool Settings::snapToDockPoints() const
 {
     return snapToDockPoints_;
@@ -299,6 +315,7 @@ void Settings::load()
     gridSize_ = settings_.value(gridSizeKey, QSizeF(32.0, 32.0)).toSizeF();
     snapToGrid_ = settings_.value(snapToGridKey, false).toBool();
     showDockPoints_ = settings_.value(showDockPointsKey, true).toBool();
+    dockingDistance_ = settings_.value(dockingDistanceKey, 6).toInt();
     snapToDockPoints_ = settings_.value(snapToDockPointsKey, true).toBool();
     qout << "Settings loaded" << endl;
 }

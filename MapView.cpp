@@ -533,6 +533,9 @@ QRectF MapView::snapToGrid(const QRectF &rect, const QSizeF &grid, bool bothSide
 
 QPointF MapView::snapToDockPoints(const QPointF &movedByDelta) const
 {
+    qreal maxDockingDistance = settings_->dockingDistance();
+    qreal squareMaxDockingDistance = maxDockingDistance * maxDockingDistance;
+
     qreal minimumSquareDistance = std::numeric_limits<qreal>::max();
     QPointF chosenDelta(0, 0);
 
@@ -555,7 +558,7 @@ QPointF MapView::snapToDockPoints(const QPointF &movedByDelta) const
                 if (!item2)
                     continue;
 
-                qdbg << "item " << item2->name() << " selected " << item2->selected() << endl;
+                //qdbg << "item " << item2->name() << " selected " << item2->selected() << endl;
                 if (item2->selected())
                     continue;
 
@@ -569,9 +572,8 @@ QPointF MapView::snapToDockPoints(const QPointF &movedByDelta) const
                     QPointF delta = translatedDockPoint2 - translatedDockPoint;
                     qreal squareDistance = delta.x() * delta.x() + delta.y() * delta.y();
 
-                    qreal maxDockingDistanceSq = 6 * 6;
-                    if (squareDistance < maxDockingDistanceSq && squareDistance < minimumSquareDistance) {
-                        qdbg << "set chosen delta " << delta << endl;
+                    if (squareDistance < squareMaxDockingDistance && squareDistance < minimumSquareDistance) {
+                        //qdbg << "set chosen delta " << delta << endl;
                         chosenDelta = delta;
                         minimumSquareDistance = squareDistance;
                     }

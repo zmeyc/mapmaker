@@ -20,6 +20,7 @@ public slots:
 
 protected:
     QGroupBox *createGridGroupBox();
+    QGroupBox *createDockPointsGroupBox();
 
     Settings *settings_;
 };
