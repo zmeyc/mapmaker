@@ -44,8 +44,9 @@ void DockPointsGraphicsEffect::setDockPoints(const QVector<QPointF> &dockPoints)
 
 QRectF DockPointsGraphicsEffect::dockPointRect(const QPointF &dockPoint, const QRectF &sourceRect) const
 {
-    QRectF rect(dockPoint.x() - dockPointWidth / 2 - sourceRect.width() / 2,
-               dockPoint.y() - dockPointWidth / 2 - sourceRect.height() / 2,
+    //qdbg << "dockPoint: " << dockPoint << endl;
+    QRectF rect(dockPoint.x() - dockPointWidth / 2,
+               dockPoint.y() - dockPointWidth / 2,
                dockPointWidth,
                dockPointWidth);
     return rect;

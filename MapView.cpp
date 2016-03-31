@@ -1,5 +1,6 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
+#include <limits>
 #include <QtMath>
 #include <QDragEnterEvent>
 #include <QMimeData>
@@ -215,8 +216,6 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
 //        QPointF prev = mapToScene(prevPos_);
 //        QPointF diff = scenePos - prev;
 //        scroll(diff.x(), diff.y());
-
-        prevPos_ = event->pos();
         return;
     }
 
@@ -234,12 +233,19 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
             //qdbg << "MapView::mouseMoveEvent(): Dragging" << endl;
         }
 
-        QRectF shiftedRect = dragInitialBounds_.translated(event->pos() - startPos_);
+        QPointF movedByDelta = event->pos() - startPos_;
+        QRectF shiftedRect = dragInitialBounds_.translated(movedByDelta);
         QSizeF gridSize = settings_->finalGridSize();
 
+//        QRectF targetRect;
+//        if (settings_->snapToGrid())
+//            targetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ true);
+//        else
+//            targetRect = shiftedRect;
+
         QRectF targetRect;
-        if (settings_->snapToGrid())
-            targetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ true);
+        if (settings_->snapToDockPoints())
+            targetRect = dragPrevBounds_.translated(snapToDockPoints(shiftedRect.topLeft() - dragPrevBounds_.topLeft()));
         else
             targetRect = shiftedRect;
 
@@ -253,6 +259,9 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
 
         dragPrevBounds_ = targetRect;
     }
+
+
+    prevPos_ = event->pos();
 }
 
 void MapView::keyPressEvent(QKeyEvent *event)
@@ -520,4 +529,56 @@ QRectF MapView::snapToGrid(const QRectF &rect, const QSizeF &grid, bool bothSide
     return bothSides
             ? QRectF(QPointF(newLeft, newTop), QPointF(newRight, newBottom))
             : QRectF(QPointF(newLeft, newTop), rect.size());
+}
+
+QPointF MapView::snapToDockPoints(const QPointF &movedByDelta) const
+{
+    qreal minimumSquareDistance = std::numeric_limits<qreal>::max();
+    QPointF chosenDelta(0, 0);
+
+    foreach (MapItem *item, mapScene()->selectedItems()) {
+        LevelObject *obj = item->levelObject();
+        if (!obj)
+            continue;
+
+        // Find nearest object to which current object can potentially dock
+        QRectF nearestItemsRect = item->boundingRect().translated(item->pos() + movedByDelta).marginsAdded(QMarginsF(50, 50, 50, 50));
+        QList<QGraphicsItem *> nearestItems = scene()->items(nearestItemsRect, Qt::IntersectsItemBoundingRect);
+
+        QPointF shiftedObjPosition = obj->position() + movedByDelta;
+
+        foreach (const QPointF &dockPoint, obj->dockPoints()) {
+            QPointF translatedDockPoint = shiftedObjPosition + dockPoint;
+
+            foreach (QGraphicsItem *graphicsItem2, nearestItems) {
+                MapItem *item2 = dynamic_cast<MapItem *>(graphicsItem2);
+                if (!item2)
+                    continue;
+
+                qdbg << "item " << item2->name() << " selected " << item2->selected() << endl;
+                if (item2->selected())
+                    continue;
+
+                LevelObject *obj2 = item2->levelObject();
+                if (!obj2)
+                    continue;
+
+                foreach (const QPointF &dockPoint2, obj2->dockPoints()) {
+                    QPointF translatedDockPoint2 = obj2->position() + dockPoint2;
+
+                    QPointF delta = translatedDockPoint2 - translatedDockPoint;
+                    qreal squareDistance = delta.x() * delta.x() + delta.y() * delta.y();
+
+                    qreal maxDockingDistanceSq = 6 * 6;
+                    if (squareDistance < maxDockingDistanceSq && squareDistance < minimumSquareDistance) {
+                        qdbg << "set chosen delta " << delta << endl;
+                        chosenDelta = delta;
+                        minimumSquareDistance = squareDistance;
+                    }
+                }
+            }
+        }
+    }
+
+    return movedByDelta + chosenDelta;
 }

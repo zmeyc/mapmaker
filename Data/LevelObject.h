@@ -61,7 +61,7 @@ public:
 
     QVector<QPointF> dockPoints() const;
     void setDockPoints(const QVector<QPointF> &dockPoints);
-    void addDockPoint(int x, int y);
+    void addDockPoint(qreal x, qreal y);
 
 signals:
     void modified();

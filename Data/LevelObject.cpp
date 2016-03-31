@@ -280,9 +280,9 @@ void LevelObject::setDockPoints(const QVector<QPointF> &dockPoints)
     emit dockPointsChanged();
 }
 
-void LevelObject::addDockPoint(int x, int y)
+void LevelObject::addDockPoint(qreal x, qreal y)
 {
-    QPoint point(x, y);
+    QPointF point(x, y);
     dockPoints_.append(point);
     emit dockPointsChanged();
 }
