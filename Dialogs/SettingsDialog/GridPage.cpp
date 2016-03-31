@@ -27,6 +27,7 @@ QGroupBox *GridPage::createGridGroupBox()
 {
     QCheckBox *autoSizeGridCheckBox = new QCheckBox;
     QSpinBox *cellSizeSpinBox = new QSpinBox;
+    cellSizeSpinBox->setMaximumWidth(50);
 
     autoSizeGridCheckBox->setChecked(settings_->autoSizeGrid());
     connect(autoSizeGridCheckBox, SIGNAL(clicked(bool)),
