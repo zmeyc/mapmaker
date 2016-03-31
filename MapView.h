@@ -3,9 +3,11 @@
 #ifndef MAPVIEW_H
 #define MAPVIEW_H
 
+#include <functional>
 #include <QGraphicsView>
 #include <QPixmap>
 
+class QGraphicsItem;
 class Settings;
 class LevelObject;
 class MapScene;
@@ -66,6 +68,8 @@ protected:
 
     void snapToGrid(qreal firstLine, qreal secondLine, qreal gridSize, qreal *newFirstLine, qreal *newSecondLine) const;
     QRectF snapToGrid(const QRectF &rect, const QSizeF &gridSize, bool bothSides = false) const;
+
+    QPointF snapToDockPoints(const QPointF &movedByDelta) const;
 
     Settings *settings_ = nullptr;
     DragState dragState_ = NotDragging;

@@ -185,8 +185,8 @@ bool LevelObjectsModel::loadMetadata(LevelObject *obj, const QString &filename)
     QJsonArray dockPoints = meta["dockPoints"].toArray();
     foreach (const QJsonValue &value, dockPoints) {
         QJsonObject json = value.toObject();
-        int x = json["x"].toInt();
-        int y = json["y"].toInt();
+        qreal x = json["x"].toDouble() - obj->size().width() / 2;
+        qreal y = json["y"].toDouble() - obj->size().height() / 2;
 
         obj->addDockPoint(x, y);
     }
