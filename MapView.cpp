@@ -233,19 +233,29 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
             //qdbg << "MapView::mouseMoveEvent(): Dragging" << endl;
         }
 
-        QPointF movedByDelta = event->pos() - startPos_;
-        QRectF shiftedRect = dragInitialBounds_.translated(movedByDelta);
-        QSizeF gridSize = settings_->finalGridSize();
+        QRectF shiftedRect = dragInitialBounds_.translated(event->pos() - startPos_);
 
-//        QRectF targetRect;
-//        if (settings_->snapToGrid())
-//            targetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ true);
-//        else
-//            targetRect = shiftedRect;
+        qreal gridDistance = std::numeric_limits<qreal>::max();
+        QRectF gridTargetRect;
+        if (settings_->snapToGrid()) {
+            QSizeF gridSize = settings_->finalGridSize();
+            gridTargetRect = snapToGrid(shiftedRect, gridSize, /* bothSides */ true);
+            gridDistance = QVector2D(gridTargetRect.topLeft() - shiftedRect.topLeft()).length();
+        }
+
+        qreal dockDistance = std::numeric_limits<qreal>::max();
+        QRectF dockTargetRect;
+        if (settings_->snapToDockPoints()) {
+            QPointF dockShift = snapToDockPoints(shiftedRect.topLeft() - dragPrevBounds_.topLeft());
+            dockTargetRect = dragPrevBounds_.translated(dockShift);
+            dockDistance = QVector2D(dockTargetRect.topLeft() - shiftedRect.topLeft()).length();
+        }
 
         QRectF targetRect;
-        if (settings_->snapToDockPoints())
-            targetRect = dragPrevBounds_.translated(snapToDockPoints(shiftedRect.topLeft() - dragPrevBounds_.topLeft()));
+        if (dockDistance < gridDistance)
+            targetRect = dockTargetRect;
+        else if (gridDistance < std::numeric_limits<qreal>::max())
+            targetRect = gridTargetRect;
         else
             targetRect = shiftedRect;
 
@@ -555,7 +565,6 @@ QPointF MapView::snapToDockPoints(const QPointF &movedByDelta) const
                 if (!item2)
                     continue;
 
-                qdbg << "item " << item2->name() << " selected " << item2->selected() << endl;
                 if (item2->selected())
                     continue;
 
@@ -580,5 +589,8 @@ QPointF MapView::snapToDockPoints(const QPointF &movedByDelta) const
         }
     }
 
-    return movedByDelta + chosenDelta;
+    return minimumSquareDistance < std::numeric_limits<qreal>::max()
+            ? movedByDelta + chosenDelta
+            : QPointF(std::numeric_limits<qreal>::max(),
+                      std::numeric_limits<qreal>::max());
 }
