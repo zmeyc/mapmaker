@@ -3,7 +3,7 @@
 #include "Utils/Settings.h"
 #include "Utils/Utils.h"
 
-const int dockPointWidth = 3;
+const int dockPointWidth = 2;
 
 DockPointsGraphicsEffect::DockPointsGraphicsEffect(QObject *parent)
     : QGraphicsEffect(parent)
