@@ -30,7 +30,7 @@ void DockPointsGraphicsEffect::draw(QPainter *painter)
 
     foreach (const QPointF &dockPoint, dockPoints_) {
         QRectF rect = dockPointRect(dockPoint, sourceRect);
-        qdbg << "Drawing dock point: " << rect << endl;
+        //qdbg << "Drawing dock point: " << rect << endl;
         painter->fillRect(rect, Qt::red);
     }
 }
