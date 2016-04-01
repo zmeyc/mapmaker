@@ -184,9 +184,7 @@ void MapItem::updateDockPoints()
     if (obj_) {
         DockPointsGraphicsEffect *effect = dockPointsEffect();
         if (effect) {
-            effect->setDockPoints(obj_->dockPoints());
-            effect->setFlipX(obj_->flipX());
-            effect->setFlipY(obj_->flipY());
+            effect->setDockPoints(obj_->dockPointsWithXYFlip());
         }
     }
 }

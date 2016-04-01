@@ -60,6 +60,8 @@ public:
     Properties customProperties() const;
 
     QVector<QPointF> dockPoints() const;
+    // Warning: this function reconstructs the dockPoints array on every call
+    QVector<QPointF> dockPointsWithXYFlip() const;
     void setDockPoints(const QVector<QPointF> &dockPoints);
     void addDockPoint(qreal x, qreal y);
 

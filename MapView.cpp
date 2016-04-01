@@ -561,7 +561,7 @@ QPointF MapView::snapToDockPoints(const QPointF &movedByDelta) const
 
         QPointF shiftedObjPosition = obj->position() + movedByDelta;
 
-        foreach (const QPointF &dockPoint, obj->dockPoints()) {
+        foreach (const QPointF &dockPoint, obj->dockPointsWithXYFlip()) {
             QPointF translatedDockPoint = shiftedObjPosition + dockPoint;
 
             foreach (QGraphicsItem *graphicsItem2, nearestItems) {
@@ -576,7 +576,7 @@ QPointF MapView::snapToDockPoints(const QPointF &movedByDelta) const
                 if (!obj2)
                     continue;
 
-                foreach (const QPointF &dockPoint2, obj2->dockPoints()) {
+                foreach (const QPointF &dockPoint2, obj2->dockPointsWithXYFlip()) {
                     QPointF translatedDockPoint2 = obj2->position() + dockPoint2;
 
                     QPointF delta = translatedDockPoint2 - translatedDockPoint;

@@ -47,42 +47,9 @@ QRectF DockPointsGraphicsEffect::dockPointRect(const QPointF &dockPoint, const Q
 {
     Q_UNUSED(sourceRect);
 
-    qreal dockPointX = dockPoint.x();
-    qdbg << "dockPointX=" << dockPointX << endl;
-    if (flipX_)
-        dockPointX = -dockPointX;
-
-    qreal dockPointY = dockPoint.y();
-    if (flipY_)
-        dockPointY = -dockPointY;
-
-    QRectF rect(dockPointX - dockPointWidth / 2,
-               dockPointY - dockPointWidth / 2,
+    QRectF rect(dockPoint.x() - dockPointWidth / 2,
+               dockPoint.y() - dockPointWidth / 2,
                dockPointWidth,
                dockPointWidth);
     return rect;
-}
-
-bool DockPointsGraphicsEffect::flipY() const
-{
-    return flipY_;
-}
-
-void DockPointsGraphicsEffect::setFlipY(bool flipY)
-{
-    flipY_ = flipY;
-    updateBoundingRect();
-    update();
-}
-
-bool DockPointsGraphicsEffect::flipX() const
-{
-    return flipX_;
-}
-
-void DockPointsGraphicsEffect::setFlipX(bool flipX)
-{
-    flipX_ = flipX;
-    updateBoundingRect();
-    update();
 }

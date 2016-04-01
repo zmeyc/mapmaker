@@ -274,6 +274,17 @@ QVector<QPointF> LevelObject::dockPoints() const
     return dockPoints_;
 }
 
+QVector<QPointF> LevelObject::dockPointsWithXYFlip() const
+{
+    QVector<QPointF> result;
+    result.reserve(dockPoints_.size());
+    foreach (const QPointF &point, dockPoints_) {
+        result.append(QPointF(flipX_ ? -point.x() : point.x(),
+                              flipY_ ? -point.y() : point.y()));
+    }
+    return result;
+}
+
 void LevelObject::setDockPoints(const QVector<QPointF> &dockPoints)
 {
     dockPoints_ = dockPoints;
