@@ -148,7 +148,7 @@ void MapView::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         MapItem *item = dynamic_cast<MapItem *>(itemAt(event->pos()));
         if (item) {
-            if (qApp->keyboardModifiers() & Qt::ControlModifier) {
+            if (qApp->keyboardModifiers() & (Qt::ControlModifier | Qt::ShiftModifier)) {
                 item->setSelected(!item->selected());
                 mapScene()->setSelectedLevelObject(nullptr);
             } else {
