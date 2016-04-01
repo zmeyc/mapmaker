@@ -48,6 +48,7 @@ signals:
 public slots:
     void copy();
     void paste();
+    void selectAll();
 
 protected slots:
     void updateGridPixmap();

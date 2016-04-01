@@ -302,6 +302,9 @@ void MainWindow::createEditMenu()
                 tr("&Paste"), mapView_, SLOT(paste()), QKeySequence::Paste);
     pasteAction->setStatusTip(tr("Paste the clipboard's contents"));
 
+    editMenu->addAction(
+                tr("Select &All"), mapView_, SLOT(selectAll()), QKeySequence::SelectAll);
+
     editMenu->addSeparator();
 
     QKeySequence preferencesShortcut(tr("Ctrl+K", "Edit|Preferences..."));

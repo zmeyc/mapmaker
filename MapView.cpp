@@ -436,6 +436,11 @@ void MapView::paste()
     mapScene()->selectItems(spawnedItems, true);
 }
 
+void MapView::selectAll()
+{
+    mapScene()->selectAllItems(true);
+}
+
 void MapView::updateGridPixmap()
 {
     //qdbg << "MapView::updateGridPixmap()" << endl;
