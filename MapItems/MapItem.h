@@ -43,7 +43,7 @@ protected slots:
     void onPositionChanged(const QPointF &pos);
     void onWillChangeSize(const QSizeF &newSize);
     void onShowDockPointsChanged(bool showDockPoints);
-    void onDockPointsChanged();
+    void updateDockPoints();
     void onLevelObjectDestroyed();
 
 protected:

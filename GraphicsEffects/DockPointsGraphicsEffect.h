@@ -16,6 +16,12 @@ public:
 
     void setDockPoints(const QVector<QPointF> &dockPoints);
 
+    bool flipX() const;
+    void setFlipX(bool flipX);
+
+    bool flipY() const;
+    void setFlipY(bool flipY);
+
 signals:
 
 public slots:
@@ -26,6 +32,8 @@ protected:
     QRectF dockPointRect(const QPointF &dockPoint, const QRectF &sourceRect) const;
 
     QVector<QPointF> dockPoints_;
+    bool flipX_ = false;
+    bool flipY_ = false;
 };
 
 #endif // DOCKPOINTSGRAPHICSEFFECT_H

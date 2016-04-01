@@ -1,5 +1,6 @@
 #include <Qpainter>
 #include "DockPointsGraphicsEffect.h"
+#include "MapItems/MapItem.h"
 #include "Utils/Settings.h"
 #include "Utils/Utils.h"
 
@@ -29,7 +30,7 @@ void DockPointsGraphicsEffect::draw(QPainter *painter)
 
     foreach (const QPointF &dockPoint, dockPoints_) {
         QRectF rect = dockPointRect(dockPoint, sourceRect);
-        //qdbg << "Drawing dock point: " << rect << endl;
+        qdbg << "Drawing dock point: " << rect << endl;
         painter->fillRect(rect, Qt::red);
     }
 }
@@ -44,10 +45,44 @@ void DockPointsGraphicsEffect::setDockPoints(const QVector<QPointF> &dockPoints)
 
 QRectF DockPointsGraphicsEffect::dockPointRect(const QPointF &dockPoint, const QRectF &sourceRect) const
 {
-    //qdbg << "dockPoint: " << dockPoint << endl;
-    QRectF rect(dockPoint.x() - dockPointWidth / 2,
-               dockPoint.y() - dockPointWidth / 2,
+    Q_UNUSED(sourceRect);
+
+    qreal dockPointX = dockPoint.x();
+    qdbg << "dockPointX=" << dockPointX << endl;
+    if (flipX_)
+        dockPointX = -dockPointX;
+
+    qreal dockPointY = dockPoint.y();
+    if (flipY_)
+        dockPointY = -dockPointY;
+
+    QRectF rect(dockPointX - dockPointWidth / 2,
+               dockPointY - dockPointWidth / 2,
                dockPointWidth,
                dockPointWidth);
     return rect;
+}
+
+bool DockPointsGraphicsEffect::flipY() const
+{
+    return flipY_;
+}
+
+void DockPointsGraphicsEffect::setFlipY(bool flipY)
+{
+    flipY_ = flipY;
+    updateBoundingRect();
+    update();
+}
+
+bool DockPointsGraphicsEffect::flipX() const
+{
+    return flipX_;
+}
+
+void DockPointsGraphicsEffect::setFlipX(bool flipX)
+{
+    flipX_ = flipX;
+    updateBoundingRect();
+    update();
 }

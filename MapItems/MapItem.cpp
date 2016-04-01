@@ -53,8 +53,13 @@ void MapItem::commonInit()
             this, SLOT(update()));
     connect(obj_, SIGNAL(imageChanged()),
             this, SLOT(update()));
+
     connect(obj_, SIGNAL(dockPointsChanged()),
-            this, SLOT(onDockPointsChanged()));
+            this, SLOT(updateDockPoints()));
+    connect(obj_, SIGNAL(flipXChanged(bool)),
+            this, SLOT(updateDockPoints()));
+    connect(obj_, SIGNAL(flipYChanged(bool)),
+            this, SLOT(updateDockPoints()));
 
     connect(obj_, SIGNAL(willChangeSize(QSizeF)),
             this, SLOT(onWillChangeSize(QSizeF)));
@@ -174,12 +179,15 @@ void MapItem::onShowDockPointsChanged(bool showDockPoints)
     }
 }
 
-void MapItem::onDockPointsChanged()
+void MapItem::updateDockPoints()
 {
     if (obj_) {
         DockPointsGraphicsEffect *effect = dockPointsEffect();
-        if (effect)
+        if (effect) {
             effect->setDockPoints(obj_->dockPoints());
+            effect->setFlipX(obj_->flipX());
+            effect->setFlipY(obj_->flipY());
+        }
     }
 }
 
