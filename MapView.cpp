@@ -277,6 +277,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
 void MapView::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
+    case Qt::Key_Delete:
     case Qt::Key_Backspace:
         mapScene()->deleteSelectedItems();
         break;
