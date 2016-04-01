@@ -233,7 +233,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
             //qdbg << "MapView::mouseMoveEvent(): Dragging" << endl;
         }
 
-        QRectF shiftedRect = dragInitialBounds_.translated(event->pos() - startPos_);
+        QRectF shiftedRect = dragInitialBounds_.translated((event->pos() - startPos_) / settings_->zoom());
 
         qreal gridDistance = std::numeric_limits<qreal>::max();
         QRectF gridTargetRect;
