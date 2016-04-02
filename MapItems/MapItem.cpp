@@ -172,8 +172,9 @@ void MapItem::onShowDockPointsChanged(bool showDockPoints)
 {
     if (showDockPoints && obj_ && !obj_->dockPoints().isEmpty()) {
         DockPointsGraphicsEffect *dockPointsEffect = new DockPointsGraphicsEffect;
-        dockPointsEffect->setDockPoints(obj_->dockPoints());
         setGraphicsEffect(dockPointsEffect);
+
+        updateDockPoints();
     } else {
         setGraphicsEffect(nullptr);
     }
