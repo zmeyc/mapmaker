@@ -66,9 +66,10 @@ void MapItem::commonInit()
     connect(obj_, SIGNAL(destroyed(QObject*)),
             this, SLOT(onLevelObjectDestroyed()));
 
-    connect(Settings::sharedInstance(), SIGNAL(showDockPointsChanged(bool)),
+    Settings *settings = Settings::sharedInstance();
+    connect(settings, SIGNAL(showDockPointsChanged(bool)),
             this, SLOT(onShowDockPointsChanged(bool)));
-    onShowDockPointsChanged(Settings::sharedInstance()->showDockPoints());
+    onShowDockPointsChanged(settings->showDockPoints());
 }
 
 QString MapItem::name() const
@@ -170,23 +171,22 @@ void MapItem::onWillChangeSize(const QSizeF &newSize)
 
 void MapItem::onShowDockPointsChanged(bool showDockPoints)
 {
-    if (showDockPoints && obj_ && !obj_->dockPoints().isEmpty()) {
-        DockPointsGraphicsEffect *dockPointsEffect = new DockPointsGraphicsEffect;
-        setGraphicsEffect(dockPointsEffect);
-
-        updateDockPoints();
-    } else {
-        setGraphicsEffect(nullptr);
-    }
+    Q_UNUSED(showDockPoints);
+    updateDockPoints();
 }
 
 void MapItem::updateDockPoints()
 {
-    if (obj_) {
+    Settings *settings = Settings::sharedInstance();
+    if (settings->showDockPoints() && obj_ && !obj_->dockPoints().isEmpty()) {
         DockPointsGraphicsEffect *effect = dockPointsEffect();
-        if (effect) {
-            effect->setDockPoints(obj_->dockPointsWithXYFlip());
+        if (!effect) {
+            effect = new DockPointsGraphicsEffect;
+            setGraphicsEffect(effect);
         }
+        effect->setDockPoints(obj_->dockPointsWithXYFlip());
+    } else {
+        setGraphicsEffect(nullptr);
     }
 }
 

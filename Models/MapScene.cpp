@@ -159,10 +159,11 @@ void MapScene::selectSingleItem(MapItem *item)
 
 void MapScene::onLevelObjectUpdated(const QString &name, LevelObject *obj)
 {
-    foreach (QGraphicsItem *item, items()) {
-        MapItem *mapItem = dynamic_cast<MapItem *>(item);
-        if (mapItem && mapItem->name() == name) {
-            LevelObject *mapObj = mapItem->levelObject();
+    // TODO: optimize
+    foreach (QGraphicsItem *graphicsItem, items()) {
+        MapItem *item = dynamic_cast<MapItem *>(graphicsItem);
+        if (item && item->name() == name) {
+            LevelObject *mapObj = item->levelObject();
             if (!mapObj)
                 continue;
             mapObj->setImage(obj->image());
