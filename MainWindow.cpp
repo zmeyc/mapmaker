@@ -16,6 +16,7 @@
 #include "ObjectBrowser.h"
 #include "PropertyBrowser.h"
 #include "Controllers/LevelLoader.h"
+#include "Controllers/ZoomController.h"
 #include "Dialogs/SettingsDialog/SettingsDialog.h"
 #include "Models/MapScene.h"
 #include "Models/LevelObjectsModel.h"
@@ -320,6 +321,16 @@ void MainWindow::createMapMenu()
 void MainWindow::createViewMenu()
 {
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
+
+    ZoomController *zoomController = ZoomController::sharedInstance();
+
+    QKeySequence zoomInShortcut(tr("Ctrl++", "View|Zoom In"));
+    viewMenu->addAction(
+                tr("Zoom In"), zoomController, SLOT(nextZoomLevel()), zoomInShortcut);
+
+    QKeySequence zoomOutShortcut(tr("Ctrl+-", "View|Zoom Out"));
+    viewMenu->addAction(
+                tr("Zoom Out"), zoomController, SLOT(previousZoomLevel()), zoomOutShortcut);
 
     QKeySequence zoom100Shortcut(tr("Ctrl+1", "View|100%"));
     viewMenu->addAction(

@@ -36,7 +36,8 @@ SOURCES += main.cpp\
     Dialogs/SettingsDialog/GeneralPage.cpp \
     Controls/DirectoryLineEdit.cpp \
     AppStyle.cpp \
-    GraphicsEffects/DockPointsGraphicsEffect.cpp
+    GraphicsEffects/DockPointsGraphicsEffect.cpp \
+    Controllers/ZoomController.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -59,4 +60,5 @@ HEADERS  += MainWindow.h \
     Controls/DirectoryLineEdit.h \
     Data/MimeTypes.h \
     AppStyle.h \
-    GraphicsEffects/DockPointsGraphicsEffect.h
+    GraphicsEffects/DockPointsGraphicsEffect.h \
+    Controllers/ZoomController.h
