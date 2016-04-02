@@ -95,12 +95,22 @@ void MapScene::selectAllItems(bool select)
 
 void MapScene::deleteSelectedItems()
 {
+    bool macroStarted = false;
+    int itemCount = selectedItems().count();
+    if (itemCount > 1) {
+        undoStack()->beginMacro(tr("Delete %1 Items").arg(itemCount));
+        macroStarted = true;
+    }
+
     foreach (QGraphicsItem *item, items()) {
         MapItem *mapItem = dynamic_cast<MapItem *>(item);
         if (mapItem && mapItem->selected()) {
             deleteItem(mapItem);
         }
     }
+
+    if (macroStarted)
+        undoStack()->endMacro();
 }
 
 void MapScene::deleteItem(MapItem *item)
