@@ -1,12 +1,12 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
 #include <QGraphicsScene>
-#include "DeleteCommand.h"
+#include "DeleteItemCommand.h"
 #include "MapItems/MapItem.h"
 #include "Data/LevelObject.h"
 #include "Utils/Utils.h"
 
-DeleteCommand::DeleteCommand(QGraphicsScene *scene,
+DeleteItemCommand::DeleteItemCommand(QGraphicsScene *scene,
                              MapItem *mapItem,
                              QUndoCommand *parent)
     : QUndoCommand(parent)
@@ -31,7 +31,7 @@ DeleteCommand::DeleteCommand(QGraphicsScene *scene,
 
 }
 
-DeleteCommand::~DeleteCommand()
+DeleteItemCommand::~DeleteItemCommand()
 {
     qerr << "~DeleteCommand[" << ptrToString(this) <<
             "]::DeleteCommand(): mapItem=" << ptrToString(mapItem_) << endl;
@@ -41,7 +41,7 @@ DeleteCommand::~DeleteCommand()
     }
 }
 
-void DeleteCommand::redo()
+void DeleteItemCommand::redo()
 {
     qerr << "DeleteCommand[" << ptrToString(this) <<
             "]::redo(): mapItem=" << ptrToString(mapItem_) <<
@@ -50,7 +50,7 @@ void DeleteCommand::redo()
         scene_->removeItem(mapItem_);
 }
 
-void DeleteCommand::undo()
+void DeleteItemCommand::undo()
 {
     qerr << "DeleteCommand[" << ptrToString(this) <<
             "]::undo(): mapItem=" << ptrToString(mapItem_) <<
@@ -59,7 +59,7 @@ void DeleteCommand::undo()
         scene_->addItem(mapItem_);
 }
 
-void DeleteCommand::onMapItemDestroyed()
+void DeleteItemCommand::onMapItemDestroyed()
 {
     MapItem *mapItem = (MapItem *)sender();
     qerr << "DeleteCommand[" << ptrToString(this) <<

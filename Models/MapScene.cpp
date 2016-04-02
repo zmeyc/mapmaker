@@ -6,7 +6,7 @@
 #include "MapScene.h"
 #include "Models/LevelObjectsModel.h"
 #include "MapItems/MapItem.h"
-#include "Commands/DeleteCommand.h"
+#include "Commands/DeleteItemCommand.h"
 #include "Utils/Settings.h"
 
 MapScene::MapScene(QObject *parent)
@@ -118,7 +118,7 @@ void MapScene::deleteItem(MapItem *item)
     //delete item;
     setModified(true);
 
-    QUndoCommand *deleteCommand = new DeleteCommand(this, item);
+    QUndoCommand *deleteCommand = new DeleteItemCommand(this, item);
     undoStack()->push(deleteCommand);
 }
 
