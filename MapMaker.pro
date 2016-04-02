@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     Controls/DirectoryLineEdit.cpp \
     AppStyle.cpp \
     GraphicsEffects/DockPointsGraphicsEffect.cpp \
-    Controllers/ZoomController.cpp
+    Controllers/ZoomController.cpp \
+    Commands/NewItemCommand.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -61,4 +62,5 @@ HEADERS  += MainWindow.h \
     Data/MimeTypes.h \
     AppStyle.h \
     GraphicsEffects/DockPointsGraphicsEffect.h \
-    Controllers/ZoomController.h
+    Controllers/ZoomController.h \
+    Commands/NewItemCommand.h

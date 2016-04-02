@@ -18,6 +18,7 @@
 #include "Models/LevelObjectsModel.h"
 #include "Models/MapScene.h"
 #include "Controllers/LevelLoader.h"
+#include "Commands/NewItemCommand.h"
 #include "Utils/Settings.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
@@ -139,8 +140,11 @@ void MapView::dropEvent(QDropEvent *event)
     connect(newObject, SIGNAL(modified()),
             mapScene(), SLOT(setModified()));
     MapItem *item = new MapItem(newObject);
-    mapScene()->addItem(item);
-    mapScene()->setModified(true);
+    MapScene *scene = mapScene();
+    //scene->addItem(item);
+    scene->setModified(true);
+    NewItemCommand *command = new NewItemCommand(scene, item);
+    scene->undoStack()->push(command);
 }
 
 void MapView::mousePressEvent(QMouseEvent *event)
