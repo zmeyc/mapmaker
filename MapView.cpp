@@ -19,6 +19,7 @@
 #include "Models/MapScene.h"
 #include "Controllers/LevelLoader.h"
 #include "Commands/NewItemCommand.h"
+#include "Commands/UpdateItemPropertyCommand.h"
 #include "Utils/Settings.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
@@ -181,6 +182,26 @@ void MapView::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
     if (event->button() == Qt::LeftButton) {
+        if (dragState_ == Dragging) {
+            // dragPrevBounds_ is actually targetRect here
+            QPointF movementDelta = dragPrevBounds_.topLeft() - dragInitialBounds_.topLeft();
+            MapScene *scene = mapScene();
+            bool macroStarted = false;
+            if (draggedItems_.count() > 1) {
+                scene->undoStack()->beginMacro(tr("Move Items"));
+                macroStarted = true;
+            }
+            foreach (MapItem *item, draggedItems_) {
+                UpdateItemPropertyCommand *command = new UpdateItemPropertyCommand(
+                            mapScene(), item,
+                            "position", item->levelObject()->position(),
+                            item->levelObject()->position() - movementDelta
+                            );
+                mapScene()->undoStack()->push(command);
+            }
+            if (macroStarted)
+                scene->undoStack()->endMacro();
+        }
         dragState_ = NotDragging;
         if (selecting_) {
             selecting_ = false;

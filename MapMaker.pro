@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     GraphicsEffects/DockPointsGraphicsEffect.cpp \
     Controllers/ZoomController.cpp \
     Commands/NewItemCommand.cpp \
-    Commands/DeleteItemCommand.cpp
+    Commands/DeleteItemCommand.cpp \
+    Commands/UpdateItemPropertyCommand.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -63,4 +64,5 @@ HEADERS  += MainWindow.h \
     GraphicsEffects/DockPointsGraphicsEffect.h \
     Controllers/ZoomController.h \
     Commands/NewItemCommand.h \
-    Commands/DeleteItemCommand.h
+    Commands/DeleteItemCommand.h \
+    Commands/UpdateItemPropertyCommand.h
