@@ -19,6 +19,7 @@
 #include "Models/MapScene.h"
 #include "Controllers/LevelLoader.h"
 #include "Commands/NewItemCommand.h"
+#include "Commands/DeleteItemCommand.h"
 #include "Commands/UpdateItemPropertyCommand.h"
 #include "Utils/Settings.h"
 #include "Utils/WidgetUtils.h"
@@ -398,7 +399,11 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
                 if (neighbour->name() != item->name())
                     continue;
                 // Found a similar item, destroy this one
-                mapScene()->deleteItem(item);
+                DeleteItemCommand *command = new DeleteItemCommand(
+                            mapScene(), item);
+                mapScene()->undoStack()->push(command);
+                //mapScene()->deleteItem(item);
+                mapScene()->setModified(true);
                 neighbour->setSelected(true);
                 destroyedItem = true;
             }
@@ -411,7 +416,10 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
             objPos.setX(objPos.x() + dx * itemRect.width());
             objPos.setY(objPos.y() + dy * itemRect.height());
             item2->levelObject()->setPosition(objPos);
-            mapScene()->addItem(item2);
+            NewItemCommand *command = new NewItemCommand(
+                        mapScene(), item2);
+            mapScene()->undoStack()->push(command);
+            //mapScene()->addItem(item2);
             mapScene()->setModified(true);
 
             // Deselect the original one
