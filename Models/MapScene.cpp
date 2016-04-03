@@ -6,6 +6,7 @@
 #include "MapScene.h"
 #include "Models/LevelObjectsModel.h"
 #include "MapItems/MapItem.h"
+#include "Commands/NewItemCommand.h"
 #include "Commands/DeleteItemCommand.h"
 #include "Utils/Settings.h"
 
@@ -128,9 +129,11 @@ MapScene::MapItems MapScene::cloneItems(const MapItems &items)
     result.reserve(items.size());
     foreach (MapItem *item, items) {
         MapItem *item2 = new MapItem(*item);
-        addItem(item2);
+        //addItem(item2);
         setModified(true);
         result.append(item2);
+        NewItemCommand *command = new NewItemCommand(this, item2);
+        undoStack()->push(command);
     }
     return result;
 }

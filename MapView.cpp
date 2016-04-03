@@ -166,6 +166,10 @@ void MapView::mousePressEvent(QMouseEvent *event)
             dragInitialBounds_ = mapScene()->itemsBoundingRect(draggedItems_);
             dragPrevBounds_ = dragInitialBounds_;
             dragState_ = AboutToDrag;
+            if (macroStarted_) {
+                qerr << "Unterminated macro" << endl;
+                mapScene()->undoStack()->endMacro();
+            }
         } else {
             if (!(qApp->keyboardModifiers() & Qt::ShiftModifier))
                 mapScene()->selectSingleItem(nullptr);
@@ -176,46 +180,6 @@ void MapView::mousePressEvent(QMouseEvent *event)
         prevPos_ = event->pos();
         scrolling_ = true;
     }
-}
-
-void MapView::mouseReleaseEvent(QMouseEvent *event)
-{
-    Q_UNUSED(event);
-    if (event->button() == Qt::LeftButton) {
-        if (dragState_ == Dragging) {
-            // dragPrevBounds_ is actually targetRect here
-            QPointF movementDelta = dragPrevBounds_.topLeft() - dragInitialBounds_.topLeft();
-            MapScene *scene = mapScene();
-            bool macroStarted = false;
-            if (draggedItems_.count() > 1) {
-                scene->undoStack()->beginMacro(tr("Move Items"));
-                macroStarted = true;
-            }
-            foreach (MapItem *item, draggedItems_) {
-                UpdateItemPropertyCommand *command = new UpdateItemPropertyCommand(
-                            mapScene(), item,
-                            "position", item->levelObject()->position(),
-                            item->levelObject()->position() - movementDelta
-                            );
-                mapScene()->undoStack()->push(command);
-            }
-            if (macroStarted)
-                scene->undoStack()->endMacro();
-        }
-        dragState_ = NotDragging;
-        if (selecting_) {
-            selecting_ = false;
-            selectActiveItems();
-            scene()->update();
-        }
-    } else if (event->button() == Qt::RightButton) {
-        scrolling_ = false;
-    }
-}
-
-void MapView::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    Q_UNUSED(event);
 }
 
 void MapView::mouseMoveEvent(QMouseEvent *event)
@@ -248,10 +212,25 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
         if (dragState_ == AboutToDrag) {
             //qdbg << "MapView::mouseMoveEvent(): About to drag" << endl;
             if (qApp->keyboardModifiers() & Qt::AltModifier) {
+                int itemCount = draggedItems_.count();
+                if (itemCount == 1) {
+                    mapScene()->undoStack()->beginMacro(
+                                tr("Clone '%1'").arg(draggedItems_.at(0)->name()));
+                    macroStarted_ = true;
+                } else if (itemCount > 1) {
+                    mapScene()->undoStack()->beginMacro(tr("Clone Items"));
+                    macroStarted_ = true;
+                }
+
                 //qdbg << "MapView::mouseMoveEvent(): Cloned items" << endl;
                 MapItems oldItems = draggedItems_;
                 draggedItems_ = mapScene()->cloneItems(oldItems);
                 mapScene()->selectItems(oldItems, false);
+            } else {
+                if (draggedItems_.count() > 1) {
+                    mapScene()->undoStack()->beginMacro(tr("Move Items"));
+                    macroStarted_ = true;
+                }
             }
             dragState_ = Dragging;
         } else {
@@ -297,6 +276,43 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
 
 
     prevPos_ = event->pos();
+}
+
+void MapView::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+    if (event->button() == Qt::LeftButton) {
+        MapScene *scene = mapScene();
+        if (dragState_ == Dragging) {
+            // dragPrevBounds_ is actually targetRect here
+            QPointF movementDelta = dragPrevBounds_.topLeft() - dragInitialBounds_.topLeft();
+            foreach (MapItem *item, draggedItems_) {
+                UpdateItemPropertyCommand *command = new UpdateItemPropertyCommand(
+                            mapScene(), item,
+                            "position", item->levelObject()->position(),
+                            item->levelObject()->position() - movementDelta
+                            );
+                scene->undoStack()->push(command);
+            }
+        }
+        if (macroStarted_) {
+            scene->undoStack()->endMacro();
+            macroStarted_ = false;
+        }
+        dragState_ = NotDragging;
+        if (selecting_) {
+            selecting_ = false;
+            selectActiveItems();
+            scene->update();
+        }
+    } else if (event->button() == Qt::RightButton) {
+        scrolling_ = false;
+    }
+}
+
+void MapView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
 }
 
 void MapView::keyPressEvent(QKeyEvent *event)
