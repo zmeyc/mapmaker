@@ -23,12 +23,14 @@ MapScene::MapScene(QObject *parent)
 
 bool MapScene::modified() const
 {
-    return modified_;
+    return modified_ || !undoStack_->isClean();
 }
 
 void MapScene::setModified(bool modified)
 {
     modified_ = modified;
+    if (!modified)
+        undoStack_->setClean();
 }
 
 QJsonArray MapScene::toJsonArray(bool selectedOnly) const
