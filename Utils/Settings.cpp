@@ -59,10 +59,14 @@ bool Settings::parseCommandLine()
         qerr << parser.errorText() << endl;
     }
 
-    QString mapFilename = parser.value(mapFilenameOption);;
+    if (!parser.positionalArguments().isEmpty())
+        mapFilename_ = parser.positionalArguments().first();
+
+    QString mapFilename = parser.value(mapFilenameOption);
     if (!mapFilename.isEmpty())
         mapFilename_ = mapFilename;
     commandline_.imagesDirectory_ = parser.value(imagesDirectoryOption);
+
     return true;
 }
 
