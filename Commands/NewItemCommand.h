@@ -1,22 +1,22 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
-#ifndef DELETECOMMAND_H
-#define DELETECOMMAND_H
+#ifndef NEWITEMCOMMAND_H
+#define NEWITEMCOMMAND_H
 
 #include <QObject>
 #include <QUndoCommand>
-#include "MapItems/MapItem.h"
 
 class QGraphicsScene;
+class MapItem;
 
-class DeleteCommand: public QObject, public QUndoCommand
+class NewItemCommand: public QObject, public QUndoCommand
 {
     Q_OBJECT
 public:
-    explicit DeleteCommand(QGraphicsScene *scene,
-                           MapItem *mapItem,
-                           QUndoCommand *parent = 0);
-    ~DeleteCommand();
+    explicit NewItemCommand(QGraphicsScene *scene,
+                            MapItem *mapItem,
+                            QUndoCommand *parent = 0);
+    ~NewItemCommand();
 
     void redo() override;
     void undo() override;
@@ -33,4 +33,4 @@ protected:
     MapItem *mapItem_ = nullptr;
 };
 
-#endif // DELETECOMMAND_H
+#endif // NEWITEMCOMMAND_H

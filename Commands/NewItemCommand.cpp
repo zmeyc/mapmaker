@@ -1,20 +1,20 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
 #include <QGraphicsScene>
-#include "DeleteCommand.h"
+#include "NewItemCommand.h"
 #include "MapItems/MapItem.h"
 #include "Data/LevelObject.h"
 #include "Utils/Utils.h"
 
-DeleteCommand::DeleteCommand(QGraphicsScene *scene,
+NewItemCommand::NewItemCommand(QGraphicsScene *scene,
                              MapItem *mapItem,
                              QUndoCommand *parent)
     : QUndoCommand(parent)
     , scene_(scene)
     , mapItem_(mapItem)
 {
-    qerr << "DeleteCommand[" << ptrToString(this) <<
-            "]::DeleteCommand(): mapItem=" << ptrToString(mapItem) <<
+    qerr << "NewItemCommand[" << ptrToString(this) <<
+            "]::NewItemCommand(): mapItem=" << ptrToString(mapItem) <<
             ", scene=" << ptrToString(mapItem->scene()) << endl;
 
     mapItem->ref.ref();
@@ -25,44 +25,44 @@ DeleteCommand::DeleteCommand(QGraphicsScene *scene,
         name = obj->name();
     else
         name = "object";
-    setText(QObject::tr("Delete") + " '" + name + "'");
+    setText(QObject::tr("New") + " '" + name + "'");
     QObject::connect(mapItem_, SIGNAL(destroyed(QObject*)),
                      this, SLOT(onMapItemDestroyed()));
 
 }
 
-DeleteCommand::~DeleteCommand()
+NewItemCommand::~NewItemCommand()
 {
-    qerr << "~DeleteCommand[" << ptrToString(this) <<
-            "]::DeleteCommand(): mapItem=" << ptrToString(mapItem_) << endl;
+    qerr << "~NewItemCommand[" << ptrToString(this) <<
+            "]::NewItemCommand(): mapItem=" << ptrToString(mapItem_) << endl;
     if (mapItem_ && false == mapItem_->ref.deref()) {
         if (!mapItem_->scene())
             delete mapItem_;
     }
 }
 
-void DeleteCommand::redo()
+void NewItemCommand::redo()
 {
-    qerr << "DeleteCommand[" << ptrToString(this) <<
+    qerr << "NewItemCommand[" << ptrToString(this) <<
             "]::redo(): mapItem=" << ptrToString(mapItem_) <<
-            ", scene=" << ptrToString(mapItem_->scene()) << endl;
-    if (mapItem_)
-        scene_->removeItem(mapItem_);
-}
-
-void DeleteCommand::undo()
-{
-    qerr << "DeleteCommand[" << ptrToString(this) <<
-            "]::undo(): mapItem=" << ptrToString(mapItem_) <<
             ", scene=" << ptrToString(mapItem_->scene()) << endl;
     if (mapItem_)
         scene_->addItem(mapItem_);
 }
 
-void DeleteCommand::onMapItemDestroyed()
+void NewItemCommand::undo()
+{
+    qerr << "NewItemCommand[" << ptrToString(this) <<
+            "]::undo(): mapItem=" << ptrToString(mapItem_) <<
+            ", scene=" << ptrToString(mapItem_->scene()) << endl;
+    if (mapItem_)
+        scene_->removeItem(mapItem_);
+}
+
+void NewItemCommand::onMapItemDestroyed()
 {
     MapItem *mapItem = (MapItem *)sender();
-    qerr << "DeleteCommand[" << ptrToString(this) <<
+    qerr << "NewItemCommand[" << ptrToString(this) <<
             "]::onMapItemDestroyed(): mapItem=" << ptrToString(mapItem) <<
             ", scene=" << ptrToString(mapItem->scene()) << endl;
     mapItem_ = nullptr; // destroyed by scene

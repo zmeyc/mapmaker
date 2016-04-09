@@ -32,9 +32,9 @@ public:
     void dropEvent(QDropEvent *event) override;
 
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
 
     void keyPressEvent(QKeyEvent *event) override;
 
@@ -48,6 +48,7 @@ signals:
 public slots:
     void copy();
     void paste();
+    void selectAll();
 
 protected slots:
     void updateGridPixmap();
@@ -80,6 +81,7 @@ protected:
     QPixmap gridPixmap_;
     double zoom_ = 1.0;
 
+    bool macroStarted_ = false;
     MapItems draggedItems_;
     QRectF dragInitialBounds_;
     QRectF dragPrevBounds_;

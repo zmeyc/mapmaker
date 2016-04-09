@@ -18,6 +18,9 @@
 #include "Models/LevelObjectsModel.h"
 #include "Models/MapScene.h"
 #include "Controllers/LevelLoader.h"
+#include "Commands/NewItemCommand.h"
+#include "Commands/DeleteItemCommand.h"
+#include "Commands/UpdateItemPropertyCommand.h"
 #include "Utils/Settings.h"
 #include "Utils/WidgetUtils.h"
 #include "Utils/Utils.h"
@@ -139,8 +142,11 @@ void MapView::dropEvent(QDropEvent *event)
     connect(newObject, SIGNAL(modified()),
             mapScene(), SLOT(setModified()));
     MapItem *item = new MapItem(newObject);
-    mapScene()->addItem(item);
-    mapScene()->setModified(true);
+    MapScene *scene = mapScene();
+    //scene->addItem(item);
+    scene->setModified(true);
+    NewItemCommand *command = new NewItemCommand(scene, item);
+    scene->undoStack()->push(command);
 }
 
 void MapView::mousePressEvent(QMouseEvent *event)
@@ -148,7 +154,7 @@ void MapView::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         MapItem *item = dynamic_cast<MapItem *>(itemAt(event->pos()));
         if (item) {
-            if (qApp->keyboardModifiers() & Qt::ControlModifier) {
+            if (qApp->keyboardModifiers() & (Qt::ControlModifier | Qt::ShiftModifier)) {
                 item->setSelected(!item->selected());
                 mapScene()->setSelectedLevelObject(nullptr);
             } else {
@@ -161,6 +167,10 @@ void MapView::mousePressEvent(QMouseEvent *event)
             dragInitialBounds_ = mapScene()->itemsBoundingRect(draggedItems_);
             dragPrevBounds_ = dragInitialBounds_;
             dragState_ = AboutToDrag;
+            if (macroStarted_) {
+                qerr << "Unterminated macro" << endl;
+                mapScene()->undoStack()->endMacro();
+            }
         } else {
             if (!(qApp->keyboardModifiers() & Qt::ShiftModifier))
                 mapScene()->selectSingleItem(nullptr);
@@ -171,26 +181,6 @@ void MapView::mousePressEvent(QMouseEvent *event)
         prevPos_ = event->pos();
         scrolling_ = true;
     }
-}
-
-void MapView::mouseReleaseEvent(QMouseEvent *event)
-{
-    Q_UNUSED(event);
-    if (event->button() == Qt::LeftButton) {
-        dragState_ = NotDragging;
-        if (selecting_) {
-            selecting_ = false;
-            selectActiveItems();
-            scene()->update();
-        }
-    } else if (event->button() == Qt::RightButton) {
-        scrolling_ = false;
-    }
-}
-
-void MapView::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    Q_UNUSED(event);
 }
 
 void MapView::mouseMoveEvent(QMouseEvent *event)
@@ -223,10 +213,25 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
         if (dragState_ == AboutToDrag) {
             //qdbg << "MapView::mouseMoveEvent(): About to drag" << endl;
             if (qApp->keyboardModifiers() & Qt::AltModifier) {
+                int itemCount = draggedItems_.count();
+                if (itemCount == 1) {
+                    mapScene()->undoStack()->beginMacro(
+                                tr("Clone '%1'").arg(draggedItems_.at(0)->name()));
+                    macroStarted_ = true;
+                } else if (itemCount > 1) {
+                    mapScene()->undoStack()->beginMacro(tr("Clone Items"));
+                    macroStarted_ = true;
+                }
+
                 //qdbg << "MapView::mouseMoveEvent(): Cloned items" << endl;
                 MapItems oldItems = draggedItems_;
                 draggedItems_ = mapScene()->cloneItems(oldItems);
                 mapScene()->selectItems(oldItems, false);
+            } else {
+                if (draggedItems_.count() > 1) {
+                    mapScene()->undoStack()->beginMacro(tr("Move Items"));
+                    macroStarted_ = true;
+                }
             }
             dragState_ = Dragging;
         } else {
@@ -274,9 +279,49 @@ void MapView::mouseMoveEvent(QMouseEvent *event)
     prevPos_ = event->pos();
 }
 
+void MapView::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+    if (event->button() == Qt::LeftButton) {
+        MapScene *scene = mapScene();
+        if (dragState_ == Dragging) {
+            // dragPrevBounds_ is actually targetRect here
+            QPointF movementDelta = dragPrevBounds_.topLeft() - dragInitialBounds_.topLeft();
+            foreach (MapItem *item, draggedItems_) {
+                UpdateItemPropertyCommand *command = new UpdateItemPropertyCommand(
+                            mapScene(), item,
+                            "position", item->levelObject()->position(),
+                            item->levelObject()->position() - movementDelta
+                            );
+                scene->undoStack()->push(command);
+            }
+        }
+        if (macroStarted_) {
+            scene->undoStack()->endMacro();
+            macroStarted_ = false;
+        }
+        dragState_ = NotDragging;
+        if (selecting_) {
+            selecting_ = false;
+            selectActiveItems();
+            scene->update();
+        }
+    } else if (event->button() == Qt::RightButton) {
+        scrolling_ = false;
+    }
+}
+
+void MapView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+}
+
 void MapView::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
+    case Qt::Key_Escape:
+        mapScene()->selectAllItems(false);
+        break;
     case Qt::Key_Delete:
     case Qt::Key_Backspace:
         mapScene()->deleteSelectedItems();
@@ -354,7 +399,11 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
                 if (neighbour->name() != item->name())
                     continue;
                 // Found a similar item, destroy this one
-                mapScene()->deleteItem(item);
+                DeleteItemCommand *command = new DeleteItemCommand(
+                            mapScene(), item);
+                mapScene()->undoStack()->push(command);
+                //mapScene()->deleteItem(item);
+                mapScene()->setModified(true);
                 neighbour->setSelected(true);
                 destroyedItem = true;
             }
@@ -367,7 +416,10 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
             objPos.setX(objPos.x() + dx * itemRect.width());
             objPos.setY(objPos.y() + dy * itemRect.height());
             item2->levelObject()->setPosition(objPos);
-            mapScene()->addItem(item2);
+            NewItemCommand *command = new NewItemCommand(
+                        mapScene(), item2);
+            mapScene()->undoStack()->push(command);
+            //mapScene()->addItem(item2);
             mapScene()->setModified(true);
 
             // Deselect the original one
@@ -434,6 +486,11 @@ void MapView::paste()
         // even if error occured
     }
     mapScene()->selectItems(spawnedItems, true);
+}
+
+void MapView::selectAll()
+{
+    mapScene()->selectAllItems(true);
 }
 
 void MapView::updateGridPixmap()

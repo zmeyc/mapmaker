@@ -32,11 +32,14 @@ SOURCES += main.cpp\
     Dialogs/SettingsDialog/SettingsDialog.cpp \
     Dialogs/SettingsDialog/GridPage.cpp \
     Dialogs/NewPropertyDialog/NewPropertyDialog.cpp \
-    Commands/DeleteCommand.cpp \
     Dialogs/SettingsDialog/GeneralPage.cpp \
     Controls/DirectoryLineEdit.cpp \
     AppStyle.cpp \
-    GraphicsEffects/DockPointsGraphicsEffect.cpp
+    GraphicsEffects/DockPointsGraphicsEffect.cpp \
+    Controllers/ZoomController.cpp \
+    Commands/NewItemCommand.cpp \
+    Commands/DeleteItemCommand.cpp \
+    Commands/UpdateItemPropertyCommand.cpp
 
 HEADERS  += MainWindow.h \
     ObjectBrowser.h \
@@ -54,9 +57,12 @@ HEADERS  += MainWindow.h \
     Dialogs/SettingsDialog/SettingsDialog.h \
     Dialogs/SettingsDialog/GridPage.h \
     Dialogs/NewPropertyDialog/NewPropertyDialog.h \
-    Commands/DeleteCommand.h \
     Dialogs/SettingsDialog/GeneralPage.h \
     Controls/DirectoryLineEdit.h \
     Data/MimeTypes.h \
     AppStyle.h \
-    GraphicsEffects/DockPointsGraphicsEffect.h
+    GraphicsEffects/DockPointsGraphicsEffect.h \
+    Controllers/ZoomController.h \
+    Commands/NewItemCommand.h \
+    Commands/DeleteItemCommand.h \
+    Commands/UpdateItemPropertyCommand.h

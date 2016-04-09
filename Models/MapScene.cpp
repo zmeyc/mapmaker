@@ -6,7 +6,8 @@
 #include "MapScene.h"
 #include "Models/LevelObjectsModel.h"
 #include "MapItems/MapItem.h"
-#include "Commands/DeleteCommand.h"
+#include "Commands/NewItemCommand.h"
+#include "Commands/DeleteItemCommand.h"
 #include "Utils/Settings.h"
 
 MapScene::MapScene(QObject *parent)
@@ -22,12 +23,14 @@ MapScene::MapScene(QObject *parent)
 
 bool MapScene::modified() const
 {
-    return modified_;
+    return modified_ || !undoStack_->isClean();
 }
 
 void MapScene::setModified(bool modified)
 {
     modified_ = modified;
+    if (!modified)
+        undoStack_->setClean();
 }
 
 QJsonArray MapScene::toJsonArray(bool selectedOnly) const
@@ -95,12 +98,22 @@ void MapScene::selectAllItems(bool select)
 
 void MapScene::deleteSelectedItems()
 {
+    bool macroStarted = false;
+    int itemCount = selectedItems().count();
+    if (itemCount > 1) {
+        undoStack()->beginMacro(tr("Delete %1 Items").arg(itemCount));
+        macroStarted = true;
+    }
+
     foreach (QGraphicsItem *item, items()) {
         MapItem *mapItem = dynamic_cast<MapItem *>(item);
         if (mapItem && mapItem->selected()) {
             deleteItem(mapItem);
         }
     }
+
+    if (macroStarted)
+        undoStack()->endMacro();
 }
 
 void MapScene::deleteItem(MapItem *item)
@@ -108,7 +121,7 @@ void MapScene::deleteItem(MapItem *item)
     //delete item;
     setModified(true);
 
-    QUndoCommand *deleteCommand = new DeleteCommand(this, item);
+    QUndoCommand *deleteCommand = new DeleteItemCommand(this, item);
     undoStack()->push(deleteCommand);
 }
 
@@ -118,9 +131,11 @@ MapScene::MapItems MapScene::cloneItems(const MapItems &items)
     result.reserve(items.size());
     foreach (MapItem *item, items) {
         MapItem *item2 = new MapItem(*item);
-        addItem(item2);
+        //addItem(item2);
         setModified(true);
         result.append(item2);
+        NewItemCommand *command = new NewItemCommand(this, item2);
+        undoStack()->push(command);
     }
     return result;
 }
@@ -159,10 +174,11 @@ void MapScene::selectSingleItem(MapItem *item)
 
 void MapScene::onLevelObjectUpdated(const QString &name, LevelObject *obj)
 {
-    foreach (QGraphicsItem *item, items()) {
-        MapItem *mapItem = dynamic_cast<MapItem *>(item);
-        if (mapItem && mapItem->name() == name) {
-            LevelObject *mapObj = mapItem->levelObject();
+    // TODO: optimize
+    foreach (QGraphicsItem *graphicsItem, items()) {
+        MapItem *item = dynamic_cast<MapItem *>(graphicsItem);
+        if (item && item->name() == name) {
+            LevelObject *mapObj = item->levelObject();
             if (!mapObj)
                 continue;
             mapObj->setImage(obj->image());

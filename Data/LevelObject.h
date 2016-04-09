@@ -14,6 +14,7 @@
 class LevelObject: public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QPointF position READ position WRITE setPosition NOTIFY positionChanged);
 public:
     using Properties = QMap<QString, QString>;
 
