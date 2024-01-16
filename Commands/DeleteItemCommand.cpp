@@ -15,7 +15,7 @@ DeleteItemCommand::DeleteItemCommand(QGraphicsScene *scene,
 {
     qerr << "DeleteCommand[" << ptrToString(this) <<
             "]::DeleteCommand(): mapItem=" << ptrToString(mapItem) <<
-            ", scene=" << ptrToString(mapItem->scene()) << endl;
+            ", scene=" << ptrToString(mapItem->scene()) << Qt::endl;
 
     mapItem->ref.ref();
 
@@ -34,7 +34,7 @@ DeleteItemCommand::DeleteItemCommand(QGraphicsScene *scene,
 DeleteItemCommand::~DeleteItemCommand()
 {
     qerr << "~DeleteCommand[" << ptrToString(this) <<
-            "]::DeleteCommand(): mapItem=" << ptrToString(mapItem_) << endl;
+            "]::DeleteCommand(): mapItem=" << ptrToString(mapItem_) << Qt::endl;
     if (mapItem_ && false == mapItem_->ref.deref()) {
         if (!mapItem_->scene())
             delete mapItem_;
@@ -45,7 +45,7 @@ void DeleteItemCommand::redo()
 {
     qerr << "DeleteCommand[" << ptrToString(this) <<
             "]::redo(): mapItem=" << ptrToString(mapItem_) <<
-            ", scene=" << ptrToString(mapItem_->scene()) << endl;
+            ", scene=" << ptrToString(mapItem_->scene()) << Qt::endl;
     if (mapItem_)
         scene_->removeItem(mapItem_);
 }
@@ -54,7 +54,7 @@ void DeleteItemCommand::undo()
 {
     qerr << "DeleteCommand[" << ptrToString(this) <<
             "]::undo(): mapItem=" << ptrToString(mapItem_) <<
-            ", scene=" << ptrToString(mapItem_->scene()) << endl;
+            ", scene=" << ptrToString(mapItem_->scene()) << Qt::endl;
     if (mapItem_)
         scene_->addItem(mapItem_);
 }
@@ -64,6 +64,6 @@ void DeleteItemCommand::onMapItemDestroyed()
     MapItem *mapItem = (MapItem *)sender();
     qerr << "DeleteCommand[" << ptrToString(this) <<
             "]::onMapItemDestroyed(): mapItem=" << ptrToString(mapItem) <<
-            ", scene=" << ptrToString(mapItem->scene()) << endl;
+            ", scene=" << ptrToString(mapItem->scene()) << Qt::endl;
     mapItem_ = nullptr; // destroyed by scene
 }

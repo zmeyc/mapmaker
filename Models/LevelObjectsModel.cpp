@@ -48,7 +48,7 @@ bool LevelObjectsModel::addImagesFromDirectory(const QString &directory)
         if (image.load(filename)) {
             //qvrb << "Loaded: " << filename << endl;
         } else {
-            qerr << "Unable to load: " << filename << endl;
+            qerr << "Unable to load: " << filename << Qt::endl;
             allLoaded = false;
         }
 
@@ -68,7 +68,9 @@ bool LevelObjectsModel::addImagesFromDirectory(const QString &directory)
 
     beginResetModel();
     entries_.append(objectsToAdd);
-    entriesByName_.unite(byName);
+    for (auto i = byName.begin(); i != byName.end(); ++i) {
+        entriesByName_[i.key()] = i.value();
+    }
     endResetModel();
 
     foreach (LevelObject *obj, entries_) {

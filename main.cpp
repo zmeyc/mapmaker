@@ -13,8 +13,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setAttribute(Qt::AA_UseHighDpiPixmaps);
-
     qt_set_sequence_auto_mnemonic(true);
 
     QApplication::setOrganizationDomain("com.zabiyaka");

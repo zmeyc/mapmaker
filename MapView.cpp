@@ -115,7 +115,7 @@ void MapView::dragLeaveEvent(QDragLeaveEvent *event)
 
 void MapView::dropEvent(QDropEvent *event)
 {
-    qdbg << "dropEvent: text=" << event->mimeData()->formats().first() << endl;
+    qdbg << "dropEvent: text=" << event->mimeData()->formats().first() << Qt::endl;
     if (!event->mimeData()->hasFormat(levelObjectNameMimeType))
         return;
     event->acceptProposedAction();
@@ -168,7 +168,7 @@ void MapView::mousePressEvent(QMouseEvent *event)
             dragPrevBounds_ = dragInitialBounds_;
             dragState_ = AboutToDrag;
             if (macroStarted_) {
-                qerr << "Unterminated macro" << endl;
+                qerr << "Unterminated macro" << Qt::endl;
                 mapScene()->undoStack()->endMacro();
             }
         } else {
@@ -386,7 +386,7 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
             QRectF targetRect = itemRect.translated(
                         dx * itemRect.width(),
                         dy * itemRect.height());
-            qdbg << "itemPos=" << item->pos() << ", itemRect=" << itemRect << ", targetRect=" << targetRect << endl;
+            qdbg << "itemPos=" << item->pos() << ", itemRect=" << itemRect << ", targetRect=" << targetRect << Qt::endl;
             // FIXME: why doesn't targeted selection work?
             QList<QGraphicsItem *> neighbours = scene()->items(targetRect.toRect(), Qt::ContainsItemBoundingRect);
             bool destroyedItem = false;
@@ -438,7 +438,7 @@ void MapView::moveOrCloneSelectedItemsBy(int dx, int dy)
 
 void MapView::copy()
 {
-    qdbg << "MapView::copy()" << endl;
+    qdbg << "MapView::copy()" << Qt::endl;
     QJsonArray objects = mapScene()->toJsonArray(/* selectedOnly */ true);
     QJsonDocument document;
     document.setArray(objects);

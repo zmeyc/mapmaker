@@ -1,4 +1,4 @@
-#include <Qpainter>
+#include <QPainter>
 #include "DockPointsGraphicsEffect.h"
 #include "MapItems/MapItem.h"
 #include "Utils/Settings.h"

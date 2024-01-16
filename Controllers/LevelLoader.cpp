@@ -103,8 +103,8 @@ bool LevelLoader::spawnObjects(MapView *view, const QJsonArray &objects,
     }
 
     if (!notFound.isEmpty()) {
-        QStringList objects = notFound.toList();
-        qSort(objects);
+        QStringList objects = notFound.values();
+        std::sort(objects.begin(), objects.end());
         lastErrorDescription_ = "Some objects were not found: " +
                  objects.join(", ");
         return false;

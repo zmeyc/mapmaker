@@ -36,7 +36,7 @@ public:
         inline QTextStream &stream() const { return stream_; }
 
 protected:
-    QMutexLocker locker_;
+    QMutexLocker<QMutex> locker_;
     QTextStream &stream_;
 };
 

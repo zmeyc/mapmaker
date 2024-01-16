@@ -1,7 +1,6 @@
 // MapMaker (c) 2016 Andrey Fidrya. MIT license. See LICENSE for more information.
 
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QSplitter>
 #include <QMessageBox>
 #include <QCloseEvent>
@@ -65,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
     loadImages();
 
     qdbg << "MainWindow::MainWindow(): mapFilename=" <<
-            settings_->mapFilename() << endl;
+            settings_->mapFilename() << Qt::endl;
     if (!settings_->mapFilename().isEmpty())
         QTimer::singleShot(0, this, SLOT(loadLevel()));
 }
@@ -139,7 +138,7 @@ void MainWindow::onOpen()
 
     QString dataLocation = mapPath;
     if (dataLocation.isEmpty()) {
-        QStringList locations = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+        QStringList locations = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
         if (!locations.empty())
             dataLocation = locations.first();
     }
@@ -236,10 +235,13 @@ void MainWindow::loadWindowSettings()
 {
     QByteArray geometry = settings_->geometry();
     if (geometry.isEmpty()) {
-        QRect rect = QApplication::desktop()->availableGeometry(this);
-        resize(rect.width() * 2 / 3, rect.height() * 3 / 4);
-        move((rect.width() - width()) / 2,
-             (rect.height() - height()) / 2);
+        QScreen *screen = QApplication::primaryScreen();
+        if (screen) {
+            QRect rect = screen->availableGeometry();
+            resize(rect.width() * 2 / 3, rect.height() * 3 / 4);
+            move((rect.width() - width()) / 2,
+                 (rect.height() - height()) / 2);
+        }
     } else {
         restoreGeometry(geometry);
     }

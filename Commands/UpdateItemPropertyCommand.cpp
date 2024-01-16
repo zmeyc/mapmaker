@@ -22,7 +22,7 @@ UpdateItemPropertyCommand::UpdateItemPropertyCommand(
 {
     qdbg << "UpdateItemPropertyCommand[" << ptrToString(this) <<
             "]::UpdateItemPropertyCommand(): mapItem=" << ptrToString(mapItem) <<
-            ", scene=" << ptrToString(mapItem->scene()) << endl;
+            ", scene=" << ptrToString(mapItem->scene()) << Qt::endl;
 
     mapItem->ref.ref();
 
@@ -49,7 +49,7 @@ UpdateItemPropertyCommand::UpdateItemPropertyCommand(
 UpdateItemPropertyCommand::~UpdateItemPropertyCommand()
 {
     qdbg << "~UpdateItemPropertyCommand[" << ptrToString(this) <<
-            "]::UpdateItemPropertyCommand(): mapItem=" << ptrToString(mapItem_) << endl;
+            "]::UpdateItemPropertyCommand(): mapItem=" << ptrToString(mapItem_) << Qt::endl;
     if (mapItem_ && false == mapItem_->ref.deref()) {
         if (!mapItem_->scene())
             delete mapItem_;
@@ -60,15 +60,15 @@ void UpdateItemPropertyCommand::redo()
 {
     qdbg << "UpdateItemPropertyCommand[" << ptrToString(this) <<
             "]::redo(): mapItem=" << ptrToString(mapItem_) <<
-            ", scene=" << ptrToString(mapItem_->scene()) << endl;
+            ", scene=" << ptrToString(mapItem_->scene()) << Qt::endl;
     if (mapItem_) {
         qdbg << "UpdateItemPropertyCommand::redo(): key=" << propertyName_ <<
-                ", value=" << propertyValue_.toPointF() << endl;
+                ", value=" << propertyValue_.toPointF() << Qt::endl;
         LevelObject *obj = mapItem_->levelObject();
         if (obj) {
             bool success = obj->setProperty(propertyName_.toUtf8().data(), propertyValue_);
             if (!success)
-                qerr << "Property does not exist: " << propertyName_ << endl;
+                qerr << "Property does not exist: " << propertyName_ << Qt::endl;
         }
     }
 }
@@ -77,15 +77,15 @@ void UpdateItemPropertyCommand::undo()
 {
     qdbg << "UpdateItemPropertyCommand[" << ptrToString(this) <<
             "]::undo(): mapItem=" << ptrToString(mapItem_) <<
-            ", scene=" << ptrToString(mapItem_->scene()) << endl;
+            ", scene=" << ptrToString(mapItem_->scene()) << Qt::endl;
     if (mapItem_) {
         qdbg << "UpdateItemPropertyCommand::undo(): key=" << propertyName_ <<
-                ", value=" << propertyValue_.toPointF() << endl;
+                ", value=" << propertyValue_.toPointF() << Qt::endl;
         LevelObject *obj = mapItem_->levelObject();
         if (obj) {
             bool success = obj->setProperty(propertyName_.toUtf8().data(), previousValue_);
             if (!success)
-                qerr << "Property does not exist: " << propertyName_ << endl;
+                qerr << "Property does not exist: " << propertyName_ << Qt::endl;
         }
     }
 }
@@ -95,6 +95,6 @@ void UpdateItemPropertyCommand::onMapItemDestroyed()
     MapItem *mapItem = (MapItem *)sender();
     qdbg << "UpdateItemPropertyCommand[" << ptrToString(this) <<
             "]::onMapItemDestroyed(): mapItem=" << ptrToString(mapItem) <<
-            ", scene=" << ptrToString(mapItem->scene()) << endl;
+            ", scene=" << ptrToString(mapItem->scene()) << Qt::endl;
     mapItem_ = nullptr; // destroyed by scene
 }

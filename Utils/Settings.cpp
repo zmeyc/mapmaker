@@ -23,7 +23,7 @@ Settings::Settings(QObject *parent)
                 QCoreApplication::organizationName(),
                 QCoreApplication::applicationName())
 {
-    qdbg << "Settings::Settings()" << endl;
+    qdbg << "Settings::Settings()" << Qt::endl;
     load();
 }
 
@@ -56,7 +56,7 @@ bool Settings::parseCommandLine()
     if (parser.parse(qApp->arguments())) {
         parser.process(qApp->arguments());
     } else {
-        qerr << parser.errorText() << endl;
+        qerr << parser.errorText() << Qt::endl;
     }
 
     if (!parser.positionalArguments().isEmpty())
@@ -114,7 +114,7 @@ QString Settings::imagesDirectory() const
 
 void Settings::setImagesDirectory(const QString &imagesDirectory)
 {
-    qdbg << "Settings::setImagesDirectory: " << imagesDirectory << endl;
+    qdbg << "Settings::setImagesDirectory: " << imagesDirectory << Qt::endl;
     commandline_.imagesDirectory_.clear();
     imagesDirectory_ = imagesDirectory;
     settings_.setValue(imagesDirectoryKey, imagesDirectory_);
@@ -321,11 +321,11 @@ void Settings::load()
     showDockPoints_ = settings_.value(showDockPointsKey, true).toBool();
     dockingDistance_ = settings_.value(dockingDistanceKey, 6).toInt();
     snapToDockPoints_ = settings_.value(snapToDockPointsKey, true).toBool();
-    qout << "Settings loaded" << endl;
+    qout << "Settings loaded" << Qt::endl;
 }
 
 void Settings::save()
 {
     settings_.sync();
-    qout << "Settings saved" << endl;
+    qout << "Settings saved" << Qt::endl;
 }
